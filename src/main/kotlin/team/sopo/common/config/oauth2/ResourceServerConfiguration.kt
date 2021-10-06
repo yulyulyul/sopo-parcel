@@ -6,23 +6,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
-import team.sopo.common.config.security.HttpAuthenticationEntryPoint
 
 @Configuration
 @EnableResourceServer
-class ResourceServerConfiguration: ResourceServerConfigurerAdapter() {
+class ResourceServerConfiguration(private final val tokenClient: TokenClient): ResourceServerConfigurerAdapter() {
 
     @Value("\${security.oauth2.client.resource-ids}")
-    lateinit var resourceIds: String
-
-    @Value("\${security.oauth2.client.client-id}")
-    lateinit var clientId: String
-
-    @Value("\${security.oauth2.client.client-secret}")
-    lateinit var clientSecret: String
-
-    @Value("\${security.oauth2.resource.token-info-uri}")
-    lateinit var checkTokenUrl: String
+    private lateinit var resourceIds: String
 
     /*
         '인증(Authentication)', '권한(Authorization)' 과정에서 발생한 오류는 RestControllerAdvice 에 걸리지 않음.(내부에 filter chain 때문이라고함)
@@ -30,7 +20,7 @@ class ResourceServerConfiguration: ResourceServerConfigurerAdapter() {
      */
     override fun configure(resources: ResourceServerSecurityConfigurer?) {
         resources?.apply {
-            val remoteTokenService = CustomResourceServerTokenServices(checkTokenUrl, clientId, clientSecret)
+            val remoteTokenService = SopoResourceServerTokenService(tokenClient)
             tokenServices(remoteTokenService)
             resourceId(resourceIds)
 

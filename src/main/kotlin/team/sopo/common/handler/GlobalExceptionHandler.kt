@@ -1,149 +1,97 @@
 package team.sopo.common.handler
 
-import team.sopo.common.enums.ResponseEnum
-import team.sopo.common.exception.APIException
-import team.sopo.common.model.api.ApiResult
 import org.apache.logging.log4j.LogManager
-import org.springframework.http.HttpStatus
-import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import team.sopo.common.exception.SopoException
+import team.sopo.common.exception.SopoOauthException
+import team.sopo.common.exception.error.ErrorResponse
+import team.sopo.common.exception.error.SopoError
+import java.util.stream.Collectors
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.validation.ConstraintDefinitionException
-import javax.validation.ConstraintViolationException
 
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
-    val logger = LogManager.getLogger(this.javaClass.name)
+    private val logger = LogManager.getLogger(GlobalExceptionHandler::class)
 
-    @ExceptionHandler(APIException::class)
-    fun handleAPIException(request: HttpServletRequest,
-                           response: HttpServletResponse,
-                           e: APIException
-    ): ApiResult<String>
-    {
-        logger.error("API Processing Error!", e)
-        logger.error("Response status code : ${response.status}")
+    @ExceptionHandler(SopoException::class)
+    fun handleSopoException(
+        request: HttpServletRequest,
+        e: SopoException
+    ): ResponseEntity<ErrorResponse> {
+        logger.error("SopoException", e)
+        val response = ErrorResponse(e, request.servletPath)
 
-        response.status = e.httpStatus
-        return ApiResult(
-                uniqueCode = request.getHeader("uuid") ?: "",
-                code = e.responseEnum.CODE,
-                message = e.message,
-                path = request.servletPath,
-                data = null
-        )
+        return ResponseEntity(response, e.getHttpStatus())
     }
 
-    @ExceptionHandler(ConstraintViolationException::class)
-    fun handleConstraintViolationException(request: HttpServletRequest,
-                                           response: HttpServletResponse,
-                                           e: ConstraintViolationException): ApiResult<String>
-    {
-        response.status = HttpStatus.BAD_REQUEST.value()
+    @ExceptionHandler(SopoOauthException::class)
+    fun handleSopoOauthException(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        e: SopoOauthException): ResponseEntity<ErrorResponse> {
 
-        return ApiResult(
-                uniqueCode = request.getHeader("uuid") ?: "",
-                code = ResponseEnum.VALIDATION_ERROR.CODE,
-                message = e.constraintViolations.last().message,
-                path = request.servletPath,
-                data = null
-        )
+        val sopoOauthError = e.sopoError
+        val errorResponse = ErrorResponse(sopoOauthError, sopoOauthError.message ?: e.localizedMessage, request.servletPath)
+        return ResponseEntity(errorResponse, sopoOauthError.status)
+    }
+
+    @ExceptionHandler(AuthenticationException::class)
+    fun handleAuthenticationException(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        e: AuthenticationException
+    ): ResponseEntity<ErrorResponse> {
+
+        val errorResponse = ErrorResponse(SopoError.AUTHENTICATION_FAIL, SopoError.AUTHENTICATION_FAIL.message ?: e.localizedMessage, request.servletPath)
+        return ResponseEntity(errorResponse, SopoError.AUTHENTICATION_FAIL.status)
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        e: AccessDeniedException
+    ): ResponseEntity<ErrorResponse> {
+
+        val errorResponse = ErrorResponse(SopoError.AUTHORIZE_FAIL, SopoError.AUTHORIZE_FAIL.message ?: e.localizedMessage, request.servletPath)
+        return ResponseEntity(errorResponse, SopoError.AUTHORIZE_FAIL.status)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        e: MethodArgumentNotValidException): ApiResult<String> {
+        e: MethodArgumentNotValidException): List<ErrorResponse> {
+
         val bindingResult = e.bindingResult
-        val strBuilder = StringBuilder()
-        var isFirst = true
-        bindingResult.fieldErrors.forEach { fieldError ->
-            if(!isFirst){
-                strBuilder.append(" , ")
+        return bindingResult
+            .fieldErrors
+            .stream()
+            .map {
+                it.defaultMessage?.let { errorMessage ->
+                    ErrorResponse(SopoError.VALIDATION, errorMessage, request.servletPath)
+                }
             }
-            strBuilder.append("${fieldError.defaultMessage}")
-            isFirst = false
-        }
-        response.status = HttpStatus.BAD_REQUEST.value()
-        return ApiResult(
-            uniqueCode = request.getHeader("uuid") ?: "",
-            code = ResponseEnum.VALIDATION_ERROR.CODE,
-            message = strBuilder.toString(),
-            path = request.servletPath,
-            data = null
-        )
-    }
-
-    @ExceptionHandler(ConstraintDefinitionException::class)
-    fun handleConstraintDefinitionException(request: HttpServletRequest,
-                                              response: HttpServletResponse,
-                                              e: ConstraintDefinitionException): ApiResult<String> {
-        response.status = HttpStatus.BAD_REQUEST.value()
-        return ApiResult(
-                uniqueCode = request.getHeader("uuid") ?: "",
-                code = ResponseEnum.VALIDATION_ERROR.CODE,
-                message = "Validation Error",
-                path = request.servletPath,
-                data = null
-        )
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun handleHttpMessageNotReadableException(request: HttpServletRequest,
-                                              response: HttpServletResponse,
-                                              e: HttpMessageNotReadableException): ApiResult<String>
-    {
-
-        logger.error("handleHttpMessageNotReadableException : ${e.printStackTrace()}")
-        logger.error("handleHttpMessageNotReadableException : ${e.localizedMessage}")
-        response.status = HttpStatus.BAD_REQUEST.value()
-        return ApiResult(
-            uniqueCode = request.getHeader("uuid") ?: "",
-            code = ResponseEnum.VALIDATION_ERROR.CODE,
-            path = request.servletPath,
-            data = null
-        )
-    }
-
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException::class)
-    fun handleAccessDeniedException(request: HttpServletRequest,
-                                    response: HttpServletResponse,
-                                    e: org.springframework.security.access.AccessDeniedException): ApiResult<String>
-    {
-        response.status = HttpStatus.UNAUTHORIZED.value()
-        return ApiResult(
-                uniqueCode = request.getHeader("uuid") ?: "",
-                code = ResponseEnum.UNAUTHORIZED_ACCESS_ERROR.CODE,
-                message = ResponseEnum.UNAUTHORIZED_ACCESS_ERROR.MSG,
-                path = request.servletPath,
-                data = null
-        )
+            .collect(Collectors.toList())
     }
 
     @ExceptionHandler(Exception::class)
-    fun exceptionErrorHandler(request: HttpServletRequest,
-                              response: HttpServletResponse,
-                              exception: java.lang.Exception): Any?{
+    fun handleException(
+        request: HttpServletRequest,
+        e: Exception): ResponseEntity<ErrorResponse>{
+        logger.error(e.printStackTrace())
+        logger.error("[Exception] : ${e.localizedMessage}")
 
-        val apiResult: ApiResult<Any?> = ApiResult()
-        logger.error("Exception : $exception")
-        logger.error("request info : $request.")
-
-        response.status = HttpStatus.BAD_REQUEST.value()
-        apiResult.uniqueCode = request.getHeader("uuid") ?: ""
-        apiResult.code = ResponseEnum.UNKNOWN_ERROR.CODE
-        apiResult.message = exception.message ?: ""
-        apiResult.path = request.servletPath
-        apiResult.data = null
-        logger.debug("OUT : $apiResult")
-
-        return apiResult
+        val errorResponse = ErrorResponse(SopoError.UNKNOWN_ERROR, e.localizedMessage, request.servletPath)
+        return ResponseEntity(errorResponse, SopoError.UNKNOWN_ERROR.status)
     }
 
 }

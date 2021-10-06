@@ -1,42 +1,37 @@
 package team.sopo.common.config.oauth2
 
-import com.google.gson.Gson
-import team.sopo.common.enums.ResponseEnum
-import team.sopo.common.model.api.ApiResult
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.web.access.AccessDeniedHandler
-import java.io.PrintWriter
-import javax.servlet.RequestDispatcher
+import org.springframework.stereotype.Component
+import org.springframework.web.servlet.HandlerExceptionResolver
+import team.sopo.common.exception.SopoOauthException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+@Component
 class Oauth2AccessDeniedHandler: AccessDeniedHandler {
 
-    val logger: Logger = LogManager.getLogger(this.javaClass.name)
+    private val logger: Logger = LogManager.getLogger(Oauth2AccessDeniedHandler::class)
+
+    @Autowired
+    @Qualifier("handlerExceptionResolver")
+    lateinit var resolver: HandlerExceptionResolver
 
     override fun handle(
-        request: HttpServletRequest?,
-        response: HttpServletResponse?,
-        accessDeniedException: AccessDeniedException?
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        accessDeniedException: AccessDeniedException
     ) {
-        logger.debug("@@ -> Oauth2AccessDeniedHandler")
+        logger.info("Oauth2AccessDeniedHandler,  AccessDeniedException, ${accessDeniedException.localizedMessage}")
+        logger.info("HttpAuthenticationEntryPoint, AuthenticationException, ${accessDeniedException.localizedMessage}")
 
-        val out: PrintWriter? = response?.writer
-        val uuid = request?.getHeader("uuid") ?: ""
-        val path = request?.getAttribute(RequestDispatcher.ERROR_REQUEST_URI) as String ?: ""
-
-        ApiResult(
-            code = ResponseEnum.UNAUTHORIZED_ACCESS_ERROR.CODE,
-            message = accessDeniedException?.message ?: "Oauth2AccessDeniedHandler",
-            uniqueCode = uuid,
-            path = path,
-            data = null
-        ).run {
-            Gson().toJson(this)
-        }.apply {
-            out?.print(this)
+        if(accessDeniedException.cause is SopoOauthException){
+            val sopoOauthException = accessDeniedException.cause as SopoOauthException
+            resolver.resolveException(request, response, null, sopoOauthException)
         }
     }
 }

@@ -2,8 +2,8 @@ package team.sopo.parcel.application
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import team.sopo.common.enums.ResponseEnum
-import team.sopo.common.exception.APIException
+import team.sopo.common.exception.AlreadyRegisteredParcelException
+import team.sopo.common.exception.OverRegisteredParcelException
 import team.sopo.parcel.domain.ParcelRepository
 
 @Service
@@ -15,12 +15,12 @@ class CheckIsParcelRegistrableService(
         val isRegistered = parcelRepository.isAlreadyRegistered(userId,  waybillNum, carrier)
 
         if(isRegistered){
-            throw APIException(ResponseEnum.ALREADY_REGISTERED_PARCEL)
+            throw AlreadyRegisteredParcelException()
         }
 
         val isLimitOver = parcelRepository.isLimitCountOver(userId)
         if(isLimitOver){
-            throw APIException(ResponseEnum.OVER_REGISTERED_PARCEL)
+            throw OverRegisteredParcelException()
         }
     }
 }

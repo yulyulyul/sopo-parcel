@@ -6,8 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import team.sopo.common.enums.ResponseEnum
-import team.sopo.common.exception.ParcelException
+import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.parcel.domain.DeliveryStatus
 import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.QParcel
@@ -46,7 +45,7 @@ class ParcelRepositorySupportImpl(@Autowired private val queryFactory: JPAQueryF
         return  queryFactory
                 .selectFrom(parcel)
                 .where(parcel.id.eq(parcelId)
-                    .and(parcel.userId.eq(userId))).fetchOne() ?: throw ParcelException(ResponseEnum.CAN_NOT_FIND_PARCEL.MSG)
+                    .and(parcel.userId.eq(userId))).fetchOne() ?: throw ParcelNotFoundException()
     }
 
     override fun getParcelsOngoing(userId: String): List<Parcel>? {

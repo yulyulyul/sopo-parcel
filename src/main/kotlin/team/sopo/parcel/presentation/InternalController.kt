@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import team.sopo.common.enums.ResponseEnum
 import team.sopo.common.model.api.ApiResult
 import team.sopo.parcel.application.GetUsageInfoService
 import team.sopo.parcel.domain.dto.UsageInfoDTO
@@ -23,7 +22,7 @@ import javax.validation.constraints.NotNull
 class InternalController(
     @Autowired private val getUsageInfoService: GetUsageInfoService
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
+    private val logger: Logger = LoggerFactory.getLogger(InternalController::class.java)
 
     @Operation(summary = "유저의 사용 정보를 조회하는 API")
     @GetMapping("/parcel/usage-info/{userId}")
@@ -33,6 +32,6 @@ class InternalController(
         userId: String? = null
     ):ResponseEntity<ApiResult<UsageInfoDTO>>{
         val usageInfoDto = getUsageInfoService.getUsageInfo(userId ?: throw ConstraintViolationException("* userId를 확인해주세요.", mutableSetOf()))
-        return ResponseEntity.ok(ApiResult(code = ResponseEnum.SUCCESS.CODE, data = usageInfoDto))
+        return ResponseEntity.ok(ApiResult(data = usageInfoDto))
     }
 }

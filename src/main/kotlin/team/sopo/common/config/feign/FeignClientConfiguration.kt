@@ -5,12 +5,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.cloud.openfeign.FeignFormatterRegistrar
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.format.FormatterRegistry
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import java.util.*
 
-class FeignClientConfig: Jackson2ObjectMapperBuilderCustomizer {
+@Configuration
+class FeignClientConfiguration: Jackson2ObjectMapperBuilderCustomizer {
 
     @Bean
     fun localDateFeignFormatterRegister(): FeignFormatterRegistrar {

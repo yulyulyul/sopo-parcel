@@ -30,10 +30,10 @@ class Parcel() {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "parcel_id", nullable = false)
-    var id: Long? = null
+    var id: Long = 0L
 
     @Column(name = "user_id")
-    var userId: String? = null
+    var userId: String = ""
 
     @Column(name = "reg_dt")
     var regDt:LocalDate = TimeUtil.getLocalDate()
@@ -84,9 +84,9 @@ class Parcel() {
         return this.inquiryHash != newParcel.inquiryHash
     }
 
-    fun getUpdatePolicy(parcelRepository: ParcelRepository, newParcel: Parcel): UpdatePolicy {
-        return if(this.inquiryHash != newParcel.inquiryHash){
-            UsualUpdate(parcelRepository, newParcel)
+    fun getUpdatePolicy(parcelRepository: ParcelRepository, refreshedParcel: Parcel): UpdatePolicy {
+        return if(this.inquiryHash != refreshedParcel.inquiryHash){
+            UsualUpdate(parcelRepository, this, refreshedParcel)
         }
         else if(auditDte.plusWeeks(2L).isBefore(LocalDateTime.now())){
             ChangeStatusToUnidentifiedDeliveredParcel(parcelRepository, this)
@@ -94,6 +94,15 @@ class Parcel() {
         else{
             NoChange()
         }
+    }
+
+    fun updateParcel(refreshedParcel: Parcel): Parcel{
+        inquiryResult = refreshedParcel.inquiryResult
+        inquiryHash = refreshedParcel.inquiryHash
+        deliveryStatus = refreshedParcel.deliveryStatus
+        arrivalDte = refreshedParcel.arrivalDte
+        auditDte = refreshedParcel.auditDte
+        return this
     }
 
     fun updateParcel(trackingInfo: TrackingInfo): Parcel {
@@ -141,14 +150,10 @@ class Parcel() {
     private fun createParcelAlias(trackingInfo: TrackingInfo?, inputAlias: String, waybillNum: String): String{
         val returnObj by lazy {
 
-            if(inputAlias.isNotEmpty()){
-                inputAlias
-            }
-            else{
-                if(trackingInfo != null) {
+            inputAlias.ifEmpty {
+                if (trackingInfo != null) {
                     trackingInfo.from?.let { "보내는 이 (${it.name})" } ?: waybillNum
-                }
-                else{
+                } else {
                     waybillNum
                 }
             }

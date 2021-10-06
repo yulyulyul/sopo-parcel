@@ -7,7 +7,7 @@ import team.sopo.parcel.domain.ParcelRepository
 class ChangeStatusToUnidentifiedDeliveredParcel(val parcelRepository: ParcelRepository, private val parcel: Parcel): UpdatePolicy() {
 
     override fun run(): UpdateResult {
-        parcel.changeDeliveryStatus(DeliveryStatus.UNIDENTIFIED_DELIVERED_PARCEL)
+        parcel.changeDeliveryStatus(DeliveryStatus.ORPHANED)
         parcelRepository.save(parcel)
         return UpdateResult.NEED_TO_CHECK_DELIVERY_STATUS
     }

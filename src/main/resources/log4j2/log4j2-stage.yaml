@@ -15,6 +15,17 @@ Configuration:
         value: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{[%-5level %X{traceId}/%X{spanId}]%throwable}{${color-filter}} [%t{1.}] %style{%c{1.}}{MAGENTA} (%F:%L) - %msg%n"
 
   Appenders:
+    Socket:
+      name: Socket
+      host: localhost
+      port: 5170
+      JsonTemplateLayout:
+        stackTraceEnabled: true
+        eventTemplateUri: classpath:LogstashJsonEventLayoutV1.json
+        eventTemplateAdditionalField:
+          - key: data_type
+            value: "$${event:Marker:-LOG}"
+
     Console:
       name: CONSOLE
       target: SYSTEM_OUT
@@ -30,18 +41,6 @@ Configuration:
         Policies:
           TimeBasedTriggeringPolicy:
             interval: 1
-      - name: JsonFile
-        fileName: ${log-path}/${service}_service.json
-        filePattern: ${log-path}/${service}_service.json.%d{yyyy-MM-dd}.gz
-        Policies:
-          TimeBasedTriggeringPolicy:
-            interval: 1
-        JsonTemplateLayout:
-          stackTraceEnabled: true
-          eventTemplateUri: classpath:LogstashJsonEventLayoutV1.json
-          eventTemplateAdditionalField:
-            - key: data_type
-              value: "$${event:Marker:-LOG}"
 
   Loggers:
     Root:
@@ -49,11 +48,13 @@ Configuration:
         additivity: false
         AppenderRef:
           - ref: File
-          - ref: JsonFile
           - ref: CONSOLE
+          - ref: Socket
 
     Logger:
-      - name: team.sopo
+      - name: team.sopo.user.infrastructure.feign_client
+        level: debug
+      - name: com.parcelpj
         level: debug
       - name: org.hibernate.type.descriptor.sql.BasicBinder
         level: trace

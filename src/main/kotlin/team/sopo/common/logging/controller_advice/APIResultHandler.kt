@@ -2,11 +2,9 @@ package team.sopo.common.logging.controller_advice
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import team.sopo.common.extension.toString
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.MarkerManager
-
 import org.springframework.core.MethodParameter
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
@@ -16,6 +14,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
+import team.sopo.common.extension.toString
+import team.sopo.common.model.api.ApiResult
 import java.util.*
 
 @ControllerAdvice
@@ -42,6 +42,11 @@ class APIResultHandler() : ResponseBodyAdvice<Any> {
         catch (e: java.lang.IllegalStateException){
             ""
         }
+
+        if(body is ApiResult<*>){
+            body.path = servletRequestAttributes.request.requestURI
+        }
+
         params["log_time"] = Date().toString("yyyy/MM/dd HH:mm:ss")
         params["http_status"] = httpServletResponse?.status
         params["http_method"] = servletRequestAttributes.request.method

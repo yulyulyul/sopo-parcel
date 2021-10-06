@@ -1,11 +1,9 @@
 package team.sopo.parcel.application
 
-import team.sopo.parcel.domain.ParcelRepository
-import team.sopo.parcel.domain.command.RegisterParcelCommand
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import team.sopo.common.enums.ResponseEnum
-import team.sopo.common.exception.APIException
+import team.sopo.parcel.domain.ParcelRepository
+import team.sopo.parcel.domain.command.RegisterParcelCommand
 
 @Service
 class RegisterParcelService(

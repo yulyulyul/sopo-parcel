@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import team.sopo.common.config.retrofit.RetrofitConfiguration
-import team.sopo.common.enums.ResponseEnum
-import team.sopo.common.exception.APIException
+import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.common.extension.checkProgressesSort
 import team.sopo.common.extension.removeSpecialCharacter
 import team.sopo.parcel.application.InquiryService
@@ -45,7 +44,7 @@ class RetrofitParcelInquiryService(
             }
         }
         catch (e: Exception){
-            throw APIException(ResponseEnum.FAIL_TO_SEARCH_PARCEL, e.localizedMessage)
+            throw ParcelNotFoundException()
         }
     }
 }

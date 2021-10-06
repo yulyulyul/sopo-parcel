@@ -42,6 +42,9 @@ class RequestLoggingAspect {
                         catch (e: java.lang.IllegalStateException){
                             ""
                         }
+                        catch (e: NullPointerException){
+                            ""
+                        }
             val params: MutableMap<String, Any> = HashMap()
 
             params["controller"] = controllerName

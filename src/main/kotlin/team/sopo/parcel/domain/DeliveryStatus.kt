@@ -4,8 +4,7 @@ enum class DeliveryStatus {
     NOT_REGISTERED,
     CHANGED,
     UNCHANGED,
-    UNIDENTIFIED_DELIVERED_PARCEL,
-    ORPHAN_PARCEL,
+    ORPHANED,
     DELIVERED, // 배송완료
     OUT_FOR_DELIVERY, // 배송출발
     IN_TRANSIT, // 상품이동중

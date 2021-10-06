@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,8 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import team.sopo.common.annotation.DateFormatYearMonth
-import team.sopo.common.enums.ResponseEnum
-import team.sopo.common.exception.ParcelException
 import team.sopo.common.model.api.ApiResult
 import team.sopo.parcel.application.ChangeParcelService
 import team.sopo.parcel.application.GetParcelService
@@ -62,8 +62,7 @@ class ParcelController(
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     @Operation(
-        summary = "Api for importing parcel",
-        description = "단일 택배 조회 API",
+        summary = "단일 택배 조회 API",
         security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"]), SecurityRequirement(name = "BearerToken")]
     )
     @GetMapping("/parcel/{parcelId}")
@@ -75,25 +74,19 @@ class ParcelController(
 
             principal: Principal
     ):ResponseEntity<ApiResult<ParcelDTO>> {
-        logger.error("user : ${principal.name}")
+        logger.info("user : ${principal.name}")
         val command = GetParcelCommand(
             userId = principal.name,
             parcelId = parcelId ?: throw ConstraintViolationException("* 택배 id를 확인해주세요.", mutableSetOf())
         )
 
-        return try{
-            val parcel = getParcelSvc.getParcel(command)
-            val result = ApiResult(code = ResponseEnum.SUCCESS.CODE, data = parcel)
-            ResponseEntity.ok(result)
-        }
-        catch (e: ParcelException){
-            ResponseEntity(ApiResult(code = ResponseEnum.PARCEL_ERROR.CODE , message = e.localizedMessage), HttpStatus.BAD_REQUEST)
-        }
+        val parcel = getParcelSvc.getParcel(command)
+        val result = ApiResult(data = parcel)
+        return ResponseEntity.ok(result)
     }
 
     @Operation(
-        summary = "Api for updating parcel`s alias",
-        description = "택배의 별칭을 수정하는 API",
+        summary = "택배의 별칭을 수정하는 API",
         security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"]), SecurityRequirement(name = "BearerToken")]
     )
     @PatchMapping("/parcel/{parcelId}/alias")
@@ -104,31 +97,29 @@ class ParcelController(
         @NotNull(message = "* 택배 id를 확인해주세요.")
         parcelId: Long? = null,
         principal: Principal
-    ): ResponseEntity<ApiResult<String?>> {
+    ): ResponseEntity<Unit> {
 
         val command = UpdateAliasCommand(principal.name, parcelId!!, request.alias)
         changeParcelSvc.changeAlias(command)
 
-        return ResponseEntity.ok(ApiResult(code = ResponseEnum.SUCCESS.CODE))
+        return ResponseEntity.noContent().build()
     }
 
     @Operation(
-        summary = "Api for importing user`s total parcel",
-        description = "복수의 택배[배송중] 조회 API",
+        summary = "복수의 택배[배송중] 조회 API",
         security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"]), SecurityRequirement(name = "BearerToken")]
     )
     @GetMapping("/parcels/ongoing")
     fun getOngoingParcels(principal: Principal): ResponseEntity<ApiResult<List<ParcelDTO>>> {
 
         val ongoings = getParcelSvc.getOngoings(userId = principal.name)
-        val successResult = ApiResult(code = ResponseEnum.SUCCESS.CODE, data = ongoings)
+        val successResult = ApiResult(data = ongoings)
 
         return ResponseEntity.ok(successResult)
     }
 
     @Operation(
-        summary = "Api for importing user`s total parcel",
-        description = "복수의 택배[배송완료] 조회(페이징 포함) API",
+        summary = "복수의 택배[배송완료] 조회(페이징 포함) API",
         security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"]), SecurityRequirement(name = "BearerToken")]
     )
     @GetMapping("/parcels/complete")
@@ -152,27 +143,25 @@ class ParcelController(
     ): ResponseEntity<ApiResult<List<ParcelDTO>>> {
 
         val completes = getParcelSvc.getCompletes(principal.name, inquiryDate, pageable)
-        val successResult = ApiResult(code = ResponseEnum.SUCCESS.CODE, data = completes)
+        val successResult = ApiResult(data = completes)
 
         return ResponseEntity.ok(successResult)
     }
 
     @Operation(
-        summary = "Api for showing available monthly list",
-        description = "사용자의 조회 가능한 '년/월' 리스트 API",
+        summary = "사용자의 조회 가능한 '년/월' 리스트 API",
         security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"]), SecurityRequirement(name = "BearerToken")]
     )
     @GetMapping("/parcels/months")
     fun getMonths(principal: Principal): ResponseEntity<ApiResult<List<ParcelCntInfo>>>{
 
         val months = getParcelSvc.getMonths(principal.name)
-        val successResult = ApiResult(code = ResponseEnum.SUCCESS.CODE, data = months)
+        val successResult = ApiResult(data = months)
         return ResponseEntity.ok(successResult)
     }
 
     @Operation(
-        summary = "Api for updating parcel",
-        description = "단일 택배 상태 업데이트 API",
+        summary = "단일 택배 상태 업데이트 API",
         security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"]), SecurityRequirement(name = "BearerToken")]
     )
     @PostMapping("/parcel/refresh")
@@ -187,25 +176,27 @@ class ParcelController(
                 ResponseEntity.noContent().build()
             }
             UpdateResult.SUCCESS_TO_UPDATE , UpdateResult.NEED_TO_CHECK_DELIVERY_STATUS -> {
+                val getParcelUri = linkTo(methodOn(ParcelController::class.java).getParcel(request.parcelId, principal)).toString()
+
                 ResponseEntity
                     .status(HttpStatus.SEE_OTHER)
-                    .header(HttpHeaders.LOCATION, "$apiGateWayUrl$apiQualifier/parcel/${request.parcelId}")
+                    .header(HttpHeaders.LOCATION, getParcelUri)
                     .build()
             }
         }
     }
 
-    @Operation( summary = "Api for updating user`s total parcel", description = "모든 택배 업데이트 API",
+    @Operation( summary = "모든 택배 업데이트 API",
                 security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"]),
                             SecurityRequirement(name = "BearerToken")]
     )
     @PostMapping("/parcels/refresh")
     fun postParcelsRefresh(principal: Principal): ResponseEntity<ApiResult<String>> {
         refreshParcelSvc.entireRefresh(principal.name)
-        return ResponseEntity.ok( ApiResult(code = ResponseEnum.SUCCESS.CODE , data = "") )
+        return ResponseEntity.ok( ApiResult(data = "") )
     }
 
-    @Operation(summary = "Api for registering parcels", description = "단일 택배 등록 API", security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"])])
+    @Operation(summary = "단일 택배 등록 API", security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"])])
     @PostMapping("/parcel")
     fun postParcel(
         @RequestBody @Valid request: RegisterParcelRequest,
@@ -213,16 +204,13 @@ class ParcelController(
     ): ResponseEntity<ApiResult<Long>> {
 
         val command = RegisterParcelCommand(principal.name, request)
-
         val registeredParcelId = registerParcelSvc.registerParcel(command)
-        val result = ApiResult(code = ResponseEnum.SUCCESS.CODE, data = registeredParcelId)
 
-        return ResponseEntity(result, HttpStatus.CREATED)
+        return ResponseEntity(ApiResult(data = registeredParcelId), HttpStatus.CREATED)
     }
 
     @Operation(
-        summary = "Api for deleting parcels",
-        description = "택배 삭제 API",
+        summary = "택배 삭제 API",
         security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"]), SecurityRequirement(name = "BearerToken")]
     )
     @DeleteMapping("/parcels")
@@ -230,9 +218,9 @@ class ParcelController(
         @Parameter(name = "parcelIds", description = "삭제할 택배 식별값 리스트", required = true)
         @RequestBody @Valid parcelIds: DeleteParcelsRequest,
         principal: Principal
-    ):ResponseEntity<ApiResult<String?>>{
+    ):ResponseEntity<Unit>{
 
         changeParcelSvc.deleteParcels(principal.name, (parcelIds.parcelIds!!))
-        return ResponseEntity.ok(ApiResult(code = ResponseEnum.SUCCESS.CODE))
+        return ResponseEntity.noContent().build()
     }
 }
