@@ -69,10 +69,10 @@ class GlobalExceptionHandler {
     fun handleMethodArgumentNotValidException(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        e: MethodArgumentNotValidException): List<ErrorResponse> {
+        e: MethodArgumentNotValidException): ResponseEntity<List<ErrorResponse>> {
 
         val bindingResult = e.bindingResult
-        return bindingResult
+        val errorResponses = bindingResult
             .fieldErrors
             .stream()
             .map {
@@ -81,6 +81,8 @@ class GlobalExceptionHandler {
                 }
             }
             .collect(Collectors.toList())
+
+        return ResponseEntity(errorResponses, SopoError.VALIDATION.status)
     }
 
     @ExceptionHandler(Exception::class)

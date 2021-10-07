@@ -135,6 +135,7 @@ dependencies {
     implementation ("org.codehaus.jettison","jettison","1.4.1")
 
     implementation ("com.google.firebase","firebase-admin","6.8.1")
+    implementation("com.fasterxml.uuid:java-uuid-generator:3.1.4")
 }
 
 idea {

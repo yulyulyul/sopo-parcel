@@ -1,6 +1,7 @@
 package team.sopo.common.exception.error
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.Gson
 import team.sopo.common.exception.SopoException
 
 class ErrorResponse(
@@ -26,4 +27,8 @@ class ErrorResponse(
         message = message,
         path = path
     )
+
+    override fun toString(): String {
+        return Gson().toJson(this)
+    }
 }

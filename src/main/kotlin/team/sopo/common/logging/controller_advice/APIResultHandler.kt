@@ -1,10 +1,7 @@
 package team.sopo.common.logging.controller_advice
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import org.apache.logging.log4j.MarkerManager
 import org.springframework.core.MethodParameter
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
@@ -14,16 +11,16 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
+import team.sopo.common.exception.error.ErrorResponse
 import team.sopo.common.extension.toString
 import team.sopo.common.model.api.ApiResult
+import team.sopo.common.tracing.ApiTracing
 import java.util.*
 
 @ControllerAdvice
 class APIResultHandler() : ResponseBodyAdvice<Any> {
 
-    var logger: Logger = LogManager.getLogger(this.javaClass)
-    val objectMapper = ObjectMapper()
-    val javaTimeModule = JavaTimeModule()
+    private val logger: Logger = LogManager.getLogger(APIResultHandler::class)
 
     override fun supports(returnType: MethodParameter, converterType: Class<out HttpMessageConverter<*>>): Boolean {
         return true
@@ -34,34 +31,35 @@ class APIResultHandler() : ResponseBodyAdvice<Any> {
                                  response: ServerHttpResponse): Any? {
 
         val servletRequestAttributes = (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)!!
-        val httpServletResponse = servletRequestAttributes.response
+        val requestUri = servletRequestAttributes.request.requestURI
+        val httpStatus = servletRequestAttributes.response?.status
         val params: MutableMap<String, Any?> = TreeMap()
-        val user = try {
-            request.principal?.name ?: ""
-        }
-        catch (e: java.lang.IllegalStateException){
-            ""
-        }
 
+        if (body != null) {
+            params["return_message"] = body.toString()
+        }
         if(body is ApiResult<*>){
             body.path = servletRequestAttributes.request.requestURI
         }
-
-        params["log_time"] = Date().toString("yyyy/MM/dd HH:mm:ss")
-        params["http_status"] = httpServletResponse?.status
-        params["http_method"] = servletRequestAttributes.request.method
-        params["user"] = user
-        params["request_uri"] = servletRequestAttributes.request.requestURI
-
-        if (body != null) {
-            params["return_message"] = body
+        if(body is ErrorResponse){
+            params["error_code"] = body.code
+            params["error_type"] = body.type
+        }
+        if(body is List<*> && body.isNotEmpty()){
+            body.first()?.apply {
+                if(this is ErrorResponse){
+                    params["error_code"] = this.code
+                    params["error_type"] = this.type
+                }
+            }
         }
 
-        val responseString = objectMapper.registerModule(javaTimeModule).writeValueAsString(params)
+        params["response_time"] = Date().toString("yyyy/MM/dd HH:mm:ss")
+        params["http_status"] = httpStatus
 
-        logger.info(MarkerManager.getMarker("response"), responseString)
+        logger.info("[RESPONSE] <== request_uri : $requestUri, httpStatus : $httpStatus")
+        ApiTracing(params).trace()
 
         return body
     }
-
 }
