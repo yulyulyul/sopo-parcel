@@ -52,7 +52,7 @@ Configuration:
           - ref: Socket
 
     Logger:
-      - name: team.sopo.user.infrastructure.feign_client
+      - name: team.sopo.parcel.infrastructure.feign_client
         level: debug
       - name: com.parcelpj
         level: debug

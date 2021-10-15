@@ -4,7 +4,17 @@ NUMBER_OF_ATTEMPTS=1000
 function start(){
   echo $! > fluentd.pid
   fluentd -c fluentd.conf -d fluentd.pid
-  exec java -Dparcel.timezone=KST -Dspring.profiles.active=stage -jar ./sopo-parcel-stage-0.0.1.jar --spring.config.location=/usr/app/config/bootstrap.yml
+  exec java -Duser.timezone=KST \
+            -Dspring.profiles.active=stage \
+            -Dotel.traces.exporter=otlp \
+            -Dotel.metrics.exporter=otlp \
+            -Dotel.exporter.otlp.metrics.endpoint=http://data-prepper:21890 \
+            -Dotel.exporter.otlp.endpoint=http://data-prepper:21890 \
+            -Dotel.resource.attributes="service.name=parcel-service" \
+            -Dotel.javaagent.debug=false \
+            -javaagent:/usr/app/opentelemetry-javaagent-all.jar \
+            -jar ./sopo-parcel-stage-0.0.4.jar \
+            --spring.config.location=/usr/app/config/bootstrap.yml
 }
 
 echo "Wait.. Until config server is up"

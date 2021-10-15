@@ -35,7 +35,6 @@ class RequestLoggingAspect {
     @Throws(Throwable::class)
     fun logAction(joinPoint: ProceedingJoinPoint): Any? {
 
-        var result: Any? = null
         try {
             val request = (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)!!.request // request 정보를 가져온다.
 

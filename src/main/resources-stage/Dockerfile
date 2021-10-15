@@ -1,8 +1,8 @@
-FROM www.sooopo.com/base_image/debian_java11_fluentd:1.0.3
+FROM www.sooopo.com/base_image/debian_java11_fluentd:1.0.4
 
 USER root
 
-ARG JAR_FILE=sopo-parcel-stage-0.0.1.jar
+ARG JAR_FILE=sopo-parcel-stage-0.0.4.jar
 ENV JAR_FILE_PATH=/usr/app/$JAR_FILE
 
 COPY ./sopo-firebase-adminsdk.json /usr/app
@@ -10,6 +10,8 @@ COPY ./src/main/resources-stage/start.sh /usr/app
 COPY ./src/main/resources/fluentd.conf /usr/app
 COPY ./src/main/resources/bootstrap.yml /usr/app/config
 COPY build/libs/${JAR_FILE} /usr/app
+ADD ./opentelemetry/opentelemetry-javaagent-all.jar /usr/app
+ADD ./opentelemetry/opentelemetry-configuration.yaml /usr/app
 
 RUN fluent-gem install fluent-plugin-kafka
 
