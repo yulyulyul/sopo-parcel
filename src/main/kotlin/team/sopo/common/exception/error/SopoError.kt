@@ -12,7 +12,7 @@ enum class SopoError(
     AUTHORIZE_FAIL(HttpStatus.FORBIDDEN, ErrorType.AUTHORIZE, 101, "허가되지 않은 접근 입니다."),
     AUTHENTICATION_FAIL(HttpStatus.UNAUTHORIZED, ErrorType.AUTHENTICATION, 102, "인증에 실패한 유저입니다."),
     VALIDATION(HttpStatus.BAD_REQUEST, ErrorType.VALIDATION, 103, null),
-    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, 104, null),
+
     INSUFFICIENT_CONDITION(HttpStatus.CONFLICT, ErrorType.CONFLICT, 105, null),
     SIGN_OUT_USER(HttpStatus.BAD_REQUEST, ErrorType.AUTHENTICATION , 106, "탈퇴한 회원입니다."),
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.UNKNOWN_ERROR, 199,"현재 서비스를 이용할 수 없습니다. 다음에 다시 시도해주세요."),
@@ -34,5 +34,5 @@ enum class SopoError(
     // Specific
     ALREADY_REGISTERED_PARCEL(HttpStatus.CONFLICT, ErrorType.CONFLICT, 701,"이미 등록된 택배입니다."),
     OVER_REGISTERED_PARCEL(HttpStatus.CONFLICT, ErrorType.CONFLICT, 702,"등록할 수 있는 택배의 개수를 초과하였습니다."),
-
+    PARCEL_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, 703, null)
 }
