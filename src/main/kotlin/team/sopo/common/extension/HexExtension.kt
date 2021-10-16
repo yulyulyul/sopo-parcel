@@ -1,8 +1,6 @@
 package team.sopo.common.extension
 
 val ByteArray.asHex get() = byteToHexString(this)
-val String.hexAsByteArray get() = hexStringToByteArray(this)
-
 
 private val LOOKUP_TABLE_UPPER = charArrayOf(0x30.toChar(), 0x31.toChar(), 0x32.toChar(), 0x33.toChar(), 0x34.toChar(), 0x35.toChar(), 0x36.toChar(), 0x37.toChar(), 0x38.toChar(), 0x39.toChar(), 0x41.toChar(), 0x42.toChar(), 0x43.toChar(), 0x44.toChar(), 0x45.toChar(), 0x46.toChar())
 

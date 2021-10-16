@@ -80,9 +80,9 @@ class Parcel() {
         }
     }
 
-    fun isNeedToUpdate(newParcel: Parcel): Boolean{
-        return this.inquiryHash != newParcel.inquiryHash
-    }
+//    fun isNeedToUpdate(newParcel: Parcel): Boolean{
+//        return this.inquiryHash != newParcel.inquiryHash
+//    }
 
     fun getUpdatePolicy(parcelRepository: ParcelRepository, refreshedParcel: Parcel): UpdatePolicy {
         return if(this.inquiryHash != refreshedParcel.inquiryHash){

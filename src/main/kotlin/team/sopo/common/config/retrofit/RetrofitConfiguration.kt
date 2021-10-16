@@ -14,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RetrofitConfiguration {
 
     @Value("\${sopo.apigateway.url.base}")
-    private lateinit var BASE_URL: String
+    private lateinit var baseUrl: String
 
     @Value("\${sopo.id}")
     private lateinit var apiSvId: String
@@ -35,7 +35,7 @@ class RetrofitConfiguration {
         val basicAuthInterceptor = BasicAuthInterceptor(apiSvId, apiSvPwd)
 
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(OkHttpClient

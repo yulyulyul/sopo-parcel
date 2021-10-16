@@ -1,9 +1,8 @@
 package team.sopo.parcel.domain
 
-import team.sopo.parcel.domain.vo.ParcelCntInfo
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import team.sopo.parcel.domain.Parcel
+import team.sopo.parcel.domain.vo.ParcelCntInfo
 
 interface ParcelRepository {
     fun getRegisterParcelCount(userId: String): Long

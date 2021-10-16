@@ -2,7 +2,6 @@
 
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
 
 data class ChangeAliasRequest(
     @field: NotBlank(message = "택배 별칭을 확인해주세요.")

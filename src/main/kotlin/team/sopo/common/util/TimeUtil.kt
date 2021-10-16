@@ -12,8 +12,4 @@ object TimeUtil {
     fun getLocalDate(): LocalDate {
         return LocalDate.now(ZoneId.of("Asia/Seoul"))
     }
-
-    fun stringToLocalDate(timeStr: String): LocalDate {
-        return LocalDate.parse(timeStr)
-    }
 }

@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 
 @Configuration
 @EnableResourceServer
-class ResourceServerConfiguration(private final val tokenClient: TokenClient): ResourceServerConfigurerAdapter() {
+class ResourceServerConfiguration(private val tokenClient: TokenClient): ResourceServerConfigurerAdapter() {
 
     @Value("\${security.oauth2.client.resource-ids}")
     private lateinit var resourceIds: String

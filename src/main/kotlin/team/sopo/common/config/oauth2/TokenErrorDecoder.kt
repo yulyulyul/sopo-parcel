@@ -21,7 +21,7 @@ class TokenErrorDecoder: ErrorDecoder {
     }
 
     private fun getErrorBody(response: Response): SopoExceptionDTO {
-        return jacksonObjectMapper().readValue<SopoExceptionDTO>(response.body().asInputStream(), SopoExceptionDTO::class.java)
+        return jacksonObjectMapper().readValue(response.body().asInputStream(), SopoExceptionDTO::class.java)
     }
 
 }

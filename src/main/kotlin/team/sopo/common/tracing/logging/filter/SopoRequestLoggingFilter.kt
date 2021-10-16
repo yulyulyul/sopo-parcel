@@ -48,12 +48,10 @@ class SopoRequestLoggingFilter(private val apiTracingRepository: ApiTracingRepos
 
         var parameter = ""
         var payload = ""
-        var httpMethod = ""
+        val httpMethod = request.method
         var user = ""
 
-
         val msg = StringBuilder()
-        httpMethod = request.method
         msg.append(prefix)
         msg.append(httpMethod).append(' ')
         msg.append(request.requestURI)

@@ -3,9 +3,6 @@ package team.sopo.parcel.infrastructure.support.impl
 import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.parcel.domain.DeliveryStatus
 import team.sopo.parcel.domain.Parcel
@@ -16,9 +13,7 @@ import team.sopo.parcel.infrastructure.support.ParcelRepositorySupport
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class ParcelRepositorySupportImpl(@Autowired private val queryFactory: JPAQueryFactory) : ParcelRepositorySupport {
-
-    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
+class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : ParcelRepositorySupport {
 
     override fun getRegisterParcelCount(userId: String): Long{
         val parcel = QParcel.parcel

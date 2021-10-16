@@ -17,7 +17,7 @@ import java.util.stream.Stream
 
 @Component
 @Aspect
-class RequestLoggingAspect(private final val apiTracingRepository: ApiTracingRepository) {
+class RequestLoggingAspect(private val apiTracingRepository: ApiTracingRepository) {
     private val logger: Logger = LogManager.getLogger(this.javaClass)
 
     @Pointcut("execution(* team.sopo..*Controller.*(..)) ")
@@ -62,12 +62,16 @@ class RequestLoggingAspect(private final val apiTracingRepository: ApiTracingRep
         val annotation: Annotation = method.getAnnotation(annotationClass)
         val value: Array<String>
         try {
-            value = annotationClass.getMethod("value").invoke(annotation) as Array<String>
-        } catch (e: IllegalAccessException) {
-            return null
-        } catch (e: NoSuchMethodException) {
-            return null
-        } catch (e: InvocationTargetException) {
+            val invoke = annotationClass.getMethod("value").invoke(annotation)
+            value = if(invoke is Array<*>){
+                invoke
+                    .filterIsInstance<String>()
+                    .toTypedArray()
+            }
+            else{
+                arrayOf()
+            }
+        } catch (e: Exception){
             return null
         }
         return String.format("%s%s", baseUrl, if (value.isNotEmpty()) value[0] else "")

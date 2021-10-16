@@ -14,7 +14,6 @@ enum class SopoError(
     VALIDATION(HttpStatus.BAD_REQUEST, ErrorType.VALIDATION, 103, null),
 
     INSUFFICIENT_CONDITION(HttpStatus.CONFLICT, ErrorType.CONFLICT, 105, null),
-    SIGN_OUT_USER(HttpStatus.BAD_REQUEST, ErrorType.AUTHENTICATION , 106, "탈퇴한 회원입니다."),
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.UNKNOWN_ERROR, 199,"현재 서비스를 이용할 수 없습니다. 다음에 다시 시도해주세요."),
     SYSTEM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.SYSTEM, 999, null),
 

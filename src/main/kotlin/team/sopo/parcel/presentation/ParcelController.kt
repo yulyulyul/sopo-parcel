@@ -47,18 +47,11 @@ import javax.validation.constraints.NotNull
 @RequestMapping("/api/v1/sopo-parcel/delivery")
 @PreAuthorize("hasRole('ROLE_USER')")
 class ParcelController(
-    @Autowired private val getParcelSvc: GetParcelService,
-    @Autowired private val registerParcelSvc: RegisterParcelService,
-    @Autowired private val changeParcelSvc: ChangeParcelService,
-    @Autowired private val refreshParcelSvc: RefreshParcelService
+    private val getParcelSvc: GetParcelService,
+    private val registerParcelSvc: RegisterParcelService,
+    private val changeParcelSvc: ChangeParcelService,
+    private val refreshParcelSvc: RefreshParcelService
 ) {
-
-    @Value("\${sopo.apigateway.url.base}")
-    private lateinit var apiGateWayUrl: String
-
-    @Value("\${sopo.qualifier}")
-    private lateinit var apiQualifier: String
-
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     @Operation(

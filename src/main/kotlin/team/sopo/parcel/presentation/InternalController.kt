@@ -2,9 +2,6 @@ package team.sopo.parcel.presentation
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,11 +16,7 @@ import javax.validation.constraints.NotNull
 @RestController
 @Tag(name = "SOPO 택배 INTERNAL API")
 @RequestMapping("/internal")
-class InternalController(
-    @Autowired private val getUsageInfoService: GetUsageInfoService
-) {
-    private val logger: Logger = LoggerFactory.getLogger(InternalController::class.java)
-
+class InternalController(private val getUsageInfoService: GetUsageInfoService) {
     @Operation(summary = "유저의 사용 정보를 조회하는 API")
     @GetMapping("/parcel/usage-info/{userId}")
     fun getServiceUsageInfo(

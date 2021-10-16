@@ -2,7 +2,6 @@ package team.sopo.parcel.domain.vo.deliverytracker
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
-import team.sopo.parcel.domain.vo.deliverytracker.*
 
 @Schema(name = "TrackingInfo", description = "")
 data class TrackingInfo(

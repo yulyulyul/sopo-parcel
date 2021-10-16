@@ -28,7 +28,7 @@ class SecurityConfiguration: WebSecurityConfigurerAdapter() {
     @Autowired
     lateinit var roleHierarchy: RoleHierarchy
 
-    private fun webExpressionHandler(): SecurityExpressionHandler<FilterInvocation?>? {
+    private fun webExpressionHandler(): SecurityExpressionHandler<FilterInvocation?> {
         val defaultWebSecurityExpressionHandler = DefaultWebSecurityExpressionHandler()
         defaultWebSecurityExpressionHandler.setRoleHierarchy(roleHierarchy)
         return defaultWebSecurityExpressionHandler
@@ -52,22 +52,20 @@ class SecurityConfiguration: WebSecurityConfigurerAdapter() {
                 "/**/internal/**")
     }
 
-    override fun configure(http: HttpSecurity?) {
+    override fun configure(http: HttpSecurity) {
 
-        if(http != null){
-            http
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                .cors()
+        http
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .csrf().disable()
-                .httpBasic().disable()
-                .formLogin().disable()
-                .authorizeRequests()
-                .antMatchers(projectConfig.adminUserAntMatchers).hasRole(Role.ADMIN)
-                .antMatchers("${projectConfig.apiPath}/**")
-                .fullyAuthenticated()
-        }
+            .cors()
+            .and()
+            .csrf().disable()
+            .httpBasic().disable()
+            .formLogin().disable()
+            .authorizeRequests()
+            .antMatchers(projectConfig.adminUserAntMatchers).hasRole(Role.ADMIN)
+            .antMatchers("${projectConfig.apiPath}/**")
+            .fullyAuthenticated()
     }
 
     @Bean

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration
 import team.sopo.common.tracing.ApiTracingRepository
 
 @Configuration
-class RequestLoggingFilterConfiguration(private final val apiTracingRepository: ApiTracingRepository) {
+class RequestLoggingFilterConfiguration(private val apiTracingRepository: ApiTracingRepository) {
 
     @Bean
     fun requestLoggingFilter(): FilterRegistrationBean<SopoRequestLoggingFilter> {
