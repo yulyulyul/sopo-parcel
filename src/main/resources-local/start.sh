@@ -4,7 +4,7 @@ NUMBER_OF_ATTEMPTS=1000
 function start(){
   echo $! > fluentd.pid
   fluentd -c fluentd.conf -d fluentd.pid
-  exec java -Dparcel.timezone=KST -Dspring.profiles.active=local -jar ./sopo-parcel-local-0.0.6.jar --spring.config.location=/usr/app/config/bootstrap.yml
+  exec java -Dparcel.timezone=KST -Dspring.profiles.active=local -jar ./sopo-parcel-local-0.0.13.jar --spring.config.location=/usr/app/config/bootstrap.yml
 }
 
 echo "Wait.. Until config server is up"

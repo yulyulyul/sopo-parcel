@@ -2,8 +2,8 @@ package team.sopo.common.tracing.logging.filter
 
 import com.google.gson.Gson
 import org.springframework.http.server.ServletServerHttpRequest
-import org.springframework.util.StringUtils
 import org.springframework.web.filter.CommonsRequestLoggingFilter
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import team.sopo.common.tracing.ApiTracing
 import team.sopo.common.tracing.ApiTracingRepository
 import java.util.*
@@ -16,12 +16,23 @@ class SopoRequestLoggingFilter(private val apiTracingRepository: ApiTracingRepos
     }
 
     override fun beforeRequest(request: HttpServletRequest, message: String) {
+        apiTracingRepository.initialize()
         return logger.debug(message)
     }
 
     override fun afterRequest(request: HttpServletRequest, message: String) {
 
+        val requestInfo: Map<String, String> = Gson().fromJson(message, object : com.google.gson.reflect.TypeToken<Map<String, String>>() {}.type)
+        apiTracingRepository.saveRequestInfo(
+            requestInfo.getOrDefault("request_url", ""),
+            requestInfo.getOrDefault("parameter", ""),
+            requestInfo.getOrDefault("payload", ""),
+            requestInfo.getOrDefault("http_method", ""),
+            requestInfo.getOrDefault("user", "")
+        )
+
         ApiTracing(content = apiTracingRepository.getContent()).trace()
+
         return logger.debug(message)
     }
 
@@ -44,40 +55,35 @@ class SopoRequestLoggingFilter(private val apiTracingRepository: ApiTracingRepos
         return map
     }
 
+    private fun getRequestUrl(url: String, queryString: String?): String{
+        var requestUrl = url
+        if (isIncludeQueryString) {
+            if (queryString != null) {
+                requestUrl += "?$queryString"
+            }
+        }
+        return requestUrl
+    }
+
     override fun createMessage(request: HttpServletRequest, prefix: String, suffix: String): String {
 
-        var parameter = ""
-        var payload = ""
         val httpMethod = request.method
-        var user = ""
-
-        val msg = StringBuilder()
-        msg.append(prefix)
-        msg.append(httpMethod).append(' ')
-        msg.append(request.requestURI)
-
+        val map = mutableMapOf<String, String>()
+        map["http_method"] = httpMethod
 
         if (isIncludeQueryString) {
             val queryString = request.queryString
             if (queryString != null) {
-                msg.append('?').append(queryString)
-                parameter = Gson().toJsonTree(queryStringToMap(queryString)).asJsonObject.toString()
+                map["parameter"] =  Gson().toJsonTree(queryStringToMap(queryString)).asJsonObject.toString()
             }
         }
+        map["request_url"] = getRequestUrl(request.requestURI, request.queryString)
+        map["http_method"] = httpMethod
 
         if (isIncludeClientInfo) {
-            val client = request.remoteAddr
-            if (StringUtils.hasLength(client)) {
-                msg.append(", client=").append(client)
-            }
-            val session = request.getSession(false)
-            if (session != null) {
-                msg.append(", session=").append(session.id)
-            }
             val remoteUser = request.remoteUser
             if (remoteUser != null) {
-                msg.append(", user=").append(remoteUser)
-                user = remoteUser
+                map["user"] = remoteUser
             }
         }
 
@@ -92,19 +98,14 @@ class SopoRequestLoggingFilter(private val apiTracingRepository: ApiTracingRepos
                     }
                 }
             }
-            msg.append(", headers=").append(headers)
         }
 
         if (isIncludePayload) {
             val messagePayload = getMessagePayload(request)
             if (messagePayload != null) {
-                msg.append(", payload=").append(messagePayload)
-                payload = messagePayload
+                map["payload"] = messagePayload
             }
         }
-        apiTracingRepository.saveRequestInfo(request.requestURI, parameter, payload, httpMethod, user)
-
-        msg.append(suffix)
-        return msg.toString()
+        return  Gson().toJsonTree(map).asJsonObject.toString()
     }
 }

@@ -16,6 +16,10 @@ class RequestLoggingFilterConfiguration(private val apiTracingRepository: ApiTra
         filter.setIncludePayload(true)
         filter.setIncludeClientInfo(true)
         filter.setMaxPayloadLength(10000)
+        filter.setBeforeMessagePrefix("")
+        filter.setAfterMessagePrefix("")
+        filter.setBeforeMessageSuffix("")
+        filter.setAfterMessageSuffix("")
         return FilterRegistrationBean(filter)
     }
 

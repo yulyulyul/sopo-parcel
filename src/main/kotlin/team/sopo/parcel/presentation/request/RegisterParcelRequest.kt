@@ -9,7 +9,7 @@ data class RegisterParcelRequest(
     @field: NotNull(message = "배송사를 확인해주세요.")
     val carrier: Carrier? = null,
 
-    @field: NotBlank(message = "waybillNum must not blank")
+    @field: NotBlank(message = "송장 번호의 길이가 0 입니다.")
     @field: Length(max = 15, message = "송장 번호(은)는 15글자를 초과할 수 없습니다.")
     val waybillNum: String = "",
 

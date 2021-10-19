@@ -9,6 +9,17 @@ class ApiTracingRepository: TracingRepository<ApiTracingContent> {
         private val threadLocal: ThreadLocal<ApiTracingContent> = ThreadLocal.withInitial{ ApiTracingContent() }
     }
 
+    fun initialize(){
+        threadLocal.get().apply {
+            this.http_method = ""
+            this.request_url = ""
+            this.parameter = ""
+            this.payload = ""
+            this.http_method = ""
+            this.user = ""
+        }
+    }
+
     fun saveHttpStatus(httpStatus: Int?){
         threadLocal.get().apply {
             this.http_status = httpStatus
@@ -59,5 +70,4 @@ class ApiTracingRepository: TracingRepository<ApiTracingContent> {
     override fun getContent(): ApiTracingContent {
         return threadLocal.get()
     }
-
 }
