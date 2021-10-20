@@ -78,7 +78,6 @@ class SopoRequestLoggingFilter(private val apiTracingRepository: ApiTracingRepos
             }
         }
         map["request_url"] = getRequestUrl(request.requestURI, request.queryString)
-        map["http_method"] = httpMethod
 
         if (isIncludeClientInfo) {
             val remoteUser = request.remoteUser

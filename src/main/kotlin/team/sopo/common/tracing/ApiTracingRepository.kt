@@ -15,7 +15,6 @@ class ApiTracingRepository: TracingRepository<ApiTracingContent> {
             this.request_url = ""
             this.parameter = ""
             this.payload = ""
-            this.http_method = ""
             this.user = ""
         }
     }

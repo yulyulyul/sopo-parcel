@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import team.sopo.common.exception.error.ErrorResponse
 import team.sopo.common.model.api.ApiResult
 import team.sopo.common.tracing.ApiTracingRepository
