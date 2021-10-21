@@ -3,7 +3,6 @@ package team.sopo.common.tracing.logging.filter
 import com.google.gson.Gson
 import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.web.filter.CommonsRequestLoggingFilter
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import team.sopo.common.tracing.ApiTracing
 import team.sopo.common.tracing.ApiTracingRepository
 import java.util.*
@@ -11,12 +10,20 @@ import javax.servlet.http.HttpServletRequest
 
 class SopoRequestLoggingFilter(private val apiTracingRepository: ApiTracingRepository): CommonsRequestLoggingFilter() {
 
+    companion object{
+        private const val REQUEST_URL = "request_url"
+        private const val PARAMETER = "parameter"
+        private const val PAYLOAD = "payload"
+        private const val HTTP_METHOD = "http_method"
+        private const val USER = "user"
+
+    }
+
     override fun shouldLog(request: HttpServletRequest): Boolean {
         return logger.isDebugEnabled
     }
 
     override fun beforeRequest(request: HttpServletRequest, message: String) {
-        apiTracingRepository.initialize()
         return logger.debug(message)
     }
 
@@ -24,14 +31,17 @@ class SopoRequestLoggingFilter(private val apiTracingRepository: ApiTracingRepos
 
         val requestInfo: Map<String, String> = Gson().fromJson(message, object : com.google.gson.reflect.TypeToken<Map<String, String>>() {}.type)
         apiTracingRepository.saveRequestInfo(
-            requestInfo.getOrDefault("request_url", ""),
-            requestInfo.getOrDefault("parameter", ""),
-            requestInfo.getOrDefault("payload", ""),
-            requestInfo.getOrDefault("http_method", ""),
-            requestInfo.getOrDefault("user", "")
+            requestInfo.getOrDefault(REQUEST_URL, ""),
+            requestInfo.getOrDefault(PARAMETER, ""),
+            requestInfo.getOrDefault(PAYLOAD, ""),
+            requestInfo.getOrDefault(HTTP_METHOD, ""),
+            requestInfo.getOrDefault(USER, "")
         )
 
-        ApiTracing(content = apiTracingRepository.getContent()).trace()
+        val content = apiTracingRepository.getContent()
+        if(content.mapping_url.isNotBlank()){
+            ApiTracing(content = content).trace()
+        }
 
         return logger.debug(message)
     }
@@ -69,20 +79,20 @@ class SopoRequestLoggingFilter(private val apiTracingRepository: ApiTracingRepos
 
         val httpMethod = request.method
         val map = mutableMapOf<String, String>()
-        map["http_method"] = httpMethod
+        map[HTTP_METHOD] = httpMethod
 
         if (isIncludeQueryString) {
             val queryString = request.queryString
             if (queryString != null) {
-                map["parameter"] =  Gson().toJsonTree(queryStringToMap(queryString)).asJsonObject.toString()
+                map[PARAMETER] =  Gson().toJsonTree(queryStringToMap(queryString)).asJsonObject.toString()
             }
         }
-        map["request_url"] = getRequestUrl(request.requestURI, request.queryString)
+        map[REQUEST_URL] = getRequestUrl(request.requestURI, request.queryString)
 
         if (isIncludeClientInfo) {
             val remoteUser = request.remoteUser
             if (remoteUser != null) {
-                map["user"] = remoteUser
+                map[USER] = remoteUser
             }
         }
 
@@ -102,7 +112,7 @@ class SopoRequestLoggingFilter(private val apiTracingRepository: ApiTracingRepos
         if (isIncludePayload) {
             val messagePayload = getMessagePayload(request)
             if (messagePayload != null) {
-                map["payload"] = messagePayload
+                map[PAYLOAD] = messagePayload
             }
         }
         return  Gson().toJsonTree(map).asJsonObject.toString()
