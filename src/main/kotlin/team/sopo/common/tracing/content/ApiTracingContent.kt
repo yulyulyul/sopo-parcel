@@ -1,4 +1,4 @@
-package team.sopo.common.tracing
+package team.sopo.common.tracing.content
 
 import team.sopo.common.exception.error.ErrorType
 

@@ -2,6 +2,7 @@ package team.sopo.common.config.feign
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import feign.RequestInterceptor
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.cloud.openfeign.FeignFormatterRegistrar
 import org.springframework.context.annotation.Bean

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository
 import org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST
 import org.springframework.web.context.request.RequestContextHolder
 import team.sopo.common.exception.error.ErrorType
+import team.sopo.common.tracing.content.ApiTracingContent
 
 @Repository
 class ApiTracingRepository: TracingRepository<ApiTracingContent> {
