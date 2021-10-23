@@ -67,9 +67,4 @@ class SecurityConfiguration: WebSecurityConfigurerAdapter() {
             .antMatchers("${projectConfig.apiPath}/**")
             .fullyAuthenticated()
     }
-
-    @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
 }

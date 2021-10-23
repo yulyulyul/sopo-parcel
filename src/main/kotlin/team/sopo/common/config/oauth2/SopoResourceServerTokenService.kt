@@ -18,8 +18,9 @@ class SopoResourceServerTokenService(private val tokenClient: TokenClient): Reso
     override fun loadAuthentication(accessToken: String): OAuth2Authentication {
 
         logger.info("accessToken : $accessToken")
-        val map = tokenClient.checkToken(request = CheckTokenRequest(token = accessToken))
-        logger.info("map : $map")
+        val request = mutableMapOf<String, String>()
+        request["token"] = accessToken
+        val map = tokenClient.checkToken(request = request)
         if (map.containsKey("active") && "true" != map["active"].toString()) {
             logger.debug("check_token returned active attribute: " + map["active"])
 
