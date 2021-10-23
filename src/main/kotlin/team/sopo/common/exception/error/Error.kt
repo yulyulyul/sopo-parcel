@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.gson.Gson
 import team.sopo.common.exception.SopoException
 
-class ErrorResponse(
+class Error(
     @JsonProperty("code")
     val code: Int,
     @JsonProperty("type")

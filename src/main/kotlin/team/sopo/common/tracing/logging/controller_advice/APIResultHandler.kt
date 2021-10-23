@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
-import team.sopo.common.exception.error.ErrorResponse
+import team.sopo.common.exception.error.Error
 import team.sopo.common.model.api.ApiResult
 import team.sopo.common.tracing.ApiTracingRepository
 
@@ -38,12 +38,12 @@ class APIResultHandler(private val tracingRepository: ApiTracingRepository) : Re
         if(body is ApiResult<*>){
             body.path = servletRequestAttributes.request.requestURI
         }
-        if(body is ErrorResponse){
+        if(body is Error){
             tracingRepository.saveErrorInfo(body.code, body.type)
         }
         if(body is List<*> && body.isNotEmpty()){
             body.first()?.apply {
-                if(this is ErrorResponse){
+                if(this is Error){
                     tracingRepository.saveErrorInfo(this.code, this.type)
                 }
             }
