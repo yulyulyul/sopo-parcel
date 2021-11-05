@@ -2,12 +2,12 @@ FROM www.sooopo.com/base_image/debian_java11_fluentd:1.0.4
 
 USER root
 
-ARG JAR_FILE=sopo-parcel-stage-0.0.16.jar
+ARG JAR_FILE=sopo-parcel-stage-0.0.17.jar
 ENV JAR_FILE_PATH=/usr/app/$JAR_FILE
 
 COPY ./sopo-firebase-adminsdk.json /usr/app
 COPY ./src/main/resources-stage/start.sh /usr/app
-COPY ./src/main/resources/fluentd.conf /usr/app
+COPY ./src/main/resources-stage/fluentd.conf /usr/app
 COPY ./src/main/resources/bootstrap.yml /usr/app/config
 COPY build/libs/${JAR_FILE} /usr/app
 ADD ./opentelemetry/opentelemetry-javaagent-all.jar /usr/app

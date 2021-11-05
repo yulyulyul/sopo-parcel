@@ -6,7 +6,6 @@ import team.sopo.common.tracing.content.ApiTracingContent
 
 class ApiTracing(private val content: ApiTracingContent): Tracing(TracingEvent.API) {
     override fun getTraceContent(): JsonObject {
-        checkElasticId()
         return Gson().toJsonTree(content).asJsonObject
     }
 }

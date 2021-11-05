@@ -35,7 +35,7 @@ sourceSets {
 }
 
 group = "team.sopo"
-version = "0.0.16"
+version = "0.0.17"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -63,8 +63,6 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
-    implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin")
     implementation("org.springframework.cloud", "spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
@@ -109,9 +107,6 @@ dependencies {
 
     //jjwt
     implementation("io.jsonwebtoken", "jjwt", "0.9.1")
-
-    //prometheus
-    implementation("io.micrometer:micrometer-registry-prometheus")
 
     implementation("com.nimbusds", "nimbus-jose-jwt", "8.20.1")
 

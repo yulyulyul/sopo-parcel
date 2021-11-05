@@ -12,7 +12,7 @@ Configuration:
       - name: color-filter
         value: FATAL=Bright red, ERROR=Bright red, WARN=Yellow, INFO=Green, DEBUG=Cyan, TRACE=White
       - name: log-pattern
-        value: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{[%-5level %X{traceId}/%X{spanId}]%throwable}{${color-filter}} [%t{1.}] %style{%c{1.}}{MAGENTA} (%F:%L) - %msg%n"
+        value: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{[%-5level] traceId : %X{trace_id} spanId : %X{span_id} %throwable}{${color-filter}} [%t{1.}] %style{%c{1.}}{MAGENTA} (%F:%L) - %msg%n"
 
   Appenders:
     Console:
@@ -45,7 +45,7 @@ Configuration:
 
   Loggers:
     Root:
-        level: info
+        level: debug
         additivity: false
         AppenderRef:
           - ref: File
@@ -57,7 +57,7 @@ Configuration:
         level: debug
       - name: org.hibernate.type.descriptor.sql.BasicBinder
         level: trace
-      - name: com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient
+      - name: com.netflix.eureka
         level: fatal
-      - name: com.hubspot.slack.client.interceptors.http
+      - name: com.netflix.discovery
         level: fatal

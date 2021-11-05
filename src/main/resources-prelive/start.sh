@@ -8,11 +8,12 @@ function start(){
             -Dspring.profiles.active=prelive \
             -Dotel.traces.exporter=otlp \
             -Dotel.metrics.exporter=otlp \
+            -Dotel.exporter.otlp.metrics.endpoint=http://yulnas.synology.me:21890 \
             -Dotel.exporter.otlp.endpoint=http://yulnas.synology.me:21890 \
             -Dotel.resource.attributes="service.name=parcel-service" \
             -Dotel.javaagent.debug=false \
             -javaagent:/usr/app/opentelemetry-javaagent-all.jar \
-            -jar ./sopo-parcel-prelive-0.0.16.jar \
+            -jar ./sopo-parcel-prelive-0.0.17.jar \
             --spring.config.location=/usr/app/config/bootstrap.yml
 }
 
