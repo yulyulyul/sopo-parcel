@@ -33,5 +33,7 @@ enum class SopoError(
     // Specific
     ALREADY_REGISTERED_PARCEL(HttpStatus.CONFLICT, ErrorType.CONFLICT, 701,"이미 등록된 택배입니다."),
     OVER_REGISTERED_PARCEL(HttpStatus.CONFLICT, ErrorType.CONFLICT, 702,"등록할 수 있는 택배의 개수를 초과하였습니다."),
-    PARCEL_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, 703, null)
+    PARCEL_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, 703, null),
+    FAIL_TO_SEARCH_PARCEL(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DELIVERY, 704, null)
+
 }
