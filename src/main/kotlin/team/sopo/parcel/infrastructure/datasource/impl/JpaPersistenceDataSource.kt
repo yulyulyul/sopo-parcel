@@ -1,6 +1,5 @@
 ﻿package team.sopo.parcel.infrastructure.datasource.impl
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
@@ -8,13 +7,10 @@ import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.vo.ParcelCntInfo
 import team.sopo.parcel.infrastructure.JpaParcelRepository
 import team.sopo.parcel.infrastructure.datasource.ParcelPersistenceDataSource
-import java.time.LocalDate
 import java.time.ZonedDateTime
 
 @Component
-class JpaPersistenceDataSource(
-    @Autowired private val datasource: JpaParcelRepository
-): ParcelPersistenceDataSource {
+class JpaPersistenceDataSource(private val datasource: JpaParcelRepository): ParcelPersistenceDataSource {
     override fun getRegisterParcelCount(userId: String): Long {
         return datasource.getRegisterParcelCount(userId)
     }

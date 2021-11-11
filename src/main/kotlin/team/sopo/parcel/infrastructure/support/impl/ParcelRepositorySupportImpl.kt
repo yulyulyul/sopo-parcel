@@ -4,7 +4,6 @@ import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import team.sopo.common.exception.ParcelNotFoundException
-import team.sopo.parcel.domain.DeliveryStatus
 import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.QParcel
 import team.sopo.parcel.domain.QParcel.parcel
@@ -48,7 +47,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
                 .where(
                     parcel.userId.eq(userId)
                         .and(parcel.status.eq(1))
-                        .and(parcel.deliveryStatus.ne(DeliveryStatus.DELIVERED))
+                        .and(parcel.deliveryStatus.ne(Parcel.DeliveryStatus.DELIVERED))
                 )
                 .orderBy(parcel.auditDte.desc())
                 .limit(20)
@@ -86,7 +85,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
                 .leftJoin(parcel).on(parcel.userId.eq(parcel.userId))
                 .where(parcel.userId.eq(userId)
                         .and(parcel.status.eq(1)
-                        .and(parcel.deliveryStatus.eq(DeliveryStatus.DELIVERED))))
+                        .and(parcel.deliveryStatus.eq(Parcel.DeliveryStatus.DELIVERED))))
                 .groupBy(dateTimePath)
                 .limit(12)
                 .fetch()

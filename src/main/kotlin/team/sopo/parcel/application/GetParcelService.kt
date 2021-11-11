@@ -1,7 +1,6 @@
 package team.sopo.parcel.application
 
 import org.apache.logging.log4j.LogManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import team.sopo.common.consts.CompletedParcelConst.pageableLimit
@@ -19,7 +18,7 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class GetParcelService(
-    @Autowired private val parcelRepo: ParcelRepository
+    private val parcelRepo: ParcelRepository
 ) {
     private val logger = LogManager.getLogger(this.javaClass)
 

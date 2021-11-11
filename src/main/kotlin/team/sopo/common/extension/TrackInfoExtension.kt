@@ -1,7 +1,7 @@
 package team.sopo.common.extension
 
 import team.sopo.parcel.domain.Carrier
-import team.sopo.parcel.domain.DeliveryStatus
+import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.vo.deliverytracker.*
 
 fun TrackingInfo.removeSpecialCharacter(): TrackingInfo
@@ -15,7 +15,7 @@ fun TrackingInfo.checkProgressesSort(): TrackingInfo {
             this.progresses.reverse()
             val trackInfoProcess = this.progresses
 
-            val delivered = DeliveryStatus.DELIVERED.name
+            val delivered = Parcel.DeliveryStatus.DELIVERED.name
             if (trackInfoProcess.last()?.status?.id?.toUpperCase() == delivered) {
                 this.state.id = delivered
                 this.state.text = "배송완료"

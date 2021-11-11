@@ -1,6 +1,5 @@
 package team.sopo.parcel.infrastructure.datasource.impl
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import team.sopo.parcel.application.CreateParcelService
 import team.sopo.parcel.domain.Parcel
@@ -10,8 +9,8 @@ import team.sopo.parcel.infrastructure.datasource.ParcelRemoteDataSource
 
 @Component
 class FeignParcelRemoteDataSource(
-    @Autowired private val inquirySvc: FeignParcelInquiryService,
-    @Autowired private val createParcelService: CreateParcelService
+    private val inquirySvc: FeignParcelInquiryService,
+    private val createParcelService: CreateParcelService
 ): ParcelRemoteDataSource {
 
     override fun getRefreshedParcel(oldParcel: Parcel, userId: String): Parcel {

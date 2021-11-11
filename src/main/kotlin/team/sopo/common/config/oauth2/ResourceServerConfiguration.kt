@@ -1,15 +1,20 @@
 package team.sopo.common.config.oauth2
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer
+import org.springframework.web.servlet.HandlerExceptionResolver
 
 @Configuration
 @EnableResourceServer
-class ResourceServerConfiguration(private val tokenClient: TokenClient): ResourceServerConfigurerAdapter() {
+class ResourceServerConfiguration(
+    private val tokenClient: TokenClient,
+    @Qualifier("handlerExceptionResolver") private val resolver: HandlerExceptionResolver
+): ResourceServerConfigurerAdapter() {
 
     @Value("\${security.oauth2.client.resource-ids}")
     private lateinit var resourceIds: String
@@ -24,8 +29,8 @@ class ResourceServerConfiguration(private val tokenClient: TokenClient): Resourc
             tokenServices(remoteTokenService)
             resourceId(resourceIds)
 
-            accessDeniedHandler(Oauth2AccessDeniedHandler())
-            authenticationEntryPoint(HttpAuthenticationEntryPoint())
+            accessDeniedHandler(Oauth2AccessDeniedHandler(resolver))
+            authenticationEntryPoint(HttpAuthenticationEntryPoint(resolver))
         }
         resources!!.resourceId(resourceIds)
     }

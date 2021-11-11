@@ -1,8 +1,5 @@
 package team.sopo.common.config
 
-import team.sopo.common.consts.Role
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.expression.SecurityExpressionHandler
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy
@@ -12,21 +9,18 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.FilterInvocation
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler
+import team.sopo.common.consts.Role
 
 @Configuration
 @EnableWebSecurity(debug = false)
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-class SecurityConfiguration: WebSecurityConfigurerAdapter() {
+class SecurityConfiguration(
+    private val projectConfig: ProjectConfig,
+    private val roleHierarchy: RoleHierarchy
+): WebSecurityConfigurerAdapter() {
 
-    @Autowired
-    lateinit var projectConfig: ProjectConfig
-
-    @Autowired
-    lateinit var roleHierarchy: RoleHierarchy
 
     private fun webExpressionHandler(): SecurityExpressionHandler<FilterInvocation?> {
         val defaultWebSecurityExpressionHandler = DefaultWebSecurityExpressionHandler()

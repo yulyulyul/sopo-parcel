@@ -9,7 +9,6 @@ import com.google.gson.Gson
 import org.apache.kafka.common.errors.ResourceNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -20,8 +19,8 @@ import team.sopo.parcel.domain.update.UpdatedParcelInfo
 
 @Service
 class FirebasePushService(
-    @Autowired private val pushList: MutableList<UpdatedParcelInfo>,
-    @Autowired private val userClient: UserClient
+    private val pushList: MutableList<UpdatedParcelInfo>,
+    private val userClient: UserClient
 ): PushService(pushList) {
 
     private val logger: Logger = LoggerFactory.getLogger(FirebasePushService::class.java)

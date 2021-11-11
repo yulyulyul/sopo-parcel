@@ -2,7 +2,7 @@ package team.sopo.parcel.domain
 
 import com.google.gson.Gson
 import team.sopo.common.extension.asHex
-import team.sopo.parcel.domain.update.ChangeStatusToUnidentifiedDeliveredParcel
+import team.sopo.parcel.domain.update.ChangeParcelToOrphaned
 import team.sopo.parcel.domain.update.NoChange
 import team.sopo.parcel.domain.update.UpdatePolicy
 import team.sopo.parcel.domain.update.UsualUpdate
@@ -15,15 +15,21 @@ import javax.persistence.*
 @Table(name = "parcel")
 class Parcel(): AbstractEntity() {
 
-    constructor(trackingInfo: TrackingInfo?, _userId: String, _waybillNum: String, _carrier: String, _alias: String): this(){
-        this.userId = _userId
-        this.waybillNum = _waybillNum
-        this.carrier = _carrier
-        this.alias = createParcelAlias(trackingInfo, _alias, _waybillNum)
-        this.inquiryResult = createInquiryResult(trackingInfo)
-        this.inquiryHash = createInquiryHash(this.inquiryResult)
-        this.deliveryStatus = createDeliveryStatus(trackingInfo)
-        this.arrivalDte = createArrivalDateTime(trackingInfo)
+    enum class DeliveryStatus {
+        NOT_REGISTERED,
+        CHANGED,
+        UNCHANGED,
+        ORPHANED,
+        DELIVERED, // 배송완료
+        OUT_FOR_DELIVERY, // 배송출발
+        IN_TRANSIT, // 상품이동중
+        AT_PICKUP, // 상품인수
+        INFORMATION_RECEIVED // 상품준비중
+    }
+
+    enum class Activeness(val STATUS: Int) {
+        ACTIVE(1),
+        INACTIVE(0)
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +38,6 @@ class Parcel(): AbstractEntity() {
 
     @Column(name = "user_id")
     var userId: String = ""
-
-//    @Column(name = "reg_dt")
-//    var regDt:LocalDate = TimeUtil.getLocalDate()
 
     @Column(name = "waybill_num")
     var waybillNum: String = ""
@@ -58,11 +61,19 @@ class Parcel(): AbstractEntity() {
     @Column(name = "arrival_dte")
     var arrivalDte: ZonedDateTime? = null
 
-//    @Column(name = "audit_dte")
-//    var auditDte: LocalDateTime = TimeUtil.getLocalDateTime()
-
     @Column(name = "status", columnDefinition = "int(11) COMMENT '0 - 사용 X, 1 - 사용 가능' ")
     var status: Int? = 1
+
+    constructor(trackingInfo: TrackingInfo?, _userId: String, _waybillNum: String, _carrier: String, _alias: String): this(){
+        userId = _userId
+        waybillNum = _waybillNum
+        carrier = _carrier
+        alias = createParcelAlias(trackingInfo, _alias, _waybillNum)
+        inquiryResult = createInquiryResult(trackingInfo)
+        inquiryHash = createInquiryHash(inquiryResult)
+        deliveryStatus = createDeliveryStatus(trackingInfo)
+        arrivalDte = createArrivalDateTime(trackingInfo)
+    }
 
     fun changeDeliveryStatus(status: DeliveryStatus){
         this.deliveryStatus = status
@@ -74,7 +85,7 @@ class Parcel(): AbstractEntity() {
 
     fun inactivate(){
         if(status != 0){
-            status = ParcelActiveness.INACTIVE.STATUS
+            status = Activeness.INACTIVE.STATUS
         }
     }
 
@@ -86,8 +97,11 @@ class Parcel(): AbstractEntity() {
         return if(this.inquiryHash != refreshedParcel.inquiryHash){
             UsualUpdate(parcelRepository, this, refreshedParcel)
         }
-        else if(auditDte!!.plusWeeks(2L).isBefore(ZonedDateTime.now())){
-            ChangeStatusToUnidentifiedDeliveredParcel(parcelRepository, this)
+        else if(this.deliveryStatus == DeliveryStatus.NOT_REGISTERED && auditDte!!.plusWeeks(2L).isBefore(ZonedDateTime.now())) {
+            ChangeParcelToOrphaned(parcelRepository, this)
+        }
+        else if(this.deliveryStatus == DeliveryStatus.ORPHANED){
+            UsualUpdate(parcelRepository, this, refreshedParcel)
         }
         else{
             NoChange()

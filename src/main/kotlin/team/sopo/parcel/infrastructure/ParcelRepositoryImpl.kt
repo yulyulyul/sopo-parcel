@@ -1,6 +1,5 @@
 package team.sopo.parcel.infrastructure
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -13,8 +12,8 @@ import team.sopo.parcel.infrastructure.datasource.ParcelRemoteDataSource
 
 @Component
 class ParcelRepositoryImpl(
-    @Autowired private val persistenceDataSource: ParcelPersistenceDataSource,
-    @Qualifier("feignParcelRemoteDataSource") @Autowired private val remoteDataSource: ParcelRemoteDataSource
+    private val persistenceDataSource: ParcelPersistenceDataSource,
+    @Qualifier("feignParcelRemoteDataSource") private val remoteDataSource: ParcelRemoteDataSource
 ): ParcelRepository
 {
     override fun getRegisterParcelCount(userId: String): Long {

@@ -15,9 +15,9 @@ object ParcelConverter {
                          inquiryResult = parcel.inquiryResult,
                          inquiryHash = parcel.inquiryHash,
                          deliveryStatus = parcel.deliveryStatus,
-                         regDte = parcel.regDte,
-                         arrivalDte = parcel.arrivalDte,
-                         auditDte = parcel.auditDte,
+                         regDte = parcel.regDte?.toLocalDateTime(),
+                         arrivalDte = parcel.arrivalDte?.toLocalDateTime(),
+                         auditDte = parcel.auditDte?.toLocalDateTime(),
                          status = parcel.status)
     }
 
