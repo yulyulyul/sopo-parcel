@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 interface JpaParcelRepository: JpaRepository<Parcel, Long>, ParcelRepositorySupport {
 
@@ -19,7 +20,7 @@ interface JpaParcelRepository: JpaRepository<Parcel, Long>, ParcelRepositorySupp
                            @Param("endDate") endDate: String): Page<Parcel>
 
 
-    fun findAllByUserIdAndRegDtBetween(userId: String, regDt: LocalDate, regDt2: LocalDate): List<Parcel>?
+    fun findAllByUserIdAndRegDteBetween(userId: String, regDt: ZonedDateTime, regDt2: ZonedDateTime): List<Parcel>?
 
     @Transactional
     fun deleteAllByUserId(userId: String)

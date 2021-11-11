@@ -2,8 +2,8 @@
 cd ..
 #./gradlew clean
 ./gradlew bootJar -Pprofile=stage
-docker rmi www.sooopo.com/sopo_stage/parcel:0.0.18
-docker build -f ./src/main/resources-stage/Dockerfile . -t www.sooopo.com/sopo_stage/parcel:0.0.18
+docker rmi www.sooopo.com/sopo_stage/parcel:0.0.20
+docker build -f ./src/main/resources-stage/Dockerfile . -t www.sooopo.com/sopo_stage/parcel:0.0.20
 
 #stack_sopo=$(docker stack ls --format "{{.Name}}")
 #

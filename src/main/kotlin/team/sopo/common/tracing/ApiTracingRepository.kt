@@ -81,7 +81,7 @@ class ApiTracingRepository: TracingRepository<ApiTracingContent> {
         throw IllegalStateException()
     }
 
-    private fun save(apiTracingContent: ApiTracingContent){
-        RequestContextHolder.getRequestAttributes()?.setAttribute(API_TRACING_CONTENT, apiTracingContent, SCOPE_REQUEST)
+    override fun save(content: ApiTracingContent){
+        RequestContextHolder.getRequestAttributes()?.setAttribute(API_TRACING_CONTENT, content, SCOPE_REQUEST)
     }
 }

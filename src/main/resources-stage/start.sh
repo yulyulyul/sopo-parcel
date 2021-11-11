@@ -13,7 +13,7 @@ function start(){
             -Dotel.resource.attributes="service.name=parcel-service" \
             -Dotel.javaagent.debug=false \
             -javaagent:/usr/app/opentelemetry-javaagent-all.jar \
-            -jar ./sopo-parcel-stage-0.0.18.jar \
+            -jar ./sopo-parcel-stage-0.0.20.jar \
             --spring.config.location=/usr/app/config/bootstrap.yml
 }
 

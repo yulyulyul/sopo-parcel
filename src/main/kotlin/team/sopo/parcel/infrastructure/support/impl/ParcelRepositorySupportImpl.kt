@@ -10,8 +10,7 @@ import team.sopo.parcel.domain.QParcel
 import team.sopo.parcel.domain.QParcel.parcel
 import team.sopo.parcel.domain.vo.ParcelCntInfo
 import team.sopo.parcel.infrastructure.support.ParcelRepositorySupport
-import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : ParcelRepositorySupport {
 
@@ -29,7 +28,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
         return queryFactory
             .selectFrom(parcel)
             .where(
-                parcel.regDt.between(LocalDate.now().minusWeeks(2L), LocalDate.now())
+                parcel.regDte.between(ZonedDateTime.now().minusWeeks(2L), ZonedDateTime.now())
                     .and(parcel.userId.eq(userId))
             )
             .fetchCount()
@@ -73,7 +72,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
     override fun getIncompleteMonthList(userId: String): MutableList<ParcelCntInfo>{
 
         val dateFormatTemplate = Expressions.stringTemplate("DATE_FORMAT({0}, {1})", parcel.arrivalDte, "%Y-%m")
-        val dateTimePath = Expressions.dateTimePath(LocalDateTime::class.java, "time")
+        val dateTimePath = Expressions.dateTimePath(ZonedDateTime::class.java, "time")
 
         val timeCountList = queryFactory
                 .select(
@@ -100,7 +99,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
         return queryFactory
                 .from(parcel)
                 .where(parcel.userId.eq(userId)
-                        .and(parcel.regDt.month().eq(Expressions.currentDate().month())))
+                        .and(parcel.regDte.month().eq(Expressions.currentDate().month())))
                 .fetchCount().toInt() > 50
     }
 }

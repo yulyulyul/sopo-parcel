@@ -21,34 +21,11 @@ Configuration:
       PatternLayout:
         pattern: ${log-pattern}
 
-#    RollingFile:
-#      - name: File
-#        fileName: ${log-path}/${service}_service.log
-#        filePattern: ${log-path}/${service}_service.log.%d{yyyy-MM-dd}.gz
-#        PatternLayout:
-#          pattern: ${log-pattern}
-#        Policies:
-#          TimeBasedTriggeringPolicy:
-#            interval: 1
-#      - name: JsonFile
-#        fileName: ${log-path}/${service}_service.json
-#        filePattern: ${log-path}/${service}_service.json.%d{yyyy-MM-dd}.gz
-#        Policies:
-#          TimeBasedTriggeringPolicy:
-#            interval: 1
-#        JsonTemplateLayout:
-#          stackTraceEnabled: true
-#          eventTemplateUri: classpath:LogstashJsonEventLayoutV1.json
-#          eventTemplateAdditionalField:
-#            - key: data_type
-#              value: "$${event:Marker:-LOG}"
-
   Loggers:
     Root:
-        level: debug
+        level: info
         additivity: false
         AppenderRef:
-#          - ref: JsonFile
           - ref: CONSOLE
 
     Logger:

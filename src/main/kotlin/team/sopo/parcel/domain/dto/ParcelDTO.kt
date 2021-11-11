@@ -1,10 +1,9 @@
 package team.sopo.parcel.domain.dto
 
+import io.swagger.v3.oas.annotations.media.Schema
 import team.sopo.parcel.domain.Carrier
 import team.sopo.parcel.domain.DeliveryStatus
-import io.swagger.v3.oas.annotations.media.Schema
-import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 @Schema(name = "택배 모델")
 data class ParcelDTO(
@@ -25,11 +24,11 @@ data class ParcelDTO(
     @Schema(name = "배송 상태", example = "delivered")
         var deliveryStatus: DeliveryStatus? = null,
     @Schema(name="등록 날짜", example = "2021-06-23")
-        var regDt: LocalDate? = null,
+        var regDte: ZonedDateTime? = null,
     @Schema(name = "도착 날짜", example = "2021-06-23")
-        var arrivalDte: LocalDateTime? = null,
+        var arrivalDte: ZonedDateTime? = null,
     @Schema(name = "데이터 수정 날짜", example = "2021-06-23")
-        var auditDte: LocalDateTime? = null,
+        var auditDte: ZonedDateTime? = null,
     @Schema(name = "택배 데이터의 상태", example = "1")
         var status: Int? = null
 )

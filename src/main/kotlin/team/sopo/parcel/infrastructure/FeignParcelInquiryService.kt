@@ -6,7 +6,6 @@ import team.sopo.common.exception.FailToSearchParcelException
 import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.parcel.application.InquiryService
 import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
-import java.net.SocketTimeoutException
 
 @Service
 class FeignParcelInquiryService(

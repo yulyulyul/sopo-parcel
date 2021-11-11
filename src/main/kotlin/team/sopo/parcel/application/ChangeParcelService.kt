@@ -1,14 +1,13 @@
 package team.sopo.parcel.application
 
-import team.sopo.parcel.domain.ParcelRepository
-import team.sopo.parcel.domain.command.UpdateAliasCommand
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team.sopo.parcel.domain.ParcelRepository
+import team.sopo.parcel.domain.command.UpdateAliasCommand
 
 @Service
 class ChangeParcelService(
-    @Autowired private val parcelRepository: ParcelRepository
+    private val parcelRepository: ParcelRepository
 ) {
 
     fun changeAlias(command: UpdateAliasCommand){

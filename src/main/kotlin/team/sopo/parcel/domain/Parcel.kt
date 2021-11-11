@@ -2,20 +2,18 @@ package team.sopo.parcel.domain
 
 import com.google.gson.Gson
 import team.sopo.common.extension.asHex
-import team.sopo.common.util.TimeUtil
 import team.sopo.parcel.domain.update.ChangeStatusToUnidentifiedDeliveredParcel
 import team.sopo.parcel.domain.update.NoChange
 import team.sopo.parcel.domain.update.UpdatePolicy
 import team.sopo.parcel.domain.update.UsualUpdate
 import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
 import java.security.MessageDigest
-import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import javax.persistence.*
 
 @Entity
 @Table(name = "parcel")
-class Parcel() {
+class Parcel(): AbstractEntity() {
 
     constructor(trackingInfo: TrackingInfo?, _userId: String, _waybillNum: String, _carrier: String, _alias: String): this(){
         this.userId = _userId
@@ -35,8 +33,8 @@ class Parcel() {
     @Column(name = "user_id")
     var userId: String = ""
 
-    @Column(name = "reg_dt")
-    var regDt:LocalDate = TimeUtil.getLocalDate()
+//    @Column(name = "reg_dt")
+//    var regDt:LocalDate = TimeUtil.getLocalDate()
 
     @Column(name = "waybill_num")
     var waybillNum: String = ""
@@ -58,10 +56,10 @@ class Parcel() {
     var deliveryStatus: DeliveryStatus? = null
 
     @Column(name = "arrival_dte")
-    var arrivalDte: LocalDateTime? = null
+    var arrivalDte: ZonedDateTime? = null
 
-    @Column(name = "audit_dte")
-    var auditDte: LocalDateTime = TimeUtil.getLocalDateTime()
+//    @Column(name = "audit_dte")
+//    var auditDte: LocalDateTime = TimeUtil.getLocalDateTime()
 
     @Column(name = "status", columnDefinition = "int(11) COMMENT '0 - 사용 X, 1 - 사용 가능' ")
     var status: Int? = 1
@@ -80,15 +78,15 @@ class Parcel() {
         }
     }
 
-//    fun isNeedToUpdate(newParcel: Parcel): Boolean{
-//        return this.inquiryHash != newParcel.inquiryHash
-//    }
-
     fun getUpdatePolicy(parcelRepository: ParcelRepository, refreshedParcel: Parcel): UpdatePolicy {
+        if(auditDte == null){
+            throw NullPointerException("auditDte is null")
+        }
+
         return if(this.inquiryHash != refreshedParcel.inquiryHash){
             UsualUpdate(parcelRepository, this, refreshedParcel)
         }
-        else if(auditDte.plusWeeks(2L).isBefore(LocalDateTime.now())){
+        else if(auditDte!!.plusWeeks(2L).isBefore(ZonedDateTime.now())){
             ChangeStatusToUnidentifiedDeliveredParcel(parcelRepository, this)
         }
         else{
@@ -110,7 +108,6 @@ class Parcel() {
         inquiryHash = createInquiryHash(inquiryResult)
         deliveryStatus = createDeliveryStatus(trackingInfo)
         arrivalDte = createArrivalDateTime(trackingInfo)
-        auditDte = TimeUtil.getLocalDateTime()
         return this
     }
 
@@ -135,11 +132,11 @@ class Parcel() {
         return DeliveryStatus.valueOf(statusStr)
     }
 
-    private fun createArrivalDateTime(trackingInfo: TrackingInfo?): LocalDateTime?{
+    private fun createArrivalDateTime(trackingInfo: TrackingInfo?): ZonedDateTime?{
         val status = createDeliveryStatus(trackingInfo)
         return if(trackingInfo != null && status == DeliveryStatus.DELIVERED){
-            LocalDateTime.parse(trackingInfo.progresses.last()?.time.let {
-                it?.substring(0, it.indexOf("+"))
+            ZonedDateTime.parse(trackingInfo.progresses.last()?.time.let {
+                it?.plus("[Asia/Seoul]")
             })
         }
         else{

@@ -1,8 +1,8 @@
 package team.sopo.parcel.infrastructure.converter
 
+import team.sopo.parcel.domain.Carrier
 import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.dto.ParcelDTO
-import team.sopo.parcel.domain.Carrier
 import kotlin.streams.toList
 
 object ParcelConverter {
@@ -15,7 +15,7 @@ object ParcelConverter {
                          inquiryResult = parcel.inquiryResult,
                          inquiryHash = parcel.inquiryHash,
                          deliveryStatus = parcel.deliveryStatus,
-                         regDt = parcel.regDt,
+                         regDte = parcel.regDte,
                          arrivalDte = parcel.arrivalDte,
                          auditDte = parcel.auditDte,
                          status = parcel.status)

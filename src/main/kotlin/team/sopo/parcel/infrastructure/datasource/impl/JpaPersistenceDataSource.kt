@@ -9,6 +9,7 @@ import team.sopo.parcel.domain.vo.ParcelCntInfo
 import team.sopo.parcel.infrastructure.JpaParcelRepository
 import team.sopo.parcel.infrastructure.datasource.ParcelPersistenceDataSource
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 @Component
 class JpaPersistenceDataSource(
@@ -23,10 +24,10 @@ class JpaPersistenceDataSource(
     }
 
     override fun getParcelHistoryWithInOneWeek(userId: String): List<Parcel>? {
-        val now = LocalDate.now()
-        val oneWeek = LocalDate.now().minusWeeks(1L)
+        val now = ZonedDateTime.now()
+        val oneWeek = ZonedDateTime.now().minusWeeks(1L)
 
-        return datasource.findAllByUserIdAndRegDtBetween(userId, oneWeek, now)
+        return datasource.findAllByUserIdAndRegDteBetween(userId, oneWeek, now)
     }
 
     override fun getCompleteParcels(
