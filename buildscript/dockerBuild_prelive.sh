@@ -2,7 +2,7 @@
 cd ..
 #./gradlew clean
 ./gradlew bootJar -Pprofile=prelive
-docker rmi www.sooopo.com/sopo_prelive/parcel:0.0.20
-docker build -f ./src/main/resources-prelive/Dockerfile . -t www.sooopo.com/sopo_prelive/parcel:0.0.20
-docker push www.sooopo.com/sopo_prelive/parcel:0.0.20
+docker rmi www.sooopo.com/sopo_prelive/parcel:0.0.21
+docker build -f ./src/main/resources-prelive/Dockerfile . -t www.sooopo.com/sopo_prelive/parcel:0.0.21
+docker push www.sooopo.com/sopo_prelive/parcel:0.0.21
 exit 0
