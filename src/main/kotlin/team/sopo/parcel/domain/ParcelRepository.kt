@@ -11,7 +11,6 @@ interface ParcelRepository {
     fun getCompleteParcels(pageable: Pageable, userId: String, startDate: String, endDate: String): Page<Parcel>
 
     fun getParcel(userId: String, parcelId: Long): Parcel
-    fun getRefreshedParcel(userId: String, parcelId: Long): Parcel
     fun getParcelFromRemote(carrier: String, waybillNum: String, userId: String, alias: String): Parcel
     fun getOngoingParcels(userId: String): List<Parcel>?
     fun save(parcel: Parcel): Parcel

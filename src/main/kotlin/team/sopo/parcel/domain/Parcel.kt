@@ -75,8 +75,8 @@ class Parcel(): AbstractEntity() {
         arrivalDte = createArrivalDateTime(trackingInfo)
     }
 
-    fun changeDeliveryStatus(status: DeliveryStatus){
-        this.deliveryStatus = status
+    fun changeToOrphaned(){
+        this.deliveryStatus = DeliveryStatus.ORPHANED
     }
 
     fun changeParcelAlias(alias: String){
@@ -114,14 +114,6 @@ class Parcel(): AbstractEntity() {
         deliveryStatus = refreshedParcel.deliveryStatus
         arrivalDte = refreshedParcel.arrivalDte
         auditDte = refreshedParcel.auditDte
-        return this
-    }
-
-    fun updateParcel(trackingInfo: TrackingInfo): Parcel {
-        inquiryResult = createInquiryResult(trackingInfo)
-        inquiryHash = createInquiryHash(inquiryResult)
-        deliveryStatus = createDeliveryStatus(trackingInfo)
-        arrivalDte = createArrivalDateTime(trackingInfo)
         return this
     }
 
@@ -171,5 +163,4 @@ class Parcel(): AbstractEntity() {
         }
         return returnObj
     }
-
 }

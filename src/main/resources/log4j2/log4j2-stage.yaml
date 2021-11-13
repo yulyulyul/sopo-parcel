@@ -34,7 +34,7 @@ Configuration:
 
   Loggers:
     Root:
-        level: debug
+        level: info
         additivity: false
         AppenderRef:
           - ref: CONSOLE
@@ -46,6 +46,4 @@ Configuration:
       - name: org.hibernate.type.descriptor.sql.BasicBinder
         level: trace
       - name: com.netflix.discovery.shared.transport.decorator.RedirectingEurekaHttpClient
-        level: fatal
-      - name: com.hubspot.slack.client.interceptors.http
         level: fatal

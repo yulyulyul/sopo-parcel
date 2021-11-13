@@ -6,7 +6,7 @@ import team.sopo.parcel.domain.ParcelRepository
 class ChangeParcelToOrphaned(val parcelRepository: ParcelRepository, private val parcel: Parcel): UpdatePolicy() {
 
     override fun run(): UpdateResult {
-        parcel.changeDeliveryStatus(Parcel.DeliveryStatus.ORPHANED)
+        parcel.changeToOrphaned()
         parcelRepository.save(parcel)
         return UpdateResult.NEED_TO_CHECK_DELIVERY_STATUS
     }

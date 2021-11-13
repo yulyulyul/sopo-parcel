@@ -36,11 +36,6 @@ class ParcelRepositoryImpl(
         return persistenceDataSource.getParcel(userId, parcelId)
     }
 
-    override fun getRefreshedParcel(userId: String, parcelId: Long): Parcel {
-        val parcel = persistenceDataSource.getParcel(userId, parcelId)
-        return remoteDataSource.getRefreshedParcel(parcel, userId)
-    }
-
     override fun getParcelFromRemote(carrier: String, waybillNum: String, userId: String, alias: String): Parcel {
         return remoteDataSource.getParcelFromRemote(carrier, waybillNum, userId, alias)
     }
