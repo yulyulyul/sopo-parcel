@@ -2,10 +2,6 @@ package team.sopo.parcel.domain
 
 import com.google.gson.Gson
 import team.sopo.common.extension.asHex
-import team.sopo.parcel.domain.update.ChangeParcelToOrphaned
-import team.sopo.parcel.domain.update.NoChange
-import team.sopo.parcel.domain.update.UpdatePolicy
-import team.sopo.parcel.domain.update.UsualUpdate
 import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
 import java.security.MessageDigest
 import java.time.ZonedDateTime
@@ -83,28 +79,13 @@ class Parcel(): AbstractEntity() {
         this.alias = alias
     }
 
+    fun isActivate(): Boolean{
+        return status != null && status == Activeness.ACTIVE.STATUS
+    }
+
     fun inactivate(){
         if(status != 0){
             status = Activeness.INACTIVE.STATUS
-        }
-    }
-
-    fun getUpdatePolicy(parcelRepository: ParcelRepository, refreshedParcel: Parcel): UpdatePolicy {
-        if(auditDte == null){
-            throw NullPointerException("auditDte is null")
-        }
-
-        return if(this.inquiryHash != refreshedParcel.inquiryHash){
-            UsualUpdate(parcelRepository, this, refreshedParcel)
-        }
-        else if(this.deliveryStatus == DeliveryStatus.NOT_REGISTERED && auditDte!!.plusWeeks(2L).isBefore(ZonedDateTime.now())) {
-            ChangeParcelToOrphaned(parcelRepository, this)
-        }
-        else if(this.deliveryStatus == DeliveryStatus.ORPHANED){
-            UsualUpdate(parcelRepository, this, refreshedParcel)
-        }
-        else{
-            NoChange()
         }
     }
 

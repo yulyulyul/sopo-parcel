@@ -1,15 +1,15 @@
 package team.sopo.common.util
 
-import team.sopo.parcel.domain.vo.ParcelCntInfo
+import team.sopo.parcel.ParcelInfo
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 object MonthListBuilder {
 
-    fun makeMonthlyDataList(incompleteMonthList: List<ParcelCntInfo>): MutableList<ParcelCntInfo> {
+    fun makeMonthlyDataList(incompleteMonthList: List<ParcelInfo.MonthlyParcelCnt>): MutableList<ParcelInfo.MonthlyParcelCnt> {
         val monthList = incompleteMonthList.toMutableList()
         // 정렬해서 상위 12개 아이템만 리턴할 객체
-        val returnObj = mutableListOf<ParcelCntInfo>()
+        val returnObj = mutableListOf<ParcelInfo.MonthlyParcelCnt>()
 
         /*
         * 현재날짜(ex, 2020-01)이 기준으로 가입된 날짜까지 정렬해서 가져오는 것이므로
@@ -45,7 +45,7 @@ object MonthListBuilder {
                 returnObj.add(targetTimeCountDTO)
                 monthList.removeAt(0)
             } else { // 사용자가 해당 월에 사용하지 않았을 경우, count를 0을 채운 TimeCountDTO를 만들어 returnObj에 넣어준다.
-                returnObj.add(ParcelCntInfo("${currentYearMonth.year}-${String.format("%02d", currentYearMonth.monthValue)}", 0))
+                returnObj.add(ParcelInfo.MonthlyParcelCnt("${currentYearMonth.year}-${String.format("%02d", currentYearMonth.monthValue)}", 0))
             }
             currentYearMonth = currentYearMonth.minusMonths(1)
             cnt++
@@ -53,7 +53,7 @@ object MonthListBuilder {
         return returnObj
     }
 
-    private fun getYearMonth(parcelCntInfo: ParcelCntInfo): YearMonth {
+    private fun getYearMonth(parcelCntInfo: ParcelInfo.MonthlyParcelCnt): YearMonth {
         return YearMonth.parse(parcelCntInfo.time, DateTimeFormatter.ofPattern("yyyy-MM"))
     }
 }

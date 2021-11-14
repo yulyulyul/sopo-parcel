@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import team.sopo.common.tracing.DeliveryTracing
 import team.sopo.common.tracing.DeliveryTrackerRepository
 import team.sopo.parcel.domain.Carrier
-import team.sopo.parcel.infrastructure.DeliveryClient
+import team.sopo.parcel.infrastructure.DeliveryTrackerClient
 
 @Aspect
 @Component
@@ -25,7 +25,7 @@ class FeignClientAspect(private val repository: DeliveryTrackerRepository) {
     @Before("feignClientPointcut()")
     fun before(joinPoint: JoinPoint) {
 
-        if (joinPoint.target is DeliveryClient) {
+        if (joinPoint.target is DeliveryTrackerClient) {
             saveUser(repository)
             saveSignature(joinPoint.signature.name, repository)
             saveQueries(joinPoint.args, repository)
@@ -34,7 +34,7 @@ class FeignClientAspect(private val repository: DeliveryTrackerRepository) {
 
     @After("feignClientPointcut()")
     fun after(joinPoint: JoinPoint){
-        if (joinPoint.target is DeliveryClient) {
+        if (joinPoint.target is DeliveryTrackerClient) {
             DeliveryTracing(content = repository.getContent()).trace()
         }
     }
@@ -48,7 +48,7 @@ class FeignClientAspect(private val repository: DeliveryTrackerRepository) {
     }
 
     private fun saveSignature(method: String, repository: DeliveryTrackerRepository){
-        repository.saveSignature(DeliveryClient::class.java.simpleName, method)
+        repository.saveSignature(DeliveryTrackerClient::class.java.simpleName, method)
     }
 
     private fun saveQueries(queries: Array<Any>, repository: DeliveryTrackerRepository){

@@ -5,14 +5,6 @@ spring:
 spring:
   cloud:
     config:
-      profile: local
-      uri: http://localhost:8888
-      #      todo mariadb2 => mariadb
-      name: default, parcel-service, kafka, eureka, mariadb, firebase, discovery, feign
----
-spring:
-  cloud:
-    config:
       profile: stage
       uri: http://config:8888
       #      todo mariadb2 => mariadb
@@ -25,3 +17,11 @@ spring:
       uri: http://config:8888
       #      todo mariadb2 => mariadb
       name: default, parcel-service, kafka, eureka, mariadb2, firebase, discovery, feign
+---
+spring:
+  cloud:
+    config:
+      profile: local
+      uri: http://localhost:8888
+      #      todo mariadb2 => mariadb
+      name: default, parcel-service, kafka, eureka, mariadb, firebase, discovery, feign

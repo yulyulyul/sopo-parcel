@@ -8,7 +8,7 @@ import feign.Util.UTF_8
 import feign.Util.decodeOrDefault
 import org.apache.logging.log4j.LogManager
 import team.sopo.common.tracing.DeliveryTrackerRepository
-import team.sopo.parcel.infrastructure.DeliveryClient
+import team.sopo.parcel.infrastructure.DeliveryTrackerClient
 import java.io.IOException
 
 
@@ -56,7 +56,7 @@ class FeignCustomLogger(private val repository: DeliveryTrackerRepository): Logg
     }
 
     private fun isDeliveryClient(configKey: String): Boolean {
-        return getClientName(configKey) == DeliveryClient::class.simpleName
+        return getClientName(configKey) == DeliveryTrackerClient::class.simpleName
     }
 
     private fun getClientName(configKey: String): String{

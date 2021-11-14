@@ -1,7 +1,7 @@
 package team.sopo.parcel.infrastructure.support
 
+import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.domain.Parcel
-import team.sopo.parcel.domain.vo.ParcelCntInfo
 
 interface ParcelRepositorySupport {
 
@@ -15,7 +15,9 @@ interface ParcelRepositorySupport {
 
     fun isAlreadyRegistered(userId: String, waybillNum: String, carrier: String): Boolean
 
-    fun getIncompleteMonthList(userId: String): MutableList<ParcelCntInfo>
+    fun getMonthlyParcelCntList(userId: String): MutableList<ParcelInfo.MonthlyParcelCnt>
 
     fun isLimitCountOver(userId: String): Boolean
+
+    fun getCurrentMonthRegisteredCount(userId: String): Int
 }

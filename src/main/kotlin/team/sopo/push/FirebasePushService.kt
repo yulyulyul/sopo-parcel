@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import team.sopo.common.exception.InsufficientConditionException
 import team.sopo.common.exception.SystemException
-import team.sopo.parcel.domain.Parcel
-import team.sopo.parcel.domain.update.UpdatedParcelInfo
+import team.sopo.parcel.ParcelInfo
+import team.sopo.push.dto.UpdatedParcelInfo
 
 @Service
 class FirebasePushService(
@@ -56,11 +56,17 @@ class FirebasePushService(
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    override fun addToPushList(parcel: Parcel){
-        val parcelId = parcel.id
+    override fun addToPushList(parcel: ParcelInfo.Main){
+        val parcelId = parcel.parcelId ?: throw InsufficientConditionException("택배 id가 정의되지 않아 해당 요청을 수행할 수 없습니다.")
         val deliveryStatus = parcel.deliveryStatus ?: throw InsufficientConditionException("배송 상태가 등록되지 않아 해당 요청을 수행할 수 없습니다.")
 
         pushList.add(UpdatedParcelInfo(parcelId, deliveryStatus.name))
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    override fun addToPushList(parcelList: List<ParcelInfo.Main>){
+        parcelList.stream()
+            .forEach { parcel -> addToPushList(parcel) }
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)

@@ -1,15 +1,13 @@
 package team.sopo.parcel.infrastructure
 
-import team.sopo.parcel.domain.Parcel
-import team.sopo.parcel.infrastructure.support.ParcelRepositorySupport
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
-import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
-import java.time.ZonedDateTime
+import team.sopo.parcel.domain.Parcel
+import team.sopo.parcel.infrastructure.support.ParcelRepositorySupport
+import java.util.*
 
 interface JpaParcelRepository: JpaRepository<Parcel, Long>, ParcelRepositorySupport {
 
@@ -19,10 +17,8 @@ interface JpaParcelRepository: JpaRepository<Parcel, Long>, ParcelRepositorySupp
                            @Param("startDate") startDate: String,
                            @Param("endDate") endDate: String): Page<Parcel>
 
+    fun findByIdAndUserId(id: Long, userId: String): Optional<Parcel>
 
-    fun findAllByUserIdAndRegDteBetween(userId: String, regDt: ZonedDateTime, regDt2: ZonedDateTime): List<Parcel>?
-
-    @Transactional
-    fun deleteAllByUserId(userId: String)
+    fun findByUserIdAndCarrierAndWaybillNum(userId: String, carrier: String, waybillNum: String): Optional<Parcel>
 
 }

@@ -4,10 +4,10 @@ import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import team.sopo.common.exception.ParcelNotFoundException
+import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.QParcel
 import team.sopo.parcel.domain.QParcel.parcel
-import team.sopo.parcel.domain.vo.ParcelCntInfo
 import team.sopo.parcel.infrastructure.support.ParcelRepositorySupport
 import java.time.ZonedDateTime
 
@@ -68,7 +68,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
         return flag > 0
     }
 
-    override fun getIncompleteMonthList(userId: String): MutableList<ParcelCntInfo>{
+    override fun getMonthlyParcelCntList(userId: String): MutableList<ParcelInfo.MonthlyParcelCnt>{
 
         val dateFormatTemplate = Expressions.stringTemplate("DATE_FORMAT({0}, {1})", parcel.arrivalDte, "%Y-%m")
         val dateTimePath = Expressions.dateTimePath(ZonedDateTime::class.java, "time")
@@ -76,7 +76,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
         val timeCountList = queryFactory
                 .select(
                         Projections.constructor(
-                            ParcelCntInfo::class.java,
+                            ParcelInfo.MonthlyParcelCnt::class.java,
                             dateFormatTemplate.`as`(dateTimePath.toString()),
                             parcel.arrivalDte.count()
                         )
@@ -101,4 +101,13 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
                         .and(parcel.regDte.month().eq(Expressions.currentDate().month())))
                 .fetchCount().toInt() > 50
     }
+
+    override fun getCurrentMonthRegisteredCount(userId: String): Int{
+        return queryFactory
+            .from(parcel)
+            .where(parcel.userId.eq(userId)
+                .and(parcel.regDte.month().eq(Expressions.currentDate().month())))
+            .fetchCount().toInt()
+    }
+
 }
