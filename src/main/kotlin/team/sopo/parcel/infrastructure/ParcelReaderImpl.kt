@@ -40,11 +40,11 @@ class ParcelReaderImpl(private val repository: JpaParcelRepository): ParcelReade
     }
 
     override fun getRegisteredCountIn2Week(userId: String): Long {
-        return repository.getRegisterParcelCount(userId)
+        return repository.getRegisterParcelCountIn2Week(userId)
     }
 
     override fun getRegisteredParcelCount(userId: String): Long {
-        return repository.getRegisterParcelCountIn2Week(userId)
+        return repository.getRegisterParcelCount(userId)
     }
 
     override fun getMonthlyParcelCntList(userId: String): List<ParcelInfo.MonthlyParcelCnt> {
