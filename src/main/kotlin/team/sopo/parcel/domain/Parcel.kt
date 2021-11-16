@@ -9,7 +9,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "parcel")
-class Parcel(): AbstractEntity() {
+class Parcel() : AbstractEntity() {
 
     enum class DeliveryStatus {
         NOT_REGISTERED,
@@ -28,7 +28,8 @@ class Parcel(): AbstractEntity() {
         INACTIVE(0)
     }
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "parcel_id", nullable = false)
     var id: Long = 0L
 
@@ -60,7 +61,13 @@ class Parcel(): AbstractEntity() {
     @Column(name = "status", columnDefinition = "int(11) COMMENT '0 - 사용 X, 1 - 사용 가능' ")
     var status: Int? = 1
 
-    constructor(trackingInfo: TrackingInfo?, _userId: String, _waybillNum: String, _carrier: String, _alias: String): this(){
+    constructor(
+        trackingInfo: TrackingInfo?,
+        _userId: String,
+        _waybillNum: String,
+        _carrier: String,
+        _alias: String
+    ) : this() {
         userId = _userId
         waybillNum = _waybillNum
         carrier = _carrier
@@ -71,25 +78,25 @@ class Parcel(): AbstractEntity() {
         arrivalDte = createArrivalDateTime(trackingInfo)
     }
 
-    fun changeToOrphaned(){
+    fun changeToOrphaned() {
         this.deliveryStatus = DeliveryStatus.ORPHANED
     }
 
-    fun changeParcelAlias(alias: String){
+    fun changeParcelAlias(alias: String) {
         this.alias = alias
     }
 
-    fun isActivate(): Boolean{
+    fun isActivate(): Boolean {
         return status != null && status == Activeness.ACTIVE.STATUS
     }
 
-    fun inactivate(){
-        if(status != 0){
+    fun inactivate() {
+        if (status != 0) {
             status = Activeness.INACTIVE.STATUS
         }
     }
 
-    fun updateParcel(refreshedParcel: Parcel): Parcel{
+    fun updateParcel(refreshedParcel: Parcel): Parcel {
         inquiryResult = refreshedParcel.inquiryResult
         inquiryHash = refreshedParcel.inquiryHash
         deliveryStatus = refreshedParcel.deliveryStatus
@@ -107,9 +114,10 @@ class Parcel(): AbstractEntity() {
             }
     }
 
-    private fun createInquiryResult(trackingInfo: TrackingInfo?): String{
-        return if(trackingInfo == null){ "" }
-        else{
+    private fun createInquiryResult(trackingInfo: TrackingInfo?): String {
+        return if (trackingInfo == null) {
+            ""
+        } else {
             Gson().toJson(trackingInfo)
         }
     }
@@ -119,19 +127,18 @@ class Parcel(): AbstractEntity() {
         return DeliveryStatus.valueOf(statusStr)
     }
 
-    private fun createArrivalDateTime(trackingInfo: TrackingInfo?): ZonedDateTime?{
+    private fun createArrivalDateTime(trackingInfo: TrackingInfo?): ZonedDateTime? {
         val status = createDeliveryStatus(trackingInfo)
-        return if(trackingInfo != null && status == DeliveryStatus.DELIVERED){
+        return if (trackingInfo != null && status == DeliveryStatus.DELIVERED) {
             ZonedDateTime.parse(trackingInfo.progresses.last()?.time.let {
                 it?.plus("[Asia/Seoul]")
             })
-        }
-        else{
+        } else {
             null
         }
     }
 
-    private fun createParcelAlias(trackingInfo: TrackingInfo?, inputAlias: String, waybillNum: String): String{
+    private fun createParcelAlias(trackingInfo: TrackingInfo?, inputAlias: String, waybillNum: String): String {
         val returnObj by lazy {
 
             inputAlias.ifEmpty {

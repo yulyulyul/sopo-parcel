@@ -5,7 +5,7 @@ import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.ParcelStore
 
 @Service
-class ParcelStoreImpl(private val repository: JpaParcelRepository): ParcelStore {
+class ParcelStoreImpl(private val repository: JpaParcelRepository) : ParcelStore {
     override fun store(parcel: Parcel): Parcel {
         return repository.save(parcel)
     }

@@ -2,7 +2,7 @@ FROM www.sooopo.com/base_image/debian_java11_fluentd:1.0.4
 
 USER root
 
-ARG JAR_FILE=sopo-parcel-prelive-0.0.22.jar
+ARG JAR_FILE=sopo-parcel-prelive-0.0.23.jar
 ENV JAR_FILE_PATH=/usr/app/$JAR_FILE
 
 COPY ./sopo-firebase-adminsdk.json /usr/app

@@ -21,7 +21,10 @@ class ParcelReaderImpl(private val repository: JpaParcelRepository): ParcelReade
 
     override fun getParcel(userId: String, carrier: Carrier, waybillNum: String): Parcel {
         return repository.findByUserIdAndCarrierAndWaybillNum(userId, carrier.CODE, waybillNum).orElseThrow{ ParcelNotFoundException() }
+    }
 
+    override fun getParcels(parcelIds: List<Long>): List<Parcel> {
+        return repository.findAllByIdIn(parcelIds)
     }
 
     override fun getOngoingParcels(userId: String): List<Parcel> {

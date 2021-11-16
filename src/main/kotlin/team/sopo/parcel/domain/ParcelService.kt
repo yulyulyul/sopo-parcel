@@ -4,12 +4,12 @@ import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.domain.update.UpdateResult
 
 interface ParcelService {
-    fun retrieveParcel(command: ParcelCommand.GetParcel): ParcelInfo.Main
-    fun retrieveOngoingParcels(command: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main>
-    fun retrieveCompleteParcels(command: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main>
-    fun retrieveMonthlyParcelCntList(command: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt>
-    fun retrieveUsageInfo(getUsageInfoCommand: ParcelCommand.GetUsageInfo): ParcelInfo.UsageInfo
-    fun changeParcelAlias(changeAliasCommand: ParcelCommand.ChangeParcelAlias)
+    fun retrieveParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main
+    fun retrieveOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main>
+    fun retrieveCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main>
+    fun retrieveMonthlyParcelCntList(getCommand: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt>
+    fun retrieveUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.UsageInfo
+    fun changeParcelAlias(changeCommand: ParcelCommand.ChangeParcelAlias)
     fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel)
     fun registerParcel(registerCommand: ParcelCommand.RegisterParcel): ParcelInfo.Main
     fun singleRefresh(refreshCommand: ParcelCommand.SingleRefresh): ParcelInfo.RefreshedParcel

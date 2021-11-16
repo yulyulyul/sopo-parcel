@@ -3,13 +3,13 @@ package team.sopo.parcel.domain
 import java.lang.NullPointerException
 
 enum class Carrier(val CODE: String, val NAME: String) {
-    DHL("de.dhl","DHL"),
+    DHL("de.dhl", "DHL"),
     SAGAWA("jp.sagawa", "Sagawa"),
     YAMATO("jp.yamato", "Kuroneko Yamato"),
     YUUBIN("jp.yuubin", "Japan Post"),
     CHUNILPS("kr.chunilps", "천일택배"),
     CJ_LOGISTICS("kr.cjlogistics", "CJ대한통운"),
-    CU_POST("kr.cupost","CU 편의점 택배"),
+    CU_POST("kr.cupost", "CU 편의점 택배"),
     CVSNET("kr.cvsnet", "GS Postbox 택배"),
     CWAY("kr.cway", "CWAY (Woori Express)"),
     DAESIN("kr.daesin", "대신택배"),
@@ -25,14 +25,14 @@ enum class Carrier(val CODE: String, val NAME: String) {
     LOGEN("kr.logen", "로젠택배"),
     LOTTE("kr.lotte", "롯데택배"),
     SLX("kr.slx", "SLX"),
-    SWGEXP("kr.swgexp","성원글로벌카고"),
+    SWGEXP("kr.swgexp", "성원글로벌카고"),
     TNT("nl.tnt", "TNT"),
     EMS("un.upu.ems", "EMS"),
     FEDEX("us.fedex", "FEDEX"),
     UPS("us.ups", "UPS"),
     USPS("us.usps", "USPS");
 
-    companion object{
+    companion object {
         fun getCarrierByCode(code: String): Carrier {
             val carrier = values().findLast {
                 it.CODE == code

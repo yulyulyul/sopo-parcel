@@ -26,9 +26,17 @@ class ParcelCommand {
         val waybillNum: String,
         val alias: String,
         val trackingInfo: TrackingInfo? = null
-    ){
-        fun toEntity(trackingInfo: TrackingInfo?): Parcel{
+    ) {
+        fun toEntity(trackingInfo: TrackingInfo?): Parcel {
             return Parcel(trackingInfo, userId, waybillNum, carrier.CODE, alias)
+        }
+
+        fun toSearchRequest(): SearchRequest {
+            return SearchRequest(userId, carrier, waybillNum)
+        }
+
+        fun toRegisterRequest(parcel: Parcel): RegisterRequest {
+            return RegisterRequest(userId, carrier, waybillNum, parcel)
         }
     }
 
@@ -67,16 +75,26 @@ class ParcelCommand {
     data class SingleRefresh(
         val userId: String,
         val parcelId: Long
-    ){
-        fun toEntity(trackingInfo: TrackingInfo?, originalParcel: Parcel): Parcel{
-            return Parcel(trackingInfo, originalParcel.userId, originalParcel.waybillNum, originalParcel.carrier, originalParcel.alias)
+    ) {
+        fun toEntity(trackingInfo: TrackingInfo?, originalParcel: Parcel): Parcel {
+            return Parcel(
+                trackingInfo,
+                originalParcel.userId,
+                originalParcel.waybillNum,
+                originalParcel.carrier,
+                originalParcel.alias
+            )
         }
 
         fun toSearchRequest(originalParcel: Parcel): SearchRequest {
-            return SearchRequest(originalParcel.userId, Carrier.getCarrierByCode(originalParcel.carrier), originalParcel.waybillNum)
+            return SearchRequest(
+                originalParcel.userId,
+                Carrier.getCarrierByCode(originalParcel.carrier),
+                originalParcel.waybillNum
+            )
         }
 
-        fun toUpdateRequest(originalParcel: Parcel, refreshedParcel: Parcel): UpdateRequest{
+        fun toUpdateRequest(originalParcel: Parcel, refreshedParcel: Parcel): UpdateRequest {
             return UpdateRequest(originalParcel, refreshedParcel)
         }
     }

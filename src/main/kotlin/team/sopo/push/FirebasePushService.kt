@@ -21,32 +21,32 @@ import team.sopo.push.dto.UpdatedParcelInfo
 class FirebasePushService(
     private val pushList: MutableList<UpdatedParcelInfo>,
     private val userClient: UserClient
-): PushService(pushList) {
+) : PushService(pushList) {
 
     private val logger: Logger = LoggerFactory.getLogger(FirebasePushService::class.java)
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    override fun sendPushMsg(userId: String){
+    override fun sendPushMsg(userId: String) {
 
-        if(pushList.isEmpty()){
+        if (pushList.isEmpty()) {
             return
         }
 
-        val config = AndroidConfig.builder().setPriority(AndroidConfig.Priority.HIGH).build() ?: throw SystemException("푸쉬관련 안드로이드 설정에 실패하였습니다.")
+        val config = AndroidConfig.builder().setPriority(AndroidConfig.Priority.HIGH).build()
+            ?: throw SystemException("푸쉬관련 안드로이드 설정에 실패하였습니다.")
         logger.info("Push List : $pushList")
 
         val message: Message = Message.builder()
-                .putData("notificationId", NotificationType.PUSH_UPDATE_PARCEL.code)
-                .putData("data", Gson().toJson(pushList))
-                .setToken(getClientFcmToken(userId))
-                .setAndroidConfig(config)
-                .build()
+            .putData("notificationId", NotificationType.PUSH_UPDATE_PARCEL.code)
+            .putData("data", Gson().toJson(pushList))
+            .setToken(getClientFcmToken(userId))
+            .setAndroidConfig(config)
+            .build()
 
-        try{
+        try {
             val response = FirebaseMessaging.getInstance().send(message)
             logger.info("Successfully sent message: $response")
-        }
-        catch (e: FirebaseMessagingException){
+        } catch (e: FirebaseMessagingException) {
             val fcmException = e.cause as HttpResponseException
 
             logger.error("fcm error message => ${fcmException.message}")
@@ -56,21 +56,23 @@ class FirebasePushService(
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    override fun addToPushList(parcel: ParcelInfo.Main){
+    override fun addToPushList(parcel: ParcelInfo.Main) {
         val parcelId = parcel.parcelId ?: throw InsufficientConditionException("택배 id가 정의되지 않아 해당 요청을 수행할 수 없습니다.")
-        val deliveryStatus = parcel.deliveryStatus ?: throw InsufficientConditionException("배송 상태가 등록되지 않아 해당 요청을 수행할 수 없습니다.")
+        val deliveryStatus =
+            parcel.deliveryStatus ?: throw InsufficientConditionException("배송 상태가 등록되지 않아 해당 요청을 수행할 수 없습니다.")
 
         pushList.add(UpdatedParcelInfo(parcelId, deliveryStatus.name))
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    override fun addToPushList(parcelList: List<ParcelInfo.Main>){
+    override fun addToPushList(parcelList: List<ParcelInfo.Main>) {
         parcelList.stream()
             .forEach { parcel -> addToPushList(parcel) }
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    fun getClientFcmToken(userId: String):String{
-        return userClient.getFcmToken(userId).data?.fcmToken ?: throw ResourceNotFoundException("fcmToken을 요청했으나 데이터가 존재하지 않습니다.")
+    fun getClientFcmToken(userId: String): String {
+        return userClient.getFcmToken(userId).data?.fcmToken
+            ?: throw ResourceNotFoundException("fcmToken을 요청했으나 데이터가 존재하지 않습니다.")
     }
 }

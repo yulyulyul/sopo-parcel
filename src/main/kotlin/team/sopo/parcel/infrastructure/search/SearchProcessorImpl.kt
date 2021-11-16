@@ -1,4 +1,4 @@
-package team.sopo.parcel.infrastructure.parcel.search
+package team.sopo.parcel.infrastructure.search
 
 import org.springframework.stereotype.Component
 import team.sopo.common.exception.InsufficientConditionException

@@ -15,56 +15,59 @@ class ParcelServiceImpl(
     private val searchProcessor: SearchProcessor,
     private val updateProcessor: UpdateProcessor,
     private val registerProcessor: RegisterProcessor,
-    private val parcelInfoMapper: ParcelInfoMapper): ParcelService {
+    private val parcelInfoMapper: ParcelInfoMapper
+) : ParcelService {
 
     @Transactional(readOnly = true)
-    override fun retrieveParcel(command: ParcelCommand.GetParcel): ParcelInfo.Main {
-        val parcel = parcelReader.getParcel(command.parcelId, command.userId)
+    override fun retrieveParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main {
+        val parcel = parcelReader.getParcel(getCommand.parcelId, getCommand.userId)
         return parcelInfoMapper.of(parcel)
     }
 
     @Transactional(readOnly = true)
-    override fun retrieveOngoingParcels(command: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main> {
-        val ongoingParcels = parcelReader.getOngoingParcels(command.userId)
+    override fun retrieveOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main> {
+        val ongoingParcels = parcelReader.getOngoingParcels(getCommand.userId)
         return parcelInfoMapper.of(ongoingParcels)
     }
 
     @Transactional(readOnly = true)
-    override fun retrieveCompleteParcels(command: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main> {
-        val completeParcels = parcelReader.getCompleteParcels(command.userId, command.inquiryDate, command.pageable)
+    override fun retrieveCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main> {
+        val completeParcels = parcelReader.getCompleteParcels(getCommand.userId, getCommand.inquiryDate, getCommand.pageable)
         return parcelInfoMapper.of(completeParcels)
     }
 
     @Transactional(readOnly = true)
-    override fun retrieveMonthlyParcelCntList(command: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt> {
-        return parcelReader.getMonthlyParcelCntList(command.userId)
+    override fun retrieveMonthlyParcelCntList(getCommand: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt> {
+        return parcelReader.getMonthlyParcelCntList(getCommand.userId)
     }
 
     @Transactional(readOnly = true)
-    override fun retrieveUsageInfo(getUsageInfoCommand: ParcelCommand.GetUsageInfo): ParcelInfo.UsageInfo {
-        val countIn2Week = parcelReader.getRegisteredCountIn2Week(getUsageInfoCommand.userId)
-        val totalCount = parcelReader.getRegisteredParcelCount(getUsageInfoCommand.userId)
+    override fun retrieveUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.UsageInfo {
+        val countIn2Week = parcelReader.getRegisteredCountIn2Week(getCommand.userId)
+        val totalCount = parcelReader.getRegisteredParcelCount(getCommand.userId)
 
         return ParcelInfo.UsageInfo(countIn2Week, totalCount)
     }
 
     @Transactional
-    override fun changeParcelAlias(changeAliasCommand: ParcelCommand.ChangeParcelAlias) {
-        val parcel = parcelReader.getParcel(changeAliasCommand.parcelId, changeAliasCommand.userId)
-        parcel.changeParcelAlias(changeAliasCommand.alias)
+    override fun changeParcelAlias(changeCommand: ParcelCommand.ChangeParcelAlias) {
+        val parcel = parcelReader.getParcel(changeCommand.parcelId, changeCommand.userId)
+        parcel.changeParcelAlias(changeCommand.alias)
     }
 
     @Transactional
     override fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel) {
+        parcelReader.getParcels(deleteCommand.parcelIds).parallelStream().peek(Parcel::inactivate)
+
         deleteCommand.parcelIds.stream()
             .forEach { parcelId -> parcelReader.getParcel(parcelId, deleteCommand.userId).inactivate() }
     }
 
     @Transactional
     override fun registerParcel(registerCommand: ParcelCommand.RegisterParcel): ParcelInfo.Main {
-        val searchResult = searchProcessor.search(ParcelCommand.SearchRequest(registerCommand.userId, registerCommand.carrier, registerCommand.waybillNum))
-        val parcel = registerCommand.toEntity(searchResult)
-        registerProcessor.register(ParcelCommand.RegisterRequest(registerCommand.userId, registerCommand.carrier, registerCommand.waybillNum, parcel))
+        val searchResult = searchProcessor.search(registerCommand.toSearchRequest())
+        val initParcel = registerCommand.toEntity(searchResult)
+        val parcel = registerProcessor.register(registerCommand.toRegisterRequest(parcel = initParcel))
 
         return parcelInfoMapper.of(parcel)
     }
@@ -76,23 +79,25 @@ class ParcelServiceImpl(
         val refreshedParcel = refreshCommand.toEntity(searchResult, originalParcel)
         val updateResult = updateProcessor.update(refreshCommand.toUpdateRequest(originalParcel, refreshedParcel))
 
-        return ParcelInfo.RefreshedParcel(parcelInfoMapper.of(refreshedParcel), updateResult == UpdateResult.SUCCESS_TO_UPDATE)
+        return ParcelInfo.RefreshedParcel(
+            parcel = parcelInfoMapper.of(refreshedParcel),
+            isUpdated = updateResult == UpdateResult.SUCCESS_TO_UPDATE
+        )
     }
 
     @Transactional
     override fun entireRefresh(refreshCommand: ParcelCommand.EntireRefresh): List<ParcelInfo.Main> {
         val ongoingParcels = parcelReader.getOngoingParcels(refreshCommand.userId)
         return ongoingParcels
-                .filter { parcel -> parcel.deliveryStatus != Parcel.DeliveryStatus.ORPHANED }
-                .filter { parcel ->
-                    try{
-                        singleRefresh(ParcelCommand.SingleRefresh(refreshCommand.userId, parcel.id)).isUpdated
-                    }
-                    catch (e: SopoException){
-                        false
-                    }
+            .filter { parcel -> parcel.deliveryStatus != Parcel.DeliveryStatus.ORPHANED }
+            .filter { parcel ->
+                try {
+                    singleRefresh(ParcelCommand.SingleRefresh(refreshCommand.userId, parcel.id)).isUpdated
+                } catch (e: SopoException) {
+                    false
                 }
-                .map { parcel -> parcelInfoMapper.of(parcel) }
-                .toList()
+            }
+            .map { parcel -> parcelInfoMapper.of(parcel) }
+            .toList()
     }
 }

@@ -23,7 +23,7 @@ class InternalController(private val parcelFacade: ParcelFacade) {
         @PathVariable("userId", required = true)
         @NotNull(message = "* 유저 id를 확인해주세요.")
         userId: String? = null
-    ):ResponseEntity<ApiResult<ParcelInfo.UsageInfo>>{
+    ): ResponseEntity<ApiResult<ParcelInfo.UsageInfo>> {
         val usageInfo = parcelFacade.retrieveUsageInfo(ParcelCommand.GetUsageInfo(userId!!))
         return ResponseEntity.ok(ApiResult(data = usageInfo))
     }

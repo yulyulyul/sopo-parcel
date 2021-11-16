@@ -1,4 +1,4 @@
-package team.sopo.parcel.infrastructure.parcel.search
+package team.sopo.parcel.infrastructure.search
 
 import org.springframework.stereotype.Component
 import team.sopo.common.exception.FailToSearchParcelException
@@ -8,16 +8,15 @@ import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
 import team.sopo.parcel.infrastructure.DeliveryTrackerClient
 
 @Component
-class DeliveryTrackerSearchApiCaller(private val deliveryTrackerClient: DeliveryTrackerClient): SearchApiCaller {
+class DeliveryTrackerSearchApiCaller(private val deliveryTrackerClient: DeliveryTrackerClient) : SearchApiCaller {
     override fun support(searchMethod: SearchMethod): Boolean {
         return searchMethod == SearchMethod.DeliveryTracker
     }
 
     override fun search(search: ParcelCommand.SearchRequest): TrackingInfo {
-        return try{
+        return try {
             deliveryTrackerClient.getTrackingInfo(search.carrier.CODE, search.waybillNum)
-        }
-        catch(e: feign.RetryableException){
+        } catch (e: feign.RetryableException) {
             throw FailToSearchParcelException(search.carrier.CODE, search.waybillNum, e)
         }
     }

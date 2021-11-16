@@ -16,7 +16,7 @@ interface ParcelInfoMapper {
     companion object {
         @JvmStatic
         @AfterMapping
-        fun afterMapping(@MappingTarget parcelDto: ParcelInfo.Main, parcel: Parcel){
+        fun afterMapping(@MappingTarget parcelDto: ParcelInfo.Main, parcel: Parcel) {
             parcelDto.carrier = Carrier.getCarrierByCode(parcel.carrier)
         }
     }

@@ -1,4 +1,4 @@
-package team.sopo.parcel.infrastructure.parcel.search
+package team.sopo.parcel.infrastructure.search
 
 import team.sopo.parcel.domain.ParcelCommand
 import team.sopo.parcel.domain.search.SearchMethod

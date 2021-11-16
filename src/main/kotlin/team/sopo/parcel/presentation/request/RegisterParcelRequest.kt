@@ -16,8 +16,8 @@ data class RegisterParcelRequest(
 
     @field: Length(max = 25, message = "택배 별칭(은)는 25글자를 초과할 수 없습니다.")
     val alias: String = ""
-){
-    fun toCommand(userId: String): ParcelCommand.RegisterParcel{
+) {
+    fun toCommand(userId: String): ParcelCommand.RegisterParcel {
         return ParcelCommand.RegisterParcel(userId, carrier!!, waybillNum, alias)
     }
 }

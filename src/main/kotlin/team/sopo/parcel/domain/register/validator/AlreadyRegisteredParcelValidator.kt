@@ -7,14 +7,14 @@ import team.sopo.parcel.domain.ParcelCommand
 import team.sopo.parcel.domain.ParcelReader
 
 @Component
-class AlreadyRegisteredParcelValidator(private val parcelReader: ParcelReader): RegisterValidator {
+class AlreadyRegisteredParcelValidator(private val parcelReader: ParcelReader) : RegisterValidator {
     override fun validate(request: ParcelCommand.RegisterRequest) {
-        try{
+        try {
             val parcel = parcelReader.getParcel(request.userId, request.carrier, request.waybillNum)
-            if(parcel.isActivate()){
+            if (parcel.isActivate()) {
                 throw AlreadyRegisteredParcelException()
             }
+        } catch (e: ParcelNotFoundException) {
         }
-        catch (e: ParcelNotFoundException){ }
     }
 }
