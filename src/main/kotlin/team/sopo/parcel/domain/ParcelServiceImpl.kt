@@ -57,10 +57,10 @@ class ParcelServiceImpl(
 
     @Transactional
     override fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel) {
-        parcelReader.getParcels(deleteCommand.parcelIds).parallelStream().peek(Parcel::inactivate)
+        parcelReader.getParcels(deleteCommand.parcelIds).parallelStream().forEach(Parcel::inactivate)
 
-        deleteCommand.parcelIds.stream()
-            .forEach { parcelId -> parcelReader.getParcel(parcelId, deleteCommand.userId).inactivate() }
+//        deleteCommand.parcelIds.stream()
+//            .forEach { parcelId -> parcelReader.getParcel(parcelId, deleteCommand.userId).inactivate() }
     }
 
     @Transactional
