@@ -48,7 +48,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             .selectFrom(parcel)
             .where(
                 parcel.userId.eq(userId)
-                    .and(parcel.status.eq(1))
+                    .and(parcel.status.eq(Parcel.Activeness.ACTIVE))
                     .and(parcel.deliveryStatus.ne(Parcel.DeliveryStatus.DELIVERED))
             )
             .orderBy(parcel.auditDte.desc())
@@ -61,7 +61,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             .from(parcel)
             .where(
                 parcel.userId.eq(userId)
-                    .and(parcel.status.eq(1))
+                    .and(parcel.status.eq(Parcel.Activeness.ACTIVE))
                     .and(parcel.waybillNum.eq(waybillNum))
                     .and(parcel.carrier.eq(carrier))
             )
@@ -88,7 +88,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             .where(
                 parcel.userId.eq(userId)
                     .and(
-                        parcel.status.eq(1)
+                        parcel.status.eq(Parcel.Activeness.ACTIVE)
                             .and(parcel.deliveryStatus.eq(Parcel.DeliveryStatus.DELIVERED))
                     )
             )

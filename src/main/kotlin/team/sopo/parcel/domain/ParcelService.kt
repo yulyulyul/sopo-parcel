@@ -1,7 +1,6 @@
 package team.sopo.parcel.domain
 
 import team.sopo.parcel.ParcelInfo
-import team.sopo.parcel.domain.update.UpdateResult
 
 interface ParcelService {
     fun retrieveParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main

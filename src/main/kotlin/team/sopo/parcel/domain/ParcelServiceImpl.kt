@@ -89,10 +89,10 @@ class ParcelServiceImpl(
     override fun entireRefresh(refreshCommand: ParcelCommand.EntireRefresh): List<ParcelInfo.Main> {
         val ongoingParcels = parcelReader.getOngoingParcels(refreshCommand.userId)
         return ongoingParcels
-            .filter { parcel -> parcel.deliveryStatus != Parcel.DeliveryStatus.ORPHANED }
+            .filter { parcel -> parcel.isEntireRefreshable() }
             .filter { parcel ->
                 try {
-                    singleRefresh(ParcelCommand.SingleRefresh(refreshCommand.userId, parcel.id)).isUpdated
+                    singleRefresh(refreshCommand.toRefreshRequest(parcel.id)).isUpdated
                 } catch (e: SopoException) {
                     false
                 }

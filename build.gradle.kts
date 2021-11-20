@@ -86,13 +86,12 @@ dependencies {
     api("com.querydsl:querydsl-jpa:4.4.0")
     kapt("com.querydsl:querydsl-apt:4.4.0:jpa") // ":jpa 꼭 붙여줘야 한다!!"
 
-    implementation("org.mariadb.jdbc", "mariadb-java-client")
+    runtimeOnly("org.mariadb.jdbc", "mariadb-java-client")
 
     //Httpclient
     implementation("org.apache.httpcomponents", "httpclient", "4.5.9")
 
     //Log4j2
-    implementation("org.bgee.log4jdbc-log4j2","log4jdbc-log4j2-jdbc4.1", "1.16")
     implementation("org.apache.logging.log4j","log4j-slf4j-impl","2.14.1")
     implementation("org.apache.logging.log4j","log4j-core","2.14.1")
     implementation("org.apache.logging.log4j","log4j-jul","2.14.1")
@@ -131,6 +130,8 @@ dependencies {
 
     implementation ("com.google.firebase","firebase-admin","6.8.1")
     implementation("com.fasterxml.uuid:java-uuid-generator:3.1.4")
+
+    implementation ("org.flywaydb:flyway-core")
 }
 
 idea {

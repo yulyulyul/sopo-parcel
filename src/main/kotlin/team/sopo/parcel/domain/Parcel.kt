@@ -59,7 +59,8 @@ class Parcel() : AbstractEntity() {
     var arrivalDte: ZonedDateTime? = null
 
     @Column(name = "status", columnDefinition = "int(11) COMMENT '0 - 사용 X, 1 - 사용 가능' ")
-    var status: Int? = 1
+    @Enumerated(EnumType.STRING)
+    var status: Activeness = Activeness.ACTIVE
 
     constructor(
         trackingInfo: TrackingInfo?,
@@ -87,12 +88,16 @@ class Parcel() : AbstractEntity() {
     }
 
     fun isActivate(): Boolean {
-        return status != null && status == Activeness.ACTIVE.STATUS
+        return status == Activeness.ACTIVE
+    }
+
+    fun isEntireRefreshable(): Boolean {
+        return this.deliveryStatus != DeliveryStatus.ORPHANED
     }
 
     fun inactivate() {
-        if (status != 0) {
-            status = Activeness.INACTIVE.STATUS
+        if (status != Activeness.INACTIVE) {
+            status = Activeness.INACTIVE
         }
     }
 
@@ -123,7 +128,7 @@ class Parcel() : AbstractEntity() {
     }
 
     private fun createDeliveryStatus(trackingInfo: TrackingInfo?): DeliveryStatus {
-        val statusStr = trackingInfo?.state?.id?.toUpperCase() ?: return DeliveryStatus.NOT_REGISTERED
+        val statusStr = trackingInfo?.state?.id?.uppercase() ?: return DeliveryStatus.NOT_REGISTERED
         return DeliveryStatus.valueOf(statusStr)
     }
 

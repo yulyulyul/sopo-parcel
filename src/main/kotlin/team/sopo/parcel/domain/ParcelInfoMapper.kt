@@ -7,7 +7,8 @@ import team.sopo.parcel.ParcelInfo
 interface ParcelInfoMapper {
     @Mappings(
         Mapping(source = "parcel.id", target = "parcelId"),
-        Mapping(target = "carrier", ignore = true)
+        Mapping(target = "carrier", ignore = true),
+        Mapping(target = "status", ignore = true)
     )
     fun of(parcel: Parcel): ParcelInfo.Main
 
@@ -17,6 +18,12 @@ interface ParcelInfoMapper {
         @JvmStatic
         @AfterMapping
         fun afterMapping(@MappingTarget parcelDto: ParcelInfo.Main, parcel: Parcel) {
+            parcelDto.status = if (parcel.isActivate()) {
+                1
+            } else {
+                0
+            }
+
             parcelDto.carrier = Carrier.getCarrierByCode(parcel.carrier)
         }
     }

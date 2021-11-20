@@ -12,7 +12,7 @@ import java.util.*
 interface JpaParcelRepository : JpaRepository<Parcel, Long>, ParcelRepositorySupport {
 
     @Query(
-        value = "SELECT * FROM parcel WHERE user_id = :user_id AND status = 1 AND delivery_status = 'DELIVERED' AND arrival_dte BETWEEN :startDate AND :endDate",
+        value = "SELECT * FROM parcel WHERE user_id = :user_id AND status = 'ACTIVE' AND delivery_status = 'DELIVERED' AND date(arrival_dte) BETWEEN :startDate AND :endDate",
         nativeQuery = true
     )
     fun getCompleteParcels(

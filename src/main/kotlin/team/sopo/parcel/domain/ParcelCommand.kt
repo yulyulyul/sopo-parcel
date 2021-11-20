@@ -99,5 +99,9 @@ class ParcelCommand {
         }
     }
 
-    data class EntireRefresh(val userId: String)
+    data class EntireRefresh(val userId: String) {
+        fun toRefreshRequest(parcelId: Long): SingleRefresh {
+            return SingleRefresh(userId, parcelId)
+        }
+    }
 }
