@@ -7,8 +7,7 @@ spring:
     config:
       profile: stage
       uri: http://config:8888
-      #      todo mariadb2 => mariadb
-      name: default, parcel-service, kafka, eureka, mariadb2, firebase, discovery, feign, flyway
+      name: default, parcel-service, kafka, eureka, maria, firebase, discovery, feign, flyway
   config:
     activate:
       on-profile: stage
@@ -18,7 +17,6 @@ spring:
     config:
       profile: local
       uri: http://localhost:8888
-      #      todo mariadb2 => mariadb
       name: default, parcel-service, kafka, eureka, maria, firebase, discovery, feign, flyway
   config:
     activate:
@@ -29,7 +27,6 @@ spring:
     config:
       profile: prelive
       uri: http://config:8888
-      #      todo mariadb2 => mariadb
       name: default, parcel-service, kafka, eureka, maria, firebase, discovery, feign, flyway
   config:
     activate:
@@ -40,7 +37,6 @@ spring:
     config:
       profile: test
       uri: http://localhost:8888
-      #      todo mariadb2 => mariadb
       name: default, parcel-service, kafka, eureka, firebase, discovery, feign
   config:
     activate:

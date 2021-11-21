@@ -7,7 +7,7 @@ import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.domain.register.RegisterProcessor
 import team.sopo.parcel.domain.search.SearchProcessor
 import team.sopo.parcel.domain.update.UpdateProcessor
-import team.sopo.parcel.domain.update.UpdateResult
+import team.sopo.parcel.domain.update.UpdateStatus
 
 @Service
 class ParcelServiceImpl(
@@ -58,9 +58,6 @@ class ParcelServiceImpl(
     @Transactional
     override fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel) {
         parcelReader.getParcels(deleteCommand.parcelIds).parallelStream().forEach(Parcel::inactivate)
-
-//        deleteCommand.parcelIds.stream()
-//            .forEach { parcelId -> parcelReader.getParcel(parcelId, deleteCommand.userId).inactivate() }
     }
 
     @Transactional
@@ -77,11 +74,12 @@ class ParcelServiceImpl(
         val originalParcel = parcelReader.getParcel(refreshCommand.parcelId, refreshCommand.userId)
         val searchResult = searchProcessor.search(refreshCommand.toSearchRequest(originalParcel))
         val refreshedParcel = refreshCommand.toEntity(searchResult, originalParcel)
-        val updateResult = updateProcessor.update(refreshCommand.toUpdateRequest(originalParcel, refreshedParcel))
+
+        val processResult = updateProcessor.update(refreshCommand.toUpdateRequest(originalParcel, refreshedParcel))
 
         return ParcelInfo.RefreshedParcel(
-            parcel = parcelInfoMapper.of(refreshedParcel),
-            isUpdated = updateResult == UpdateResult.SUCCESS_TO_UPDATE
+            parcel = parcelInfoMapper.of(processResult.updatedParcel),
+            isUpdated = processResult.updateStatus == UpdateStatus.SUCCESS_TO_UPDATE
         )
     }
 

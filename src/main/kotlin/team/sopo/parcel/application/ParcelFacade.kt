@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.domain.ParcelCommand
 import team.sopo.parcel.domain.ParcelService
-import team.sopo.parcel.domain.update.UpdateResult
 import team.sopo.push.PushService
 
 @Service

@@ -3,13 +3,14 @@ package team.sopo.parcel.infrastructure.update
 import org.springframework.stereotype.Component
 import team.sopo.common.exception.InsufficientConditionException
 import team.sopo.parcel.domain.ParcelCommand
+import team.sopo.parcel.domain.update.ProcessResult
 import team.sopo.parcel.domain.update.policy.UpdatePolicyCaller
 import team.sopo.parcel.domain.update.UpdateProcessor
-import team.sopo.parcel.domain.update.UpdateResult
+import team.sopo.parcel.domain.update.UpdateStatus
 
 @Component
 class UpdateProcessorImpl(private val updaterList: List<UpdatePolicyCaller>) : UpdateProcessor {
-    override fun update(request: ParcelCommand.UpdateRequest): UpdateResult {
+    override fun update(request: ParcelCommand.UpdateRequest): ProcessResult {
         val updater = routingUpdatePolicyCaller(updaterList, request)
         return updater.update(request)
     }
