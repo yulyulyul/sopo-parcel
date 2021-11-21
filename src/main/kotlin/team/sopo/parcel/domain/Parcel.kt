@@ -23,9 +23,8 @@ class Parcel() : AbstractEntity() {
         INFORMATION_RECEIVED // 상품준비중
     }
 
-    enum class Activeness(val STATUS: Int) {
-        ACTIVE(1),
-        INACTIVE(0)
+    enum class Activeness {
+        ACTIVE, INACTIVE
     }
 
     @Id

@@ -2,7 +2,7 @@
 create table parcel
 (
     parcel_id       bigint auto_increment primary key,
-    status          int          null,
+    status          varchar(15)  null,
     waybill_num     varchar(255) null,
     user_id         varchar(50)  null,
     reg_dte         datetime(6)  null,

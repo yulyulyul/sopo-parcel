@@ -30,7 +30,7 @@ spring:
       profile: prelive
       uri: http://config:8888
       #      todo mariadb2 => mariadb
-      name: default, parcel-service, kafka, eureka, mariadb2, firebase, discovery, feign, flyway
+      name: default, parcel-service, kafka, eureka, maria, firebase, discovery, feign, flyway
   config:
     activate:
       on-profile: prelive
