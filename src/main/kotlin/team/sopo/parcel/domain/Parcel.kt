@@ -94,6 +94,15 @@ class Parcel() : AbstractEntity() {
         return this.deliveryStatus != DeliveryStatus.ORPHANED
     }
 
+    fun verifyRefreshable(){
+      /*
+        TODO 택배서버에서 일어나는 이슈를 좀 더 알아보고 결정하기 위해서 아래 사항은 후에 적용하기로 의사결정함. (의사결정 일자 : 2021-11-21)
+        if(this.deliveryStatus == DeliveryStatus.DELIVERED){
+            throw ParcelRefreshValidateException("이미 완료된 택배는 업데이트할 수 없습니다.")
+        }
+      */
+    }
+
     fun inactivate() {
         if (status != Activeness.INACTIVE) {
             status = Activeness.INACTIVE

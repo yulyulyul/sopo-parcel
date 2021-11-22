@@ -71,7 +71,7 @@ class ParcelServiceImpl(
 
     @Transactional
     override fun singleRefresh(refreshCommand: ParcelCommand.SingleRefresh): ParcelInfo.RefreshedParcel {
-        val originalParcel = parcelReader.getParcel(refreshCommand.parcelId, refreshCommand.userId)
+        val originalParcel = parcelReader.getParcel(refreshCommand.parcelId, refreshCommand.userId).also { it.verifyRefreshable() }
         val searchResult = searchProcessor.search(refreshCommand.toSearchRequest(originalParcel))
         val refreshedParcel = refreshCommand.toEntity(searchResult, originalParcel)
 
