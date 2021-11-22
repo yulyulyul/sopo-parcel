@@ -4,6 +4,8 @@ plugins {
     val basicVersion = "1.5.21"
     id("org.springframework.boot") version "2.5.4"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.flywaydb.flyway") version "6.0.8"
+
     kotlin("jvm") version basicVersion
     kotlin("plugin.spring") version basicVersion
     kotlin("plugin.jpa") version basicVersion
@@ -53,21 +55,21 @@ allOpen{
 extra["springCloudVersion"] = "2020.0.3"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-hateoas")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("org.springframework.kafka:spring-kafka")
-    implementation("org.springframework.cloud:spring-cloud-starter-config")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter:2.5.6")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.5.6")
+    implementation("org.springframework.boot:spring-boot-starter-web:2.5.6")
+    implementation("org.springframework.boot:spring-boot-starter-security:2.5.6")
+    implementation("org.springframework.boot:spring-boot-starter-hateoas:2.5.6")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:2.5.6")
+    implementation("org.springframework.boot:spring-boot-starter-mail:2.5.6")
+    implementation("org.springframework.kafka:spring-kafka:2.7.6")
+    implementation("org.springframework.cloud:spring-cloud-starter-config:3.0.5")
+    implementation("org.springframework.boot:spring-boot-starter-aop:2.5.6")
     implementation("org.springframework.cloud", "spring-cloud-starter-netflix-eureka-client")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.cloud:spring-cloud-starter-bootstrap")
+    implementation("org.springframework.boot:spring-boot-starter-validation:2.5.6")
+    implementation("org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.4")
     implementation("org.springframework.security.oauth.boot", "spring-security-oauth2-autoconfigure", "2.5.2")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:3.0.5")
     implementation("io.github.openfeign", "feign-httpclient")
 
     //Spring Doc
@@ -75,16 +77,16 @@ dependencies {
     implementation("org.springdoc", "springdoc-openapi-security", "1.5.4")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.6") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.security:spring-security-test:5.5.1")
     testImplementation("org.mockito","mockito-inline")
 
     // kapt로 dependency를 지정해 준다.
     // kotlin 코드가 아니라면 kapt 대신 annotationProcessor를 사용한다.
-    api("com.querydsl:querydsl-jpa:4.4.0")
-    kapt("com.querydsl:querydsl-apt:4.4.0:jpa") // ":jpa 꼭 붙여줘야 한다!!"
+    api("com.querydsl:querydsl-jpa:5.0.0")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jpa") // ":jpa 꼭 붙여줘야 한다!!"
 
     runtimeOnly("org.mariadb.jdbc", "mariadb-java-client")
 
@@ -106,7 +108,6 @@ dependencies {
 
     //jjwt
     implementation("io.jsonwebtoken", "jjwt", "0.9.1")
-
     implementation("com.nimbusds", "nimbus-jose-jwt", "8.20.1")
 
     // retrofit
@@ -122,16 +123,20 @@ dependencies {
     implementation("org.mapstruct","mapstruct", "1.4.2.Final")
     implementation("org.mapstruct","mapstruct-jdk8", "1.4.2.Final")
     kapt("org.mapstruct","mapstruct-processor", "1.4.2.Final")
-    api("com.github.pozo:mapstruct-kotlin:1.3.1.2")
-    kapt("com.github.pozo:mapstruct-kotlin-processor:1.3.1.2")
+    api("com.github.pozo:mapstruct-kotlin:1.4.0.0")
+    kapt("com.github.pozo:mapstruct-kotlin-processor:1.4.0.0")
 
     implementation ("com.googlecode.json-simple","json-simple","1.1")
     implementation ("org.codehaus.jettison","jettison","1.4.1")
 
     implementation ("com.google.firebase","firebase-admin","6.8.1")
-    implementation("com.fasterxml.uuid:java-uuid-generator:3.1.4")
+    implementation("com.fasterxml.uuid:java-uuid-generator:4.0.1")
 
-    implementation ("org.flywaydb:flyway-core")
+    implementation ("org.flywaydb:flyway-core:8.0.2")
+
+    testImplementation ("com.github.springtestdbunit:spring-test-dbunit:1.3.0")
+    testImplementation ("org.dbunit:dbunit:2.7.2")
+
 }
 
 idea {
@@ -167,4 +172,13 @@ tasks.bootJar{
 
 tasks.bootRun {
     args("--spring.profiles.active=$profile")
+}
+
+flyway {
+    url = "jdbc:mariadb://localhost:23306/parcel?verifyServerCertificate=false&allowPublicKeyRetrieval=true&useSSL=false"
+    user = "parcel-svc"
+    password = "parcel-pass"
+    encoding = "UTF-8"
+    outOfOrder = true
+    validateOnMigrate = true
 }

@@ -58,7 +58,7 @@ spring:
     generate-ddl: false
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:13306/parcel?verifyServerCertificate=false&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mariadb://localhost:23306/parcel?verifyServerCertificate=false&allowPublicKeyRetrieval=true&useSSL=false
     username: parcel-svc
     password: parcel-pass
     hikari:
