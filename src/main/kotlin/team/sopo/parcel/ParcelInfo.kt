@@ -47,5 +47,9 @@ class ParcelInfo {
     class MonthlyParcelCnt(_time: String, _count: Long){
         val time = _time
         val count = _count
+
+        override fun toString(): String {
+            return "{time:$time, count:$count}"
+        }
     }
 }
