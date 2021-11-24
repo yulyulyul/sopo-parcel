@@ -1,6 +1,7 @@
 package team.sopo.parcel.domain
 
 import com.google.gson.Gson
+import team.sopo.common.exception.ValidationException
 import team.sopo.common.extension.asHex
 import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
 import java.security.MessageDigest
@@ -83,6 +84,9 @@ class Parcel() : AbstractEntity() {
     }
 
     fun changeParcelAlias(alias: String) {
+        if(alias.length > 25){
+            throw ValidationException("택배 별칭은 25글자를 초과할 수 없습니다.")
+        }
         this.alias = alias
     }
 

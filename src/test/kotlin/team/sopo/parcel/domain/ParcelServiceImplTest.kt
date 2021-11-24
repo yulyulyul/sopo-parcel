@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import team.sopo.common.exception.ParcelNotFoundException
+import team.sopo.common.exception.ValidationException
 import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.TestConfig
 import java.time.LocalDateTime
@@ -203,5 +204,45 @@ class ParcelServiceImplTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("택배 별칭 수정 테스트")
+    inner class ChangeParcelAliasTest(){
+        @Test
+        @DisplayName("정상 케이스 - 유저가 택배의 별칭을 변경한다면, 변경되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun changeParcelAliasTestCase1(){
+            // given
+            val userId = "asle1221@naver.com"
+            val initParcel = Parcel(null, userId, "test_waybillNum", Carrier.CJ_LOGISTICS.CODE, "test_parcel")
+            val parcel = parcelStore.store(initParcel)
+            val aliasContent = "change_alias"
+
+            // when
+            parcelService.changeParcelAlias(ParcelCommand.ChangeParcelAlias(userId, parcel.id, aliasContent))
+            val target = parcelReader.getParcel(parcel.id, userId)
+
+            // then
+            Assertions.assertTrue(aliasContent == target.alias)
+        }
+
+        @Test
+        @DisplayName("별칭은 최대 25글자까지만 변경이 가능하다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun changeParcelAliasTestCase2(){
+            // given
+            val userId = "asle1221@naver.com"
+            val initParcel = Parcel(null, userId, "test_waybillNum", Carrier.CJ_LOGISTICS.CODE, "test_parcel")
+            val parcel = parcelStore.store(initParcel)
+            val aliasContent = "change_alias_change_alias_change_alias"
+
+            // when
+            // then
+            Assertions.assertThrows(ValidationException::class.java){
+                parcelService.changeParcelAlias(ParcelCommand.ChangeParcelAlias(userId, parcel.id, aliasContent))
+            }
+        }
+    }
+
 
 }
