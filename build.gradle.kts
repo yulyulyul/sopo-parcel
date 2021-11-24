@@ -85,8 +85,8 @@ dependencies {
 
     // kapt로 dependency를 지정해 준다.
     // kotlin 코드가 아니라면 kapt 대신 annotationProcessor를 사용한다.
-    api("com.querydsl:querydsl-jpa:5.0.0")
-    kapt("com.querydsl:querydsl-apt:5.0.0:jpa") // ":jpa 꼭 붙여줘야 한다!!"
+    api("com.querydsl:querydsl-jpa:4.4.0")
+    kapt("com.querydsl:querydsl-apt:4.4.0:jpa") // ":jpa 꼭 붙여줘야 한다!!"
 
     runtimeOnly("org.mariadb.jdbc", "mariadb-java-client")
 
