@@ -37,3 +37,4 @@ logs/
 ### VS Code ###
 .vscode/
 /src/main/resources-test/mysql/
+/src/test/resources/mysql/
