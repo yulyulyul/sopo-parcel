@@ -1,6 +1,7 @@
 package team.sopo.parcel.domain
 
 import com.google.gson.Gson
+import team.sopo.common.exception.UnauthorizedException
 import team.sopo.common.exception.ValidationException
 import team.sopo.common.extension.asHex
 import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
@@ -96,6 +97,12 @@ class Parcel() : AbstractEntity() {
 
     fun isEntireRefreshable(): Boolean {
         return this.deliveryStatus != DeliveryStatus.ORPHANED
+    }
+
+    fun verifyDeletable(command: ParcelCommand.DeleteParcel){
+        if(userId != command.userId){
+            throw UnauthorizedException("삭제하시려는 택배는 ${command.userId}님의 택배가 아닙니다.")
+        }
     }
 
     fun verifyRefreshable(){

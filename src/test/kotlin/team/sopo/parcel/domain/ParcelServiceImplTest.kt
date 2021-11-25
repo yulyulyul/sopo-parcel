@@ -4,6 +4,8 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener
 import com.github.springtestdbunit.annotation.DatabaseOperation
 import com.github.springtestdbunit.annotation.DatabaseSetup
 import com.github.springtestdbunit.annotation.DbUnitConfiguration
+import io.mockk.every
+import io.mockk.mockk
 import org.apache.logging.log4j.LogManager
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
@@ -17,13 +19,22 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import team.sopo.common.exception.ParcelNotFoundException
+import team.sopo.common.exception.UnauthorizedException
 import team.sopo.common.exception.ValidationException
 import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.TestConfig
+import team.sopo.parcel.domain.register.RegisterProcessor
+import team.sopo.parcel.domain.search.SearchProcessor
+import team.sopo.parcel.domain.update.UpdateProcessor
+import team.sopo.parcel.domain.vo.deliverytracker.From
+import team.sopo.parcel.domain.vo.deliverytracker.State
+import team.sopo.parcel.domain.vo.deliverytracker.To
+import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.transaction.Transactional
+import kotlin.streams.toList
 
 @Transactional
 @Import(TestConfig::class)
@@ -35,7 +46,9 @@ import javax.transaction.Transactional
 @DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])
 @ActiveProfiles("test")
 //@DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-class ParcelServiceImplTest {
+class ParcelServiceImplTest() {
+    @Autowired
+    lateinit var mapper: ParcelInfoMapper
 
     /*
      *   [TEST DB 구축 방법]
@@ -45,10 +58,21 @@ class ParcelServiceImplTest {
 
     @Autowired
     lateinit var parcelService: ParcelService
+
     @Autowired
     lateinit var parcelReader: ParcelReader
+
     @Autowired
     lateinit var parcelStore: ParcelStore
+
+    @Autowired
+    lateinit var searchProcessor: SearchProcessor
+
+    @Autowired
+    lateinit var registerProcessor: RegisterProcessor
+
+    @Autowired
+    lateinit var updateProcessor: UpdateProcessor
 
     private val logger = LogManager.getLogger(ParcelServiceImplTest::class.java)
 
@@ -176,17 +200,23 @@ class ParcelServiceImplTest {
         @Test
         @DisplayName("정상 케이스 - 유저에게 월별 특정 개수의 택배가 주어진다면, 월별 등록된 완료된 택배의 개수는 특정 개수랑 일치해야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-        fun retrieveMonthlyParcelCntListTestCase1(){
+        fun retrieveMonthlyParcelCntListTestCase1() {
             // given
             val userId = "asle1221@naver.com"
             val monthCnt = 5
             val dayCnt = 3
 
-            for (i in 1..monthCnt){
-                for(j in 1..dayCnt){
-                    val initParcel = Parcel(null, userId, "test_waybillNum", Carrier.CJ_LOGISTICS.CODE, "test_parcel ($i/$j)").apply {
-                        regDte = ZonedDateTime.of(LocalDateTime.of(2021, i, j, 0,0), ZoneId.of("Asia/Seoul"))
-                        arrivalDte = ZonedDateTime.of(LocalDateTime.of(2021, i, j, 0,0), ZoneId.of("Asia/Seoul"))
+            for (i in 1..monthCnt) {
+                for (j in 1..dayCnt) {
+                    val initParcel = Parcel(
+                        null,
+                        userId,
+                        "test_waybillNum",
+                        Carrier.CJ_LOGISTICS.CODE,
+                        "test_parcel ($i/$j)"
+                    ).apply {
+                        regDte = ZonedDateTime.of(LocalDateTime.of(2021, i, j, 0, 0), ZoneId.of("Asia/Seoul"))
+                        arrivalDte = ZonedDateTime.of(LocalDateTime.of(2021, i, j, 0, 0), ZoneId.of("Asia/Seoul"))
                         deliveryStatus = Parcel.DeliveryStatus.DELIVERED
                     }
                     parcelStore.store(initParcel)
@@ -194,7 +224,8 @@ class ParcelServiceImplTest {
             }
 
             // when
-            val monthlyParcelCntList = parcelService.retrieveMonthlyParcelCntList(ParcelCommand.GetMonthlyParcelCnt(userId))
+            val monthlyParcelCntList =
+                parcelService.retrieveMonthlyParcelCntList(ParcelCommand.GetMonthlyParcelCnt(userId))
             logger.info("list : $monthlyParcelCntList")
 
             // then
@@ -207,11 +238,11 @@ class ParcelServiceImplTest {
 
     @Nested
     @DisplayName("택배 별칭 수정 테스트")
-    inner class ChangeParcelAliasTest(){
+    inner class ChangeParcelAliasTest() {
         @Test
         @DisplayName("정상 케이스 - 유저가 택배의 별칭을 변경한다면, 변경되어야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-        fun changeParcelAliasTestCase1(){
+        fun changeParcelAliasTestCase1() {
             // given
             val userId = "asle1221@naver.com"
             val initParcel = Parcel(null, userId, "test_waybillNum", Carrier.CJ_LOGISTICS.CODE, "test_parcel")
@@ -229,7 +260,7 @@ class ParcelServiceImplTest {
         @Test
         @DisplayName("별칭은 최대 25글자까지만 변경이 가능하다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-        fun changeParcelAliasTestCase2(){
+        fun changeParcelAliasTestCase2() {
             // given
             val userId = "asle1221@naver.com"
             val initParcel = Parcel(null, userId, "test_waybillNum", Carrier.CJ_LOGISTICS.CODE, "test_parcel")
@@ -238,11 +269,84 @@ class ParcelServiceImplTest {
 
             // when
             // then
-            Assertions.assertThrows(ValidationException::class.java){
+            Assertions.assertThrows(ValidationException::class.java) {
                 parcelService.changeParcelAlias(ParcelCommand.ChangeParcelAlias(userId, parcel.id, aliasContent))
             }
         }
     }
 
+    @Nested
+    @DisplayName("택배 삭제 테스트")
+    inner class DeleteParcelTest(){
+        @Test
+        @DisplayName("현재 진행중인 택배가 복수로 주어지고, 모두 삭제한다고 다시 조회한다면, 현재 진행중인 택배는 0건이어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
+        fun deleteParcelsTestCase1(){
+            // given
+            val userId = "asle1221@naver.com"
+            val ongoingParcels = parcelReader.getOngoingParcels(userId)
+            Assertions.assertTrue(ongoingParcels.isNotEmpty())
+            val idList = ongoingParcels.stream().map(Parcel::id).toList()
+
+            // when
+            parcelService.deleteParcel(ParcelCommand.DeleteParcel(userId, idList))
+            val afterDelete = parcelReader.getOngoingParcels(userId)
+
+            // then
+            Assertions.assertEquals(0, afterDelete.size)
+        }
+
+        @Test
+        @DisplayName("유저 소유가 아닌 택배를 삭제하려한다면, UnauthorizedException가 발생되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
+        fun deleteParcelsTestCase2(){
+            // given
+            val user1 = "asle1221@naver.com"
+            val user1ParcelId = 2L
+            val user2 = "chloe.choi@kakao.com"
+            val user2ParcelId = 1L
+
+            val user1Parcel = parcelReader.getParcel(user1ParcelId, user1)
+            val user2Parcel = parcelReader.getParcel(user2ParcelId, user2)
+
+            // when / then
+            Assertions.assertThrows(UnauthorizedException::class.java){
+                parcelService.deleteParcel(ParcelCommand.DeleteParcel(user1, listOf(user2Parcel.id)))
+                parcelService.deleteParcel(ParcelCommand.DeleteParcel(user2, listOf(user1Parcel.id)))
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("단일 택배 업데이트 테스트")
+    inner class SingleRefreshTest() {
+        @Test
+        @DisplayName("택배가 주어졌을 때, 추적 정보가 변경된다면, 택배는 업데이트 되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun singleRefreshTestCase1() {
+            // given
+            val mockParcelReader: ParcelReader = mockk()
+            val mockSearchProc: SearchProcessor = mockk()
+
+            val userId = "asle1221@naver.com"
+            val parcelId = 1L
+            val originalParcel =
+                Parcel(null, userId, "test_waybillNum", Carrier.CJ_LOGISTICS.CODE, "test_parcel").apply {
+                    id = parcelId
+                    inquiryHash = "1111111"
+                }
+            every { mockParcelReader.getParcel(any(), any())} returns originalParcel
+            every { mockSearchProc.search(any()) } returns TrackingInfo(From(null, null),To("name", null), State("IN_TRANSIT", "text"), null, arrayListOf(), null)
+
+            val mockedService =
+                ParcelServiceImpl(mockParcelReader, mockSearchProc, updateProcessor, registerProcessor, mapper)
+
+            // when
+            val singleRefresh = mockedService.singleRefresh(refreshCommand = ParcelCommand.SingleRefresh(userId, parcelId))
+
+            // then
+            Assertions.assertTrue(singleRefresh.isUpdated)
+        }
+    }
 
 }

@@ -32,7 +32,8 @@ class ParcelServiceImpl(
 
     @Transactional(readOnly = true)
     override fun retrieveCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main> {
-        val completeParcels = parcelReader.getCompleteParcels(getCommand.userId, getCommand.inquiryDate, getCommand.pageable)
+        val completeParcels =
+            parcelReader.getCompleteParcels(getCommand.userId, getCommand.inquiryDate, getCommand.pageable)
         return parcelInfoMapper.of(completeParcels)
     }
 
@@ -57,7 +58,11 @@ class ParcelServiceImpl(
 
     @Transactional
     override fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel) {
-        parcelReader.getParcels(deleteCommand.parcelIds).parallelStream().forEach(Parcel::inactivate)
+        parcelReader.getParcels(deleteCommand.parcelIds).parallelStream()
+            .forEach{ parcel ->
+                parcel.verifyDeletable(deleteCommand)
+                parcel.inactivate()
+            }
     }
 
     @Transactional
@@ -71,7 +76,8 @@ class ParcelServiceImpl(
 
     @Transactional
     override fun singleRefresh(refreshCommand: ParcelCommand.SingleRefresh): ParcelInfo.RefreshedParcel {
-        val originalParcel = parcelReader.getParcel(refreshCommand.parcelId, refreshCommand.userId).also { it.verifyRefreshable() }
+        val originalParcel =
+            parcelReader.getParcel(refreshCommand.parcelId, refreshCommand.userId).also { it.verifyRefreshable() }
         val searchResult = searchProcessor.search(refreshCommand.toSearchRequest(originalParcel))
         val refreshedParcel = refreshCommand.toEntity(searchResult, originalParcel)
 

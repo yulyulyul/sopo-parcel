@@ -48,7 +48,7 @@ class ParcelCommand {
 
     data class DeleteParcel(
         val userId: String,
-        val parcelIds: MutableList<Long>
+        val parcelIds: List<Long>
     )
 
     data class SearchRequest(
