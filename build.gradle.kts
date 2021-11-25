@@ -136,7 +136,7 @@ dependencies {
 
     testImplementation ("com.github.springtestdbunit:spring-test-dbunit:1.3.0")
     testImplementation ("org.dbunit:dbunit:2.7.2")
-
+    testImplementation ("io.mockk:mockk:1.12.0")
 }
 
 idea {
