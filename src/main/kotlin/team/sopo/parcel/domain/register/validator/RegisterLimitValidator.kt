@@ -9,7 +9,7 @@ import team.sopo.parcel.domain.ParcelReader
 class RegisterLimitValidator(private val parcelReader: ParcelReader) : RegisterValidator {
     override fun validate(request: ParcelCommand.RegisterRequest) {
         val count = parcelReader.getCurrentMonthRegisteredCount(request.userId)
-        if (count > 50) {
+        if (count >= 50) {
             throw OverRegisteredParcelException()
         }
     }

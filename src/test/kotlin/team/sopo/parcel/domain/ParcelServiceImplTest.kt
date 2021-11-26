@@ -18,9 +18,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
-import team.sopo.common.exception.ParcelNotFoundException
-import team.sopo.common.exception.UnauthorizedException
-import team.sopo.common.exception.ValidationException
+import team.sopo.common.exception.*
 import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.TestConfig
 import team.sopo.parcel.domain.register.RegisterProcessor
@@ -30,6 +28,7 @@ import team.sopo.parcel.domain.vo.deliverytracker.From
 import team.sopo.parcel.domain.vo.deliverytracker.State
 import team.sopo.parcel.domain.vo.deliverytracker.To
 import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
+import team.sopo.parcel.infrastructure.register.RegisterProcessorImpl
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -315,6 +314,185 @@ class ParcelServiceImplTest() {
                 parcelService.deleteParcel(ParcelCommand.DeleteParcel(user2, listOf(user1Parcel.id)))
             }
         }
+    }
+
+    @Nested
+    @DisplayName("택배 등록 테스트")
+    inner class RegisterParcelTest(){
+        @Test
+        @DisplayName("searchProcessor에서 조회한 결과가 null이라면, 배송 상태가 NOT_REGISTERED로 설정되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun registerParcelTestCase1(){
+            // given
+            val userId = "asle1221@naver.com"
+            val carrier = Carrier.CJ_LOGISTICS
+
+            val mockedSearchProcessor: SearchProcessor = mockk()
+            every { mockedSearchProcessor.search(any()) } returns null
+
+            // when
+            val parcelService = ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
+            val registerParcel = parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, "test_123123", "test_alias"))
+
+            // then
+            Assertions.assertEquals(Parcel.DeliveryStatus.NOT_REGISTERED, registerParcel.deliveryStatus)
+        }
+
+        @Test
+        @DisplayName("이미 등록한 택배라면, AlreadyRegisteredParcelException가 발생해야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun registerParcelTestCase2(){
+            // given
+            val userId = "asle1221@naver.com"
+            val carrier = Carrier.CJ_LOGISTICS
+            val alias = "test_alias"
+            val waybillNum = "test_num"
+            val initParcel = Parcel(null, userId, waybillNum, carrier.CODE, alias)
+            parcelStore.store(initParcel)
+
+            val mockedSearchProcessor: SearchProcessor = mockk()
+            every { mockedSearchProcessor.search(any()) } returns null
+            val parcelService = ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
+
+            // when, then
+            Assertions.assertThrows(AlreadyRegisteredParcelException::class.java){
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+            }
+        }
+
+        @Test
+        @DisplayName("한달에 50개 초과의 택배는 등록할 수 없다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun registerParcelTestCase3(){
+            val userId = "sopo@sooopo.com"
+            val carrier = Carrier.CJ_LOGISTICS
+            val alias = "test_alias"
+            val waybillNum = "test_num"
+
+            for (i in 1..50) {
+                val initParcel = Parcel(null, userId, "test_waybillNum_$i", Carrier.CJ_LOGISTICS.CODE, "test_parcel ($i)").apply {
+                    regDte = ZonedDateTime.now(ZoneId.of("Asia/Seoul"))
+                    deliveryStatus = Parcel.DeliveryStatus.IN_TRANSIT
+                }
+                parcelStore.store(initParcel)
+            }
+            val mockedSearchProcessor: SearchProcessor = mockk()
+            every { mockedSearchProcessor.search(any()) } returns null
+            val parcelService = ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
+
+            Assertions.assertThrows(OverRegisteredParcelException::class.java){
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+            }
+        }
+
+        @Test
+        @DisplayName("택배를 등록할 때, 택배 별칭이 빈 값이고 조회되는 정보가 없다면(null) 택배별칭은 송장번호가 된다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun registerParcelTestCase4(){
+            // given
+            val userId = "sopo@sooopo.com"
+            val carrier = Carrier.CJ_LOGISTICS
+            val alias = ""
+            val waybillNum = "test_num"
+
+            val mockedSearchProcessor: SearchProcessor = mockk()
+            every { mockedSearchProcessor.search(any()) } returns null
+            val parcelService = ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
+
+            // when
+            val parcelInfo = parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+
+            // then
+            Assertions.assertEquals(waybillNum, parcelInfo.alias)
+        }
+
+        @Test
+        @DisplayName("택배를 등록할 때, 택배별칭이 빈 값이 아니고 조회되는 정보가 없다면(null) 택배별칭은 처음에 설정한 값이 되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun registerParcelTestCase5(){
+            // given
+            val userId = "sopo@sooopo.com"
+            val carrier = Carrier.CJ_LOGISTICS
+            val alias = "test_alias"
+            val waybillNum = "test_num"
+
+            val mockedSearchProcessor: SearchProcessor = mockk()
+            every { mockedSearchProcessor.search(any()) } returns null
+            val parcelService = ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
+
+            // when
+            val parcelInfo = parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+
+            // then
+            Assertions.assertEquals(alias, parcelInfo.alias)
+        }
+
+        @Test
+        @DisplayName("택배를 등록할 때, 택배별칭이 빈 값이고 조회되는 정보(From)에 택배별칭이 있으면 택배별칭은 from에 있는 값이 되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun registerParcelTestCase6(){
+            // given
+            val userId = "sopo@sooopo.com"
+            val carrier = Carrier.CJ_LOGISTICS
+            val alias = ""
+            val waybillNum = "test_num"
+            val from = From("sopo", "")
+
+            val mockedSearchProcessor: SearchProcessor = mockk()
+            every { mockedSearchProcessor.search(any()) } returns TrackingInfo(from, null, State("IN_TRANSIT", "text"), null, arrayListOf(), null)
+            val parcelService = ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
+
+            // when
+            val parcelInfo = parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+
+            // then
+            Assertions.assertEquals("보내는 이 (${from.name})", parcelInfo.alias)
+        }
+
+        @Test
+        @DisplayName("택배를 등록할 때, 택배별칭이 빈 값이 아니고 조회되는 정보(From)에 택배별칭이 있으면 택배별칭은 처음에 설정한 택배별칭이 되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun registerParcelTestCase7(){
+            // given
+            val userId = "sopo@sooopo.com"
+            val carrier = Carrier.CJ_LOGISTICS
+            val alias = "test_alias"
+            val waybillNum = "test_num"
+            val from = From("sopo", "")
+
+            val mockedSearchProcessor: SearchProcessor = mockk()
+            every { mockedSearchProcessor.search(any()) } returns TrackingInfo(from, null, State("IN_TRANSIT", "text"), null, arrayListOf(), null)
+            val parcelService = ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
+
+            // when
+            val parcelInfo = parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+
+            // then
+            Assertions.assertEquals(alias, parcelInfo.alias)
+        }
+
+        @Test
+        @DisplayName("택배를 등록할 때, 조회되는 정보가 없으면(null) 도착시간은 null이 되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun registerParcelTestCase8(){
+            // given
+            val userId = "sopo@sooopo.com"
+            val carrier = Carrier.CJ_LOGISTICS
+            val alias = "test_alias"
+            val waybillNum = "test_num"
+            val from = From("sopo", "")
+
+            val mockedSearchProcessor: SearchProcessor = mockk()
+            every { mockedSearchProcessor.search(any()) } returns TrackingInfo(from, null, State("IN_TRANSIT", "text"), null, arrayListOf(), null)
+            val parcelService = ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
+
+            // when
+            val parcelInfo = parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+
+            // then
+            Assertions.assertEquals(null, parcelInfo.arrivalDte)
+        }
+
     }
 
     @Nested
