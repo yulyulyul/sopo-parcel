@@ -5,7 +5,7 @@ spring:
     config:
       profile: local
       uri: http://localhost:8888
-      name: default, parcel-service, kafka, eureka, firebase, discovery, feign
+      name: default, parcel-service, kafka, firebase, discovery, feign
   config:
     activate:
       on-profile: test
@@ -44,3 +44,7 @@ spring:
     schemas: parcel
     url: jdbc:mariadb://localhost:23306/parcel?verifyServerCertificate=false&allowPublicKeyRetrieval=true&useSSL=false
     enabled: true
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
