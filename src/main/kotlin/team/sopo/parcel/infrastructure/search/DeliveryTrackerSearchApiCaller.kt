@@ -3,6 +3,7 @@ package team.sopo.parcel.infrastructure.search
 import org.springframework.stereotype.Component
 import team.sopo.common.exception.FailToSearchParcelException
 import team.sopo.parcel.domain.ParcelCommand
+import team.sopo.parcel.domain.search.SearchApiCaller
 import team.sopo.parcel.domain.search.SearchMethod
 import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
 import team.sopo.parcel.infrastructure.DeliveryTrackerClient
