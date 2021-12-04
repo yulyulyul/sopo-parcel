@@ -38,3 +38,4 @@ logs/
 .vscode/
 /src/main/resources-test/mysql/
 /src/test/resources/mysql/
+/src/main/resources-local/mysql/
