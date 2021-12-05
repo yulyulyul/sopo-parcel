@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(name = "API 처리 결과 모델")
 class ApiResult<T>(
-    @Schema(name = "API 처리 완료 시간", required = true, readOnly = true, example = "2020-01-01 01:01:01")
+     @Schema(name = "API 처리 완료 시간", required = true, readOnly = true, example = "2020-01-01 01:01:01")
      @JsonProperty("timestamp") var timestamp: String = getCurrentDateTime().toString("yyyy-MM-dd HH:mm:ss"),
 
     @Schema(name = "응답 내용", required = true, readOnly = true, example = "SUCCESS")

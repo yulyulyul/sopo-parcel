@@ -65,6 +65,11 @@ class ParcelCommand {
         val parcel: Parcel
     )
 
+    data class PushRequest(
+        val userId: String,
+        val parcelIds: List<Long>
+    )
+
     data class GetUsageInfo(val userId: String)
 
     data class UpdateRequest(

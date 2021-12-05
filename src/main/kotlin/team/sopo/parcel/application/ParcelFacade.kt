@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.domain.ParcelCommand
 import team.sopo.parcel.domain.ParcelService
-import team.sopo.push.PushService
+import team.sopo.push.domain.PushService
 
 @Service
 class ParcelFacade(
@@ -49,8 +49,11 @@ class ParcelFacade(
     }
 
     fun entireRefresh(command: ParcelCommand.EntireRefresh){
-        val updatedParcelList = parcelService.entireRefresh(command)
-        pushService.addToPushList(updatedParcelList)
-        pushService.sendPushMsg(command.userId)
+        val updateCompleteParcels = parcelService.entireRefresh(command)
+        pushService.pushCompleteParcels(command.userId, updateCompleteParcels)
+    }
+
+    fun pushParcels(command: ParcelCommand.PushRequest){
+        pushService.pushCompleteParcels(command.userId, command.parcelIds)
     }
 }

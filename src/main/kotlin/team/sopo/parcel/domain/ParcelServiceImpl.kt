@@ -90,7 +90,7 @@ class ParcelServiceImpl(
     }
 
     @Transactional
-    override fun entireRefresh(refreshCommand: ParcelCommand.EntireRefresh): List<ParcelInfo.Main> {
+    override fun entireRefresh(refreshCommand: ParcelCommand.EntireRefresh): List<Long> {
         val ongoingParcels = parcelReader.getOngoingParcels(refreshCommand.userId)
         return ongoingParcels
             .filter { parcel -> parcel.isEntireRefreshable() }
@@ -101,7 +101,7 @@ class ParcelServiceImpl(
                     false
                 }
             }
-            .map { parcel -> parcelInfoMapper.of(parcel) }
+            .map(Parcel::id)
             .toList()
     }
 }

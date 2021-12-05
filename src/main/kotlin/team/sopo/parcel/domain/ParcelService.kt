@@ -12,5 +12,5 @@ interface ParcelService {
     fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel)
     fun registerParcel(registerCommand: ParcelCommand.RegisterParcel): ParcelInfo.Main
     fun singleRefresh(refreshCommand: ParcelCommand.SingleRefresh): ParcelInfo.RefreshedParcel
-    fun entireRefresh(refreshCommand: ParcelCommand.EntireRefresh): List<ParcelInfo.Main>
+    fun entireRefresh(refreshCommand: ParcelCommand.EntireRefresh): List<Long>
 }

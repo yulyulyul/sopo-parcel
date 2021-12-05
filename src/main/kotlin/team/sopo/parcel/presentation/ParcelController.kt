@@ -18,11 +18,9 @@ import team.sopo.common.annotation.DateFormatYearMonth
 import team.sopo.common.model.api.ApiResult
 import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.application.ParcelFacade
+import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.ParcelCommand
-import team.sopo.parcel.presentation.request.ChangeAliasRequest
-import team.sopo.parcel.presentation.request.DeleteParcelsRequest
-import team.sopo.parcel.presentation.request.RefreshParcelRequest
-import team.sopo.parcel.presentation.request.RegisterParcelRequest
+import team.sopo.parcel.presentation.request.*
 import java.security.Principal
 import javax.validation.ConstraintViolationException
 import javax.validation.Valid
@@ -210,6 +208,16 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
         val deleteCommand = ParcelCommand.DeleteParcel(principal.name, request.parcelIds!!)
         parcelFacade.deleteParcel(deleteCommand)
 
+        return ResponseEntity.noContent().build()
+    }
+
+    @Operation(summary = "택배 push API")
+    @PostMapping("/parcels/push")
+    fun pushParcel(
+        @Parameter(name = "parcelIds", description = "업데이트할 택배id 리스트", required = true)
+        @RequestBody @Valid request: PushParcelsRequest
+    ): ResponseEntity<Unit> {
+        parcelFacade.pushParcels(command = ParcelCommand.PushRequest(request.userId!!, request.parcelIds!!))
         return ResponseEntity.noContent().build()
     }
 }

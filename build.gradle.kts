@@ -110,15 +110,6 @@ dependencies {
     implementation("io.jsonwebtoken", "jjwt", "0.9.1")
     implementation("com.nimbusds", "nimbus-jose-jwt", "8.20.1")
 
-    // retrofit
-    implementation( "com.squareup.retrofit2", "retrofit", "2.9.0")
-    implementation( "com.squareup.retrofit2", "converter-jackson", "2.9.0")
-    implementation( "com.squareup.retrofit2", "converter-gson", "2.9.0")
-    implementation( "com.squareup.retrofit2", "adapter-rxjava2", "2.9.0")
-    implementation( "com.squareup.okhttp3", "logging-interceptor", "4.9.0")
-    implementation( "com.squareup.okhttp3", "okhttp", "4.9.0")
-    implementation( "org.apache.commons", "commons-math3", "3.6.1")
-
     // mapstruct
     implementation("org.mapstruct","mapstruct", "1.4.2.Final")
     implementation("org.mapstruct","mapstruct-jdk8", "1.4.2.Final")
