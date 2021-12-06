@@ -56,4 +56,9 @@ class ParcelFacade(
     fun pushParcels(command: ParcelCommand.PushRequest){
         pushService.pushCompleteParcels(command.userId, command.parcelIds)
     }
+
+    fun pushDeviceAwaken(command: ParcelCommand.DeviceAwakenRequest){
+        pushService.pushAwakenDevice(command.topic)
+    }
+
 }

@@ -11,4 +11,8 @@ class PushServiceImpl(private val userClient: UserClient, private val producer: 
         val pushToken = userClient.getFcmToken(userId).data?.pushToken ?: throw SystemException("푸쉬 토큰을 가져오는데 실패하였습니다.")
         producer.sendMsg(PushInfo.ParcelUpdateCompleteMessage(pushToken, parcelIds))
     }
+
+    override fun pushAwakenDevice(topic: String) {
+        producer.sendMsg(PushInfo.DeviceAwakenMessage(topic))
+    }
 }

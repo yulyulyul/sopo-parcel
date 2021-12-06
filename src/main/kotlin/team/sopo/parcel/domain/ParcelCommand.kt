@@ -70,6 +70,8 @@ class ParcelCommand {
         val parcelIds: List<Long>
     )
 
+    data class DeviceAwakenRequest(val topic: String)
+
     data class GetUsageInfo(val userId: String)
 
     data class UpdateRequest(

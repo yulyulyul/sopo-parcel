@@ -34,6 +34,7 @@ class SecurityConfiguration(
         antMatchers(
                 "/api/v1/sopo-api/join/**",
                 "/api/v1/sopo-api/validation/email/exist/{email}",
+                "/api/v1/sopo-parcel/test/**",
                 "/**/asset/**",
                 "/**/v2/**",
                 "/**/configuration/ui",
