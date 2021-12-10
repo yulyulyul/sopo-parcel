@@ -663,14 +663,11 @@ class ParcelServiceImplTest() {
                 ParcelServiceImpl(parcelReader, mockSearchProc, updateProcessor, registerProcessor, mapper)
 
             // when
-            val refreshedParcels = mockedService.entireRefresh(ParcelCommand.EntireRefresh(userId))
+            val refreshedParcelIds = mockedService.entireRefresh(ParcelCommand.EntireRefresh(userId)).toTypedArray()
 
             // then
-            Assertions.assertEquals(4, refreshedParcels.size)
-            val parcelIds: Array<Long?> =
-                refreshedParcels.sortedBy(ParcelInfo.Main::parcelId).map(ParcelInfo.Main::parcelId).toList()
-                    .toTypedArray()
-            Assertions.assertArrayEquals(arrayOf(1L, 2L, 4L, 5L), parcelIds, "")
+            Assertions.assertEquals(4, refreshedParcelIds.size)
+            Assertions.assertArrayEquals(arrayOf(1L, 2L, 4L, 5L), refreshedParcelIds, "")
         }
     }
 
