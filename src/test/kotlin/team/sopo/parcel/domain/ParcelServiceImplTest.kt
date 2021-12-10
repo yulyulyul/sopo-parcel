@@ -122,7 +122,7 @@ class ParcelServiceImplTest() {
         @Test
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-        @DisplayName("정상 케이스 - 현재 진행중인 택배는 parcelInfo 객체로 리턴되어야하고 택배의 deliveryStatus가 DELIVERED가 아니어야하며 status는 1이어야한다.")
+        @DisplayName("정상 케이스 - 현재 진행중인 택배는 parcelInfo 객체로 리턴되어야하고 택배의 deliveryStatus가 (DELIVERED & ORPHANED)가 아니어야하며 status는 1이어야한다.")
         fun retrieveOngoingParcelsTestCase1() {
             // given
             val userId = "sopo@sooopo.com"
@@ -135,10 +135,9 @@ class ParcelServiceImplTest() {
             ongoingParcels.parallelStream().forEach { parcel ->
                 Assertions.assertTrue(parcel is ParcelInfo.Main)
                 Assertions.assertTrue(parcel.userId == userId)
-                Assertions.assertFalse(parcel.deliveryStatus?.equals(Parcel.DeliveryStatus.DELIVERED) ?: true)
+                Assertions.assertNotEquals(Parcel.DeliveryStatus.DELIVERED, parcel.deliveryStatus)
                 Assertions.assertEquals(parcel.status?.equals(1), true)
             }
-            Assertions.assertFalse(ongoingParcels.size >= 20)
         }
 
         @Test
@@ -155,6 +154,22 @@ class ParcelServiceImplTest() {
 
             // then
             Assertions.assertTrue(ongoingParcels.isEmpty())
+        }
+
+        @Test
+        @DisplayName("진행 중인 택배가 20개 이상 존재할 수 있다.(과거에는 20개로 제한되었음)")
+        @DatabaseSetup(value = ["classpath:/dbunit/Retrieve_ongoing_Test_DataSet.xml"], type = DatabaseOperation.CLEAN_INSERT)
+        @DatabaseTearDown(value = ["classpath:/dbunit/Retrieve_ongoing_Test_DataSet.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun retrieveOngoingParcelsTestCase3() {
+            // given
+            val userId = "sopo@sooopo.com"
+            val command = ParcelCommand.GetOngoingParcels(userId)
+
+            // when
+            val ongoingParcels = parcelService.retrieveOngoingParcels(command)
+
+            // then
+            Assertions.assertTrue(ongoingParcels.size >= 20)
         }
     }
 
@@ -610,7 +625,8 @@ class ParcelServiceImplTest() {
             every { mockSearchProc.search(any()) } returns null
             every { mockReader.getParcel(any(), any()) } returns parcel
 
-            val mockedService = ParcelServiceImpl(mockReader, mockSearchProc, updateProcessor, registerProcessor, mapper)
+            val mockedService =
+                ParcelServiceImpl(mockReader, mockSearchProc, updateProcessor, registerProcessor, mapper)
 
             // when
             val result = mockedService.singleRefresh(ParcelCommand.SingleRefresh(userId, parcel.id))
@@ -663,7 +679,7 @@ class ParcelServiceImplTest() {
                 ParcelServiceImpl(parcelReader, mockSearchProc, updateProcessor, registerProcessor, mapper)
 
             // when
-            val refreshedParcelIds = mockedService.entireRefresh(ParcelCommand.EntireRefresh(userId)).toTypedArray()
+            val refreshedParcelIds = mockedService.entireRefresh(ParcelCommand.EntireRefresh(userId)).sorted().toTypedArray()
 
             // then
             Assertions.assertEquals(4, refreshedParcelIds.size)

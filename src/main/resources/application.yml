@@ -7,7 +7,7 @@ spring:
     config:
       profile: stage
       uri: http://config:8888
-      name: default, parcel-service, kafka, eureka, maria, firebase, discovery, feign, flyway
+      name: default, parcel-service, kafka, eureka, maria, discovery, feign, flyway
   config:
     activate:
       on-profile: stage
@@ -17,7 +17,7 @@ spring:
     config:
       profile: local
       uri: http://localhost:8888
-      name: default, parcel-service, kafka, eureka, maria, firebase, discovery, feign, flyway
+      name: default, parcel-service, eureka, maria, discovery, feign, flyway
   config:
     activate:
       on-profile: local
@@ -27,52 +27,7 @@ spring:
     config:
       profile: prelive
       uri: http://config:8888
-      name: default, parcel-service, kafka, eureka, maria, firebase, discovery, feign, flyway
+      name: default, parcel-service, kafka, eureka, maria, discovery, feign, flyway
   config:
     activate:
       on-profile: prelive
----
-spring:
-  cloud:
-    config:
-      profile: test
-      uri: http://localhost:8888
-      name: default, parcel-service, kafka, eureka, firebase, discovery, feign
-  config:
-    activate:
-      on-profile: test
-  lifecycle:
-    timeout-per-shutdown-phase: 20s
-  jpa:
-    open-in-view: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MariaDB103Dialect
-        format_sql: false # true
-        show_sql: true
-        use_sql_comments: false
-    hibernate:
-      ddl-auto: none
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    generate-ddl: false
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:23306/parcel?verifyServerCertificate=false&allowPublicKeyRetrieval=true&useSSL=false
-    username: parcel-svc
-    password: parcel-pass
-    hikari:
-      pool-name: sopo-db-pool
-      validation-timeout: 5000
-      connection-timeout: 5000
-      connection-init-sql: SELECT 1
-      maximum-pool-size: 10
-      minimum-idle: 10
-      max-lifetime: 60000
-
-  flyway:
-    user: parcel-svc
-    password: parcel-pass
-    schemas: parcel
-    url: jdbc:mariadb://localhost:13306/parcel?verifyServerCertificate=false&allowPublicKeyRetrieval=true&useSSL=false
-    enabled: true

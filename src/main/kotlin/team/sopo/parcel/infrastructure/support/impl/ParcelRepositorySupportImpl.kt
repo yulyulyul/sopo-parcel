@@ -52,7 +52,6 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
                     .and(parcel.deliveryStatus.ne(Parcel.DeliveryStatus.DELIVERED))
             )
             .orderBy(parcel.auditDte.desc())
-            .limit(20)
             .fetch()
     }
 

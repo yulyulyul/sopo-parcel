@@ -37,7 +37,7 @@ sourceSets {
 }
 
 group = "team.sopo"
-version = "0.0.32"
+version = "0.0.33"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
