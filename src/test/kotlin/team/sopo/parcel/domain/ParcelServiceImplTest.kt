@@ -480,7 +480,7 @@ class ParcelServiceImplTest() {
             val carrier = Carrier.CJ_LOGISTICS
             val alias = ""
             val waybillNum = "test_num"
-            val from = From("sopo", "")
+            val from = From("sopo", "", "")
 
             val mockedSearchProcessor: SearchProcessor = mockk()
             every { mockedSearchProcessor.search(any()) } returns TrackingInfo(
@@ -512,7 +512,7 @@ class ParcelServiceImplTest() {
             val carrier = Carrier.CJ_LOGISTICS
             val alias = "test_alias"
             val waybillNum = "test_num"
-            val from = From("sopo", "")
+            val from = From("sopo", "", "")
 
             val mockedSearchProcessor: SearchProcessor = mockk()
             every { mockedSearchProcessor.search(any()) } returns TrackingInfo(
@@ -544,7 +544,7 @@ class ParcelServiceImplTest() {
             val carrier = Carrier.CJ_LOGISTICS
             val alias = "test_alias"
             val waybillNum = "test_num"
-            val from = From("sopo", "")
+            val from = From("sopo", "", "")
 
             val mockedSearchProcessor: SearchProcessor = mockk()
             every { mockedSearchProcessor.search(any()) } returns TrackingInfo(
@@ -588,7 +588,7 @@ class ParcelServiceImplTest() {
                     inquiryHash = "1111111"
                 }
             val updatedTracingInfo =
-                TrackingInfo(From(null, null), To("name", null), State("IN_TRANSIT", "text"), null, arrayListOf(), null)
+                TrackingInfo(From(null, null, null), To("name", null), State("IN_TRANSIT", "text"), null, arrayListOf(), null)
 
             every { mockParcelReader.getParcel(any(), any()) } returns originalParcel
             every { mockSearchProc.search(any()) } returns updatedTracingInfo
