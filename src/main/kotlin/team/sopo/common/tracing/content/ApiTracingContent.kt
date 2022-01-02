@@ -3,6 +3,7 @@ package team.sopo.common.tracing.content
 import com.fasterxml.uuid.EthernetAddress
 import com.fasterxml.uuid.Generators
 import team.sopo.common.exception.error.ErrorType
+import java.lang.Exception
 
 class ApiTracingContent(
     var controller: String = "",
@@ -14,6 +15,8 @@ class ApiTracingContent(
     var parameter: String = "",
     var error_code: Int? = null,
     var error_type: ErrorType? = null,
+    var exception: String? = null,
+    var exception_message: String? = "",
     var return_message: String = "",
     var request_url: String = "",
     var http_status: Int? = null

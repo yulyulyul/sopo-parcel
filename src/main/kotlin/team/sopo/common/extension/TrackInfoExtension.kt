@@ -22,6 +22,9 @@ fun TrackingInfo.sortProgress() {
 }
 
 fun TrackingInfo.verifyState() {
+    if(this.progresses.isEmpty()){
+       return
+    }
     this.progresses.last()?.status?.apply {
         this@verifyState.state.id = this.id
         this@verifyState.state.text = this.text

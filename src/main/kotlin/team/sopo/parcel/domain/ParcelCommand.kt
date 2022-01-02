@@ -46,6 +46,13 @@ class ParcelCommand {
         val alias: String
     )
 
+    data class TrackingPersonalData(
+        val userId: String,
+        val apiId: String,
+        val carrier: Carrier,
+        val waybillNum: String
+    )
+
     data class DeleteParcel(
         val userId: String,
         val parcelIds: List<Long>
@@ -56,7 +63,11 @@ class ParcelCommand {
         val carrier: Carrier,
         val waybillNum: String,
         val searchMethod: SearchMethod = SearchMethod.DeliveryTracker
-    )
+    ){
+        fun toTrackingPersonalData(apiId: String): TrackingPersonalData{
+            return TrackingPersonalData(userId, apiId, carrier, waybillNum)
+        }
+    }
 
     data class RegisterRequest(
         val userId: String,

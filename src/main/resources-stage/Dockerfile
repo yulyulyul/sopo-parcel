@@ -2,14 +2,14 @@ FROM www.sooopo.com/base_image/debian_java11_fluentd:1.0.4
 
 USER root
 
-ARG JAR_FILE=sopo-parcel-stage-0.0.33.jar
+ARG JAR_FILE=sopo-parcel-stage-0.0.36.jar
 ENV JAR_FILE_PATH=/usr/app/$JAR_FILE
 
 COPY ./src/main/resources-stage/start.sh /usr/app
 COPY ./src/main/resources-stage/fluentd.conf /usr/app
 COPY ./src/main/resources/application.yml /usr/app/config
 COPY build/libs/${JAR_FILE} /usr/app
-ADD ./opentelemetry/opentelemetry-javaagent-all.jar /usr/app
+ADD ./opentelemetry/opentelemetry-javaagent.jar /usr/app
 ADD ./opentelemetry/opentelemetry-configuration.yaml /usr/app
 
 RUN fluent-gem install fluent-plugin-kafka

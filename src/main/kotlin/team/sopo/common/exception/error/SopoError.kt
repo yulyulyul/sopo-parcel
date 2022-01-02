@@ -35,4 +35,5 @@ enum class SopoError(
     OVER_REGISTERED_PARCEL(HttpStatus.CONFLICT, ErrorType.CONFLICT, 702,"등록할 수 있는 택배의 개수를 초과하였습니다."),
     PARCEL_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorType.NO_RESOURCE, 703, null),
     FAIL_TO_SEARCH_PARCEL(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DELIVERY, 704, null),
+    PARCEL_BAD_REQUEST(HttpStatus.BAD_REQUEST, ErrorType.VALIDATION, 705, null)
 }

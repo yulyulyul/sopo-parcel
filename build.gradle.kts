@@ -37,7 +37,7 @@ sourceSets {
 }
 
 group = "team.sopo"
-version = "0.0.33"
+version = "0.0.36"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -94,10 +94,11 @@ dependencies {
     implementation("org.apache.httpcomponents", "httpclient", "4.5.9")
 
     //Log4j2
-    implementation("org.apache.logging.log4j","log4j-slf4j-impl","2.14.1")
-    implementation("org.apache.logging.log4j","log4j-core","2.14.1")
-    implementation("org.apache.logging.log4j","log4j-jul","2.14.1")
-    implementation("org.apache.logging.log4j","log4j-layout-template-json","2.14.1")
+    implementation("org.apache.logging.log4j","log4j-slf4j-impl","2.17.1")
+    implementation("org.apache.logging.log4j","log4j-core","2.17.1")
+    implementation("org.apache.logging.log4j","log4j-jul","2.17.1")
+    implementation("org.apache.logging.log4j","log4j-api","2.17.1")
+    implementation("org.apache.logging.log4j","log4j-layout-template-json","2.17.1")
 
     //Jackson Module Kotlin
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.12.4")

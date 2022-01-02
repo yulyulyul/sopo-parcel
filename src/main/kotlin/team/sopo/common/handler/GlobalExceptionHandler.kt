@@ -12,13 +12,14 @@ import team.sopo.common.exception.SopoOauthException
 import team.sopo.common.exception.error.Error
 import team.sopo.common.exception.error.Errors
 import team.sopo.common.exception.error.SopoError
+import team.sopo.common.tracing.ApiTracingRepository
 import java.util.stream.Collectors
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
 @RestControllerAdvice
-class GlobalExceptionHandler {
+class GlobalExceptionHandler(private val repository: ApiTracingRepository) {
 
     private val logger = LogManager.getLogger(GlobalExceptionHandler::class)
 
@@ -27,11 +28,10 @@ class GlobalExceptionHandler {
         request: HttpServletRequest,
         e: SopoException
     ): ResponseEntity<Errors> {
-        logger.error("SopoException", e)
 
-        val errors = Errors().apply {
-            this.errors.add(Error(e, request.servletPath))
-        }
+        val error = Error(e, request.servletPath)
+        val errors = Errors().apply { this.errors.add(error) }
+        logError(error, e)
 
         return ResponseEntity(errors, e.getHttpStatus())
     }
@@ -40,12 +40,14 @@ class GlobalExceptionHandler {
     fun handleSopoOauthException(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        e: SopoOauthException): ResponseEntity<Errors> {
+        e: SopoOauthException
+    ): ResponseEntity<Errors> {
 
         val sopoOauthError = e.sopoError
-        val errors = Errors().apply {
-            this.errors.add(Error(sopoOauthError, sopoOauthError.message ?: e.localizedMessage, request.servletPath))
-        }
+        val error = Error(sopoOauthError, sopoOauthError.message ?: e.localizedMessage, request.servletPath)
+        val errors = Errors().apply { this.errors.add(error) }
+        logError(error, e)
+
         return ResponseEntity(errors, sopoOauthError.status)
     }
 
@@ -56,9 +58,14 @@ class GlobalExceptionHandler {
         e: AuthenticationException
     ): ResponseEntity<Errors> {
 
-        val errors = Errors().apply {
-            this.errors.add(Error(SopoError.AUTHENTICATION_FAIL, SopoError.AUTHENTICATION_FAIL.message ?: e.localizedMessage, request.servletPath))
-        }
+        val error = Error(
+            SopoError.AUTHENTICATION_FAIL,
+            SopoError.AUTHENTICATION_FAIL.message ?: e.localizedMessage,
+            request.servletPath
+        )
+        val errors = Errors().apply { this.errors.add(error) }
+        logError(error, e)
+
         return ResponseEntity(errors, SopoError.AUTHENTICATION_FAIL.status)
     }
 
@@ -69,9 +76,14 @@ class GlobalExceptionHandler {
         e: AccessDeniedException
     ): ResponseEntity<Errors> {
 
-        val errors = Errors().apply {
-            this.errors.add(Error(SopoError.AUTHORIZE_FAIL, SopoError.AUTHORIZE_FAIL.message ?: e.localizedMessage, request.servletPath))
-        }
+        val error = Error(
+            SopoError.AUTHORIZE_FAIL,
+            SopoError.AUTHORIZE_FAIL.message ?: e.localizedMessage,
+            request.servletPath
+        )
+        val errors = Errors().apply { this.errors.add(error) }
+        logError(error, e)
+
         return ResponseEntity(errors, SopoError.AUTHORIZE_FAIL.status)
     }
 
@@ -79,7 +91,8 @@ class GlobalExceptionHandler {
     fun handleMethodArgumentNotValidException(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        e: MethodArgumentNotValidException): ResponseEntity<Errors> {
+        e: MethodArgumentNotValidException
+    ): ResponseEntity<Errors> {
 
         val bindingResult = e.bindingResult
         val errorResponses = bindingResult
@@ -96,22 +109,31 @@ class GlobalExceptionHandler {
             this.errors.addAll(errorResponses)
         }
 
+        if(errors.errors.isNotEmpty()){
+            val error = errors.errors.first()
+            logError(error, e)
+        }
+
         return ResponseEntity(errors, SopoError.VALIDATION.status)
     }
 
     @ExceptionHandler(Exception::class)
     fun handleException(
         request: HttpServletRequest,
-        e: Exception): ResponseEntity<Errors>{
+        e: Exception
+    ): ResponseEntity<Errors> {
 
-        logger.error(e.printStackTrace())
-        logger.error("[Exception] : ${e.localizedMessage}")
+        val error = Error(SopoError.UNKNOWN_ERROR, e.localizedMessage, request.servletPath)
+        val errors = Errors().apply { this.errors.add(error) }
 
-        val errors = Errors().apply {
-            this.errors.add(Error(SopoError.UNKNOWN_ERROR, e.localizedMessage, request.servletPath))
-        }
+        logError(error, e)
 
         return ResponseEntity(errors, SopoError.UNKNOWN_ERROR.status)
+    }
+
+    private fun logError(error: Error, e: Exception) {
+        e.printStackTrace()
+        repository.saveErrorInfo(error.code, error.type, e, e.localizedMessage)
     }
 
 }

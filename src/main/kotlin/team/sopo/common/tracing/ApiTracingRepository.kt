@@ -5,6 +5,7 @@ import org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST
 import org.springframework.web.context.request.RequestContextHolder
 import team.sopo.common.exception.error.ErrorType
 import team.sopo.common.tracing.content.ApiTracingContent
+import java.lang.Exception
 
 @Repository
 class ApiTracingRepository: TracingRepository<ApiTracingContent> {
@@ -27,10 +28,12 @@ class ApiTracingRepository: TracingRepository<ApiTracingContent> {
         save(content)
     }
 
-    fun saveErrorInfo(errorCode: Int, errorType: ErrorType){
+    fun saveErrorInfo(errorCode: Int, errorType: ErrorType, exception: Exception, exceptionMessage: String){
         val content = get().apply {
             this.error_code = errorCode
             this.error_type = errorType
+            this.exception = exception::class.java.simpleName
+            this.exception_message = exceptionMessage
         }
         save(content)
     }

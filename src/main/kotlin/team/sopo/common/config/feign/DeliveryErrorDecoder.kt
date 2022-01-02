@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.http.HttpStatus
 import team.sopo.common.exception.FailToSearchParcelException
+import team.sopo.common.exception.ParcelBadRequestException
 import team.sopo.common.exception.ParcelNotFoundException
 
 class DeliveryErrorDecoder: ErrorDecoder {
@@ -17,6 +18,9 @@ class DeliveryErrorDecoder: ErrorDecoder {
 
         when (response.status()) {
 
+            HttpStatus.BAD_REQUEST.value() -> {
+                throw ParcelBadRequestException()
+            }
             HttpStatus.NOT_FOUND.value() -> throw ParcelNotFoundException("송장번호에 부합하는 택배를 찾지 못하였습니다.")
 
             else -> {

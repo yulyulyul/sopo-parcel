@@ -11,8 +11,8 @@ function start(){
             -Dotel.exporter.otlp.endpoint=http://data-prepper:21890 \
             -Dotel.resource.attributes="service.name=parcel-service" \
             -Dotel.javaagent.debug=false \
-            -javaagent:/usr/app/opentelemetry-javaagent-all.jar \
-            -jar ./sopo-parcel-stage-0.0.33.jar \
+            -javaagent:/usr/app/opentelemetry-javaagent.jar \
+            -jar ./sopo-parcel-stage-0.0.36.jar \
             --spring.config.location=/usr/app/config/application.yml
 }
 

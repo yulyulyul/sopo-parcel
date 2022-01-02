@@ -9,12 +9,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.format.FormatterRegistry
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
-import team.sopo.common.tracing.DeliveryTrackerRepository
-import team.sopo.common.tracing.logging.FeignCustomLogger
 import java.util.*
 
 @Configuration
-class FeignClientConfiguration(private val repository: DeliveryTrackerRepository): Jackson2ObjectMapperBuilderCustomizer {
+class FeignClientConfiguration: Jackson2ObjectMapperBuilderCustomizer {
 
     @Bean
     fun localDateFeignFormatterRegister(): FeignFormatterRegistrar {
@@ -23,11 +21,6 @@ class FeignClientConfiguration(private val repository: DeliveryTrackerRepository
             registrar.setUseIsoFormat(true)
             registrar.registerFormatters(registry)
         }
-    }
-
-    @Bean
-    fun feignLogger(): feign.Logger{
-        return FeignCustomLogger(repository)
     }
 
     override fun customize(jacksonObjectMapperBuilder: Jackson2ObjectMapperBuilder?) {

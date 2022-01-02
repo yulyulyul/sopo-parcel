@@ -1,18 +1,34 @@
 package team.sopo.common.tracing.content
 
+import feign.Request
 import team.sopo.parcel.domain.Carrier
 
 data class DeliveryTrackerContent(
-    var client_name: String? = null,
-    var method: String? = null,
+    var api_id: String,
     var http_method: String? = null,
     var request_url: String? = null,
-    var carrier: Carrier? = null,
+    var carrier: Carrier,
     var elapsedTime: Long? = null,
-    var waybillNum: String? = null,
-    var user: String? = null,
+    var waybillNum: String,
+    var user: String,
     var http_status: Int? = null,
     var return_message: String? = null,
     var exception: String? = null,
     var exception_message: String? = null
-)
+){
+    fun updateResponseInfo(elapsedTime: Long, httpStatus: Int, returnMessage: String){
+        this.elapsedTime = elapsedTime
+        this.http_status = httpStatus
+        this.return_message = returnMessage
+    }
+
+    fun updateRequestInfo(requestUrl: String, httpMethod: Request.HttpMethod){
+        this.request_url = requestUrl
+        this.http_method = httpMethod.toString()
+    }
+
+    fun updateErrorInfo(exception: String, exception_message: String?){
+        this.exception = exception
+        this.exception_message = exception_message
+    }
+}
