@@ -18,7 +18,6 @@ import team.sopo.common.annotation.DateFormatYearMonth
 import team.sopo.common.model.api.ApiResult
 import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.application.ParcelFacade
-import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.ParcelCommand
 import team.sopo.parcel.presentation.request.*
 import java.security.Principal
