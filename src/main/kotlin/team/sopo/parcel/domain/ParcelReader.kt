@@ -4,13 +4,13 @@ import org.springframework.data.domain.Pageable
 import team.sopo.parcel.ParcelInfo
 
 interface ParcelReader {
-    fun getParcel(parcelId: Long, userId: String): Parcel
-    fun getParcel(userId: String, carrier: Carrier, waybillNum: String): Parcel
+    fun getParcel(parcelId: Long, userId: Long): Parcel
+    fun getParcel(userId: Long, carrier: Carrier, waybillNum: String): Parcel
     fun getParcels(parcelIds: List<Long>): List<Parcel>
-    fun getOngoingParcels(userId: String): List<Parcel>
-    fun getCompleteParcels(userId: String, inquiryDate: String, pageable: Pageable): List<Parcel>
-    fun getRegisteredCountIn2Week(userId: String): Long
-    fun getRegisteredParcelCount(userId: String): Long
-    fun getMonthlyParcelCntList(userId: String): List<ParcelInfo.MonthlyParcelCnt>
-    fun getCurrentMonthRegisteredCount(userId: String): Int
+    fun getOngoingParcels(userId: Long): List<Parcel>
+    fun getCompleteParcels(userId: Long, inquiryDate: String, pageable: Pageable): List<Parcel>
+    fun getRegisteredCountIn2Week(userId: Long): Long
+    fun getRegisteredParcelCount(userId: Long): Long
+    fun getMonthlyParcelCntList(userId: Long): List<ParcelInfo.MonthlyParcelCnt>
+    fun getCurrentMonthRegisteredCount(userId: Long): Int
 }

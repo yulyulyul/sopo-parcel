@@ -43,11 +43,11 @@ class ParcelServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun retrieveUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.UsageInfo {
+    override fun retrieveUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage {
         val countIn2Week = parcelReader.getRegisteredCountIn2Week(getCommand.userId)
         val totalCount = parcelReader.getRegisteredParcelCount(getCommand.userId)
 
-        return ParcelInfo.UsageInfo(countIn2Week, totalCount)
+        return ParcelInfo.ParcelUsage(countIn2Week, totalCount)
     }
 
     @Transactional

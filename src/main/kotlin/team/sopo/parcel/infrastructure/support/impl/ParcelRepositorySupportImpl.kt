@@ -13,7 +13,7 @@ import java.time.ZonedDateTime
 
 class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : ParcelRepositorySupport {
 
-    override fun getRegisterParcelCount(userId: String): Long {
+    override fun getRegisterParcelCount(userId: Long): Long {
         val parcel = QParcel.parcel
         return queryFactory
             .selectFrom(parcel)
@@ -21,7 +21,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             .fetchCount()
     }
 
-    override fun getRegisterParcelCountIn2Week(userId: String): Long {
+    override fun getRegisterParcelCountIn2Week(userId: Long): Long {
         val parcel = QParcel.parcel
 
         return queryFactory
@@ -33,7 +33,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             .fetchCount()
     }
 
-    override fun getParcel(userId: String, parcelId: Long): Parcel {
+    override fun getParcel(userId: Long, parcelId: Long): Parcel {
 
         return queryFactory
             .selectFrom(parcel)
@@ -43,7 +43,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             ).fetchOne() ?: throw ParcelNotFoundException()
     }
 
-    override fun getParcelsOngoing(userId: String): List<Parcel>? {
+    override fun getParcelsOngoing(userId: Long): List<Parcel>? {
         return queryFactory
             .selectFrom(parcel)
             .where(
@@ -55,7 +55,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             .fetch()
     }
 
-    override fun isAlreadyRegistered(userId: String, waybillNum: String, carrier: String): Boolean {
+    override fun isAlreadyRegistered(userId: Long, waybillNum: String, carrier: String): Boolean {
         val flag = queryFactory
             .from(parcel)
             .where(
@@ -69,7 +69,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
         return flag > 0
     }
 
-    override fun getMonthlyParcelCntList(userId: String): MutableList<ParcelInfo.MonthlyParcelCnt> {
+    override fun getMonthlyParcelCntList(userId: Long): MutableList<ParcelInfo.MonthlyParcelCnt> {
 
         val dateFormatTemplate = Expressions.stringTemplate("DATE_FORMAT({0}, {1})", parcel.arrivalDte, "%Y-%m")
         val dateTimePath = Expressions.dateTimePath(ZonedDateTime::class.java, "time")
@@ -99,7 +99,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
         return timeCountList
     }
 
-    override fun isLimitCountOver(userId: String): Boolean {
+    override fun isLimitCountOver(userId: Long): Boolean {
         return queryFactory
             .from(parcel)
             .where(
@@ -109,7 +109,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             .fetchCount().toInt() > 50
     }
 
-    override fun getCurrentMonthRegisteredCount(userId: String): Int {
+    override fun getCurrentMonthRegisteredCount(userId: Long): Int {
         return queryFactory
             .from(parcel)
             .where(

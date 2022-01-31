@@ -5,19 +5,19 @@ import team.sopo.parcel.domain.Parcel
 
 interface ParcelRepositorySupport {
 
-    fun getRegisterParcelCount(userId: String): Long
+    fun getRegisterParcelCount(userId: Long): Long
 
-    fun getRegisterParcelCountIn2Week(userId: String): Long
+    fun getRegisterParcelCountIn2Week(userId: Long): Long
 
-    fun getParcel(userId: String, parcelId: Long): Parcel
+    fun getParcel(userId: Long, parcelId: Long): Parcel
 
-    fun getParcelsOngoing(userId: String): List<Parcel>?
+    fun getParcelsOngoing(userId: Long): List<Parcel>?
 
-    fun isAlreadyRegistered(userId: String, waybillNum: String, carrier: String): Boolean
+    fun isAlreadyRegistered(userId: Long, waybillNum: String, carrier: String): Boolean
 
-    fun getMonthlyParcelCntList(userId: String): MutableList<ParcelInfo.MonthlyParcelCnt>
+    fun getMonthlyParcelCntList(userId: Long): MutableList<ParcelInfo.MonthlyParcelCnt>
 
-    fun isLimitCountOver(userId: String): Boolean
+    fun isLimitCountOver(userId: Long): Boolean
 
-    fun getCurrentMonthRegisteredCount(userId: String): Int
+    fun getCurrentMonthRegisteredCount(userId: Long): Int
 }

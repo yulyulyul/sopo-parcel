@@ -50,7 +50,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
     ): ResponseEntity<ApiResult<ParcelInfo.Main>> {
         logger.info("user : ${principal.name}")
         val command = ParcelCommand.GetParcel(
-            userId = principal.name,
+            userId = principal.name.toLong(),
             parcelId = parcelId ?: throw ConstraintViolationException("* 택배 id를 확인해주세요.", mutableSetOf())
         )
         val parcel = parcelFacade.retrieveParcel(command)
@@ -75,7 +75,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
         principal: Principal
     ): ResponseEntity<Unit> {
 
-        val command = ParcelCommand.ChangeParcelAlias(principal.name, parcelId!!, request.alias)
+        val command = ParcelCommand.ChangeParcelAlias(principal.name.toLong(), parcelId!!, request.alias)
         parcelFacade.changeParcelAlias(command)
 
         return ResponseEntity.noContent().build()
@@ -91,7 +91,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
     @GetMapping("/parcels/ongoing")
     fun getOngoingParcels(principal: Principal): ResponseEntity<ApiResult<List<ParcelInfo.Main>>> {
 
-        val command = ParcelCommand.GetOngoingParcels(principal.name)
+        val command = ParcelCommand.GetOngoingParcels(principal.name.toLong())
         val ongoings = parcelFacade.retrieveOngoingParcels(command)
         val result = ApiResult(data = ongoings)
 
@@ -125,7 +125,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
         principal: Principal
     ): ResponseEntity<ApiResult<List<ParcelInfo.Main>>> {
 
-        val command = ParcelCommand.GetCompleteParcels(principal.name, inquiryDate, pageable)
+        val command = ParcelCommand.GetCompleteParcels(principal.name.toLong(), inquiryDate, pageable)
         val completes = parcelFacade.retrieveCompleteParcels(command)
         val result = ApiResult(data = completes)
 
@@ -142,7 +142,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
     @GetMapping("/parcels/months")
     fun getMonths(principal: Principal): ResponseEntity<ApiResult<List<ParcelInfo.MonthlyParcelCnt>>> {
 
-        val command = ParcelCommand.GetMonthlyParcelCnt(principal.name)
+        val command = ParcelCommand.GetMonthlyParcelCnt(principal.name.toLong())
         val monthlyParcelCnt = parcelFacade.retrieveMonthlyParcelCnt(command)
         val successResult = ApiResult(data = monthlyParcelCnt)
         return ResponseEntity.ok(successResult)
@@ -161,7 +161,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
         principal: Principal
     ): ResponseEntity<ApiResult<ParcelInfo.RefreshedParcel>> {
 
-        val command = ParcelCommand.SingleRefresh(principal.name, request.parcelId!!)
+        val command = ParcelCommand.SingleRefresh(principal.name.toLong(), request.parcelId!!)
         val singleRefresh = parcelFacade.singleRefresh(command)
 
         return ResponseEntity.ok(ApiResult(data = singleRefresh))
@@ -174,7 +174,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
     )
     @PostMapping("/parcels/refresh")
     fun postParcelsRefresh(principal: Principal): ResponseEntity<ApiResult<String>> {
-        parcelFacade.entireRefresh(ParcelCommand.EntireRefresh(principal.name))
+        parcelFacade.entireRefresh(ParcelCommand.EntireRefresh(principal.name.toLong()))
         return ResponseEntity.ok(ApiResult(data = ""))
     }
 
@@ -184,8 +184,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
         @RequestBody @Valid request: RegisterParcelRequest,
         principal: Principal
     ): ResponseEntity<ApiResult<Long>> {
-
-        val registerCommand = request.toCommand(principal.name)
+        val registerCommand = request.toCommand(principal.name.toLong())
         val parcelInfo = parcelFacade.registerParcel(registerCommand)
 
         return ResponseEntity(ApiResult(data = parcelInfo.parcelId), HttpStatus.CREATED)
@@ -204,7 +203,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
         @RequestBody @Valid request: DeleteParcelsRequest,
         principal: Principal
     ): ResponseEntity<Unit> {
-        val deleteCommand = ParcelCommand.DeleteParcel(principal.name, request.parcelIds!!)
+        val deleteCommand = ParcelCommand.DeleteParcel(principal.name.toLong(), request.parcelIds!!)
         parcelFacade.deleteParcel(deleteCommand)
 
         return ResponseEntity.noContent().build()

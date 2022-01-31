@@ -34,8 +34,8 @@ class Parcel() : AbstractEntity() {
     @Column(name = "parcel_id", nullable = false)
     var id: Long = 0L
 
-    @Column(name = "user_id")
-    var userId: String = ""
+    @Column(name = "user_id", nullable = false)
+    var userId: Long = 0L
 
     @Column(name = "waybill_num")
     var waybillNum: String = ""
@@ -65,7 +65,7 @@ class Parcel() : AbstractEntity() {
 
     constructor(
         trackingInfo: TrackingInfo?,
-        _userId: String,
+        _userId: Long,
         _waybillNum: String,
         _carrier: String,
         _alias: String

@@ -10,7 +10,7 @@ data class DeliveryTrackerContent(
     var carrier: Carrier,
     var elapsedTime: Long? = null,
     var waybillNum: String,
-    var user: String,
+    var user: Long,
     var http_status: Int? = null,
     var return_message: String? = null,
     var exception: String? = null,

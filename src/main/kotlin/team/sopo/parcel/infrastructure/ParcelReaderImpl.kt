@@ -15,11 +15,11 @@ import java.time.format.DateTimeFormatter
 @Component
 class ParcelReaderImpl(private val repository: JpaParcelRepository): ParcelReader {
 
-    override fun getParcel(parcelId: Long, userId: String): Parcel {
+    override fun getParcel(parcelId: Long, userId: Long): Parcel {
         return repository.findByIdAndUserId(parcelId, userId).orElseThrow{ ParcelNotFoundException() }
     }
 
-    override fun getParcel(userId: String, carrier: Carrier, waybillNum: String): Parcel {
+    override fun getParcel(userId: Long, carrier: Carrier, waybillNum: String): Parcel {
         return repository.findByUserIdAndCarrierAndWaybillNum(userId, carrier.CODE, waybillNum).orElseThrow{ ParcelNotFoundException() }
     }
 
@@ -27,11 +27,11 @@ class ParcelReaderImpl(private val repository: JpaParcelRepository): ParcelReade
         return repository.findAllByIdIn(parcelIds)
     }
 
-    override fun getOngoingParcels(userId: String): List<Parcel> {
+    override fun getOngoingParcels(userId: Long): List<Parcel> {
         return repository.getParcelsOngoing(userId).orEmpty()
     }
 
-    override fun getCompleteParcels(userId: String, inquiryDate: String, pageable: Pageable): List<Parcel> {
+    override fun getCompleteParcels(userId: Long, inquiryDate: String, pageable: Pageable): List<Parcel> {
         val inquiryYearMonth = YearMonth.parse(inquiryDate, DateTimeFormatter.ofPattern(CompletedParcelConst.yearMonthDateTimeFormatPattern))
         val completeParcels = repository.getCompleteParcels(
             pageable = OffsetBasedPageRequest(pageable.pageNumber * CompletedParcelConst.pageableOffSet, CompletedParcelConst.pageableLimit),
@@ -42,19 +42,19 @@ class ParcelReaderImpl(private val repository: JpaParcelRepository): ParcelReade
         return completeParcels.content
     }
 
-    override fun getRegisteredCountIn2Week(userId: String): Long {
+    override fun getRegisteredCountIn2Week(userId: Long): Long {
         return repository.getRegisterParcelCountIn2Week(userId)
     }
 
-    override fun getRegisteredParcelCount(userId: String): Long {
+    override fun getRegisteredParcelCount(userId: Long): Long {
         return repository.getRegisterParcelCount(userId)
     }
 
-    override fun getMonthlyParcelCntList(userId: String): List<ParcelInfo.MonthlyParcelCnt> {
+    override fun getMonthlyParcelCntList(userId: Long): List<ParcelInfo.MonthlyParcelCnt> {
         return repository.getMonthlyParcelCntList(userId)
     }
 
-    override fun getCurrentMonthRegisteredCount(userId: String): Int {
+    override fun getCurrentMonthRegisteredCount(userId: Long): Int {
         return repository.getCurrentMonthRegisteredCount(userId)
     }
 }

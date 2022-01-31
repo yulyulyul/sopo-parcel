@@ -6,22 +6,22 @@ import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
 
 class ParcelCommand {
     data class GetParcel(
-        val userId: String,
+        val userId: Long,
         val parcelId: Long
     )
 
-    data class GetOngoingParcels(val userId: String)
+    data class GetOngoingParcels(val userId: Long)
 
     data class GetCompleteParcels(
-        val userId: String,
+        val userId: Long,
         val inquiryDate: String,
         val pageable: Pageable
     )
 
-    data class GetMonthlyParcelCnt(val userId: String)
+    data class GetMonthlyParcelCnt(val userId: Long)
 
     data class RegisterParcel(
-        val userId: String,
+        val userId: Long,
         val carrier: Carrier,
         val waybillNum: String,
         val alias: String,
@@ -41,25 +41,25 @@ class ParcelCommand {
     }
 
     data class ChangeParcelAlias(
-        val userId: String,
+        val userId: Long,
         val parcelId: Long,
         val alias: String
     )
 
     data class TrackingPersonalData(
-        val userId: String,
+        val userId: Long,
         val apiId: String,
         val carrier: Carrier,
         val waybillNum: String
     )
 
     data class DeleteParcel(
-        val userId: String,
+        val userId: Long,
         val parcelIds: List<Long>
     )
 
     data class SearchRequest(
-        val userId: String,
+        val userId: Long,
         val carrier: Carrier,
         val waybillNum: String,
         val searchMethod: SearchMethod = SearchMethod.DeliveryTracker
@@ -70,20 +70,20 @@ class ParcelCommand {
     }
 
     data class RegisterRequest(
-        val userId: String,
+        val userId: Long,
         val carrier: Carrier,
         val waybillNum: String,
         val parcel: Parcel
     )
 
     data class PushRequest(
-        val userId: String,
+        val userId: Long,
         val parcelIds: List<Long>
     )
 
     data class DeviceAwakenRequest(val topic: String)
 
-    data class GetUsageInfo(val userId: String)
+    data class GetUsageInfo(val userId: Long)
 
     data class UpdateRequest(
         val originalParcel: Parcel,
@@ -91,7 +91,7 @@ class ParcelCommand {
     )
 
     data class SingleRefresh(
-        val userId: String,
+        val userId: Long,
         val parcelId: Long
     ) {
         fun toEntity(trackingInfo: TrackingInfo?, originalParcel: Parcel): Parcel {
@@ -117,7 +117,7 @@ class ParcelCommand {
         }
     }
 
-    data class EntireRefresh(val userId: String) {
+    data class EntireRefresh(val userId: Long) {
         fun toRefreshRequest(parcelId: Long): SingleRefresh {
             return SingleRefresh(userId, parcelId)
         }

@@ -8,8 +8,8 @@ import team.sopo.push.domain.PushService
 
 @Service
 class ParcelFacade(
-    private val parcelService: ParcelService,
-    private val pushService: PushService
+    private val pushService: PushService,
+    private val parcelService: ParcelService
 ) {
 
     fun retrieveParcel(command: ParcelCommand.GetParcel): ParcelInfo.Main{
@@ -28,7 +28,7 @@ class ParcelFacade(
         return parcelService.retrieveMonthlyParcelCntList(command)
     }
 
-    fun retrieveUsageInfo(command: ParcelCommand.GetUsageInfo): ParcelInfo.UsageInfo{
+    fun retrieveUsageInfo(command: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage{
         return parcelService.retrieveUsageInfo(command)
     }
 
@@ -49,8 +49,11 @@ class ParcelFacade(
     }
 
     fun entireRefresh(command: ParcelCommand.EntireRefresh){
-        val updateCompleteParcels = parcelService.entireRefresh(command)
-        pushService.pushCompleteParcels(command.userId, updateCompleteParcels)
+        parcelService.entireRefresh(command).apply {
+            if(this.isNotEmpty()){
+                pushService.pushCompleteParcels(command.userId, this)
+            }
+        }
     }
 
     fun pushParcels(command: ParcelCommand.PushRequest){

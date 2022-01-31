@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val basicVersion = "1.5.21"
-    id("org.springframework.boot") version "2.5.4"
+    val basicVersion = "1.5.31"
+    id("org.springframework.boot") version "2.5.6"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.flywaydb.flyway") version "6.0.8"
 
@@ -37,8 +37,9 @@ sourceSets {
 }
 
 group = "team.sopo"
-version = "0.0.37"
-java.sourceCompatibility = JavaVersion.VERSION_11
+version = "0.0.39"
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
     mavenCentral()
@@ -52,24 +53,24 @@ allOpen{
     annotation("javax.persistence.Embeddable")
 }
 
-extra["springCloudVersion"] = "2020.0.3"
+extra["springCloudVersion"] = "2020.0.4"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter:2.5.6")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.5.6")
-    implementation("org.springframework.boot:spring-boot-starter-web:2.5.6")
-    implementation("org.springframework.boot:spring-boot-starter-security:2.5.6")
-    implementation("org.springframework.boot:spring-boot-starter-hateoas:2.5.6")
-    implementation("org.springframework.boot:spring-boot-starter-actuator:2.5.6")
-    implementation("org.springframework.boot:spring-boot-starter-mail:2.5.6")
-    implementation("org.springframework.kafka:spring-kafka:2.7.6")
-    implementation("org.springframework.cloud:spring-cloud-starter-config:3.0.5")
-    implementation("org.springframework.boot:spring-boot-starter-aop:2.5.6")
+    implementation("org.springframework.boot:spring-boot-starter:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-web:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-security:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-hateoas:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-mail:2.6.3")
+    implementation("org.springframework.kafka:spring-kafka:2.8.2")
+    implementation("org.springframework.cloud:spring-cloud-starter-config:3.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-aop:2.6.3")
     implementation("org.springframework.cloud", "spring-cloud-starter-netflix-eureka-client")
-    implementation("org.springframework.boot:spring-boot-starter-validation:2.5.6")
-    implementation("org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.4")
+    implementation("org.springframework.boot:spring-boot-starter-validation:2.6.3")
+    implementation("org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.0")
     implementation("org.springframework.security.oauth.boot", "spring-security-oauth2-autoconfigure", "2.5.2")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:3.0.5")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:3.1.0")
     implementation("io.github.openfeign", "feign-httpclient")
 
     //Spring Doc
@@ -77,7 +78,7 @@ dependencies {
     implementation("org.springdoc", "springdoc-openapi-security", "1.5.4")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.6") {
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.3") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.springframework.security:spring-security-test:5.5.1")
@@ -85,8 +86,8 @@ dependencies {
 
     // kapt로 dependency를 지정해 준다.
     // kotlin 코드가 아니라면 kapt 대신 annotationProcessor를 사용한다.
-    api("com.querydsl:querydsl-jpa:4.4.0")
-    kapt("com.querydsl:querydsl-apt:4.4.0:jpa") // ":jpa 꼭 붙여줘야 한다!!"
+    api("com.querydsl:querydsl-jpa:5.0.0")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jpa") // ":jpa 꼭 붙여줘야 한다!!"
 
     runtimeOnly("org.mariadb.jdbc", "mariadb-java-client")
 
@@ -128,7 +129,7 @@ dependencies {
 
     testImplementation ("com.github.springtestdbunit:spring-test-dbunit:1.3.0")
     testImplementation ("org.dbunit:dbunit:2.7.2")
-    testImplementation ("io.mockk:mockk:1.12.0")
+    testImplementation ("io.mockk:mockk:1.12.2")
 }
 
 idea {
@@ -145,6 +146,9 @@ dependencyManagement {
     }
 }
 
+tasks.processResources{
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
@@ -158,7 +162,7 @@ tasks.withType<Test> {
 }
 
 tasks.bootJar{
-    base.archivesBaseName = "${project.name}-$profile"
+    base.archivesName.set("${project.name}-$profile")
     launchScript()
 }
 

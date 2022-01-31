@@ -11,7 +11,7 @@ class ParcelInfo {
             @Schema(name = "택배 id", example = "1")
             var parcelId: Long? = null,
             @Schema(name = "유저 id", example = "sopo@sooopo.com")
-            var userId: String? = null,
+            var userId: Long,
             @Schema(name = "송장번호", example = "123456789")
             var waybillNum: String? = null,
             @Schema(name = "배송사", example = "LOGEN")
@@ -39,9 +39,9 @@ class ParcelInfo {
         val isUpdated: Boolean
     )
 
-    data class UsageInfo(
-        val registerParcelCountIn2Week: Long,
-        val totalRegisterParcelCount: Long
+    data class ParcelUsage(
+        val registeredCountIn2Week: Long,
+        val totalRegisteredCount: Long
     )
 
     class MonthlyParcelCnt(_time: String, _count: Long){

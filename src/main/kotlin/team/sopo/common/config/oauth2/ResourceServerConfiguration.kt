@@ -14,7 +14,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver
 class ResourceServerConfiguration(
     private val tokenClient: TokenClient,
     @Qualifier("handlerExceptionResolver") private val resolver: HandlerExceptionResolver
-): ResourceServerConfigurerAdapter() {
+) : ResourceServerConfigurerAdapter() {
 
     @Value("\${security.oauth2.client.resource-ids}")
     private lateinit var resourceIds: String
@@ -38,11 +38,11 @@ class ResourceServerConfiguration(
     override fun configure(http: HttpSecurity?) {
         http ?: throw RuntimeException("Can`t configure HttpSecurity!!")
         http.csrf()
-                .disable()
+            .disable()
             .anonymous()
-                .disable()
+            .disable()
             .authorizeRequests()
-                .antMatchers("/callback")
-                .fullyAuthenticated()
+            .antMatchers("/callback")
+            .fullyAuthenticated()
     }
 }

@@ -3,6 +3,7 @@ package team.sopo.common.config.oauth2
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
+import team.sopo.common.config.feign.BasicAuthConfiguration
 
 
 @FeignClient(name = "token-client",url = "\${sopo.apigateway.url.base}sopo-auth", configuration = [BasicAuthConfiguration::class, TokenErrorDecoder::class])

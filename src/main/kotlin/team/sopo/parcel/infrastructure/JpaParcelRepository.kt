@@ -17,15 +17,15 @@ interface JpaParcelRepository : JpaRepository<Parcel, Long>, ParcelRepositorySup
     )
     fun getCompleteParcels(
         @Param("pageable") pageable: Pageable,
-        @Param("user_id") user_id: String,
+        @Param("user_id") user_id: Long,
         @Param("startDate") startDate: String,
         @Param("endDate") endDate: String
     ): Page<Parcel>
 
-    fun findByIdAndUserId(id: Long, userId: String): Optional<Parcel>
+    fun findByIdAndUserId(id: Long, userId: Long): Optional<Parcel>
 
     fun findAllByIdIn(ids: List<Long>): List<Parcel>
 
-    fun findByUserIdAndCarrierAndWaybillNum(userId: String, carrier: String, waybillNum: String): Optional<Parcel>
+    fun findByUserIdAndCarrierAndWaybillNum(userId: Long, carrier: String, waybillNum: String): Optional<Parcel>
 
 }

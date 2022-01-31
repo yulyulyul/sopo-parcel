@@ -3,10 +3,10 @@ package team.sopo.push.infrastructure
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import team.sopo.common.model.api.ApiResult
+import team.sopo.common.config.feign.BasicAuthConfiguration
 
-@FeignClient(name = "user-client", url = "\${discovery.user}")
+@FeignClient(name = "user-client", url = "\${discovery.user}", configuration = [BasicAuthConfiguration::class])
 interface UserClient {
-    @GetMapping("internal/user/{userId}/fcm-token")
-    fun getFcmToken(@PathVariable("userId") userId: String): ApiResult<PushTokenDto>
+    @GetMapping("api/v1/sopo-user/internal/push-token/{userId}")
+    fun getPushToken(@PathVariable("userId") userId: Long): PushToken
 }

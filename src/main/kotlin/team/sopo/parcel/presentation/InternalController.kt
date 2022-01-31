@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import team.sopo.common.model.api.ApiResult
 import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.application.ParcelFacade
 import team.sopo.parcel.domain.ParcelCommand
@@ -22,9 +21,9 @@ class InternalController(private val parcelFacade: ParcelFacade) {
     fun getServiceUsageInfo(
         @PathVariable("userId", required = true)
         @NotNull(message = "* 유저 id를 확인해주세요.")
-        userId: String? = null
-    ): ResponseEntity<ApiResult<ParcelInfo.UsageInfo>> {
+        userId: Long? = null
+    ): ResponseEntity<ParcelInfo.ParcelUsage> {
         val usageInfo = parcelFacade.retrieveUsageInfo(ParcelCommand.GetUsageInfo(userId!!))
-        return ResponseEntity.ok(ApiResult(data = usageInfo))
+        return ResponseEntity.ok(usageInfo)
     }
 }

@@ -133,7 +133,7 @@ class GlobalExceptionHandler(private val repository: ApiTracingRepository) {
 
     private fun logError(error: Error, e: Exception) {
         e.printStackTrace()
-        repository.saveErrorInfo(error.code, error.type, e, e.localizedMessage)
+        repository.saveErrorInfo(error.code, error.type, e, e.toString())
     }
 
 }
