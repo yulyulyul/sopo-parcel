@@ -25,11 +25,12 @@ import team.sopo.parcel.TestConfig
 import team.sopo.parcel.domain.register.RegisterProcessor
 import team.sopo.parcel.domain.search.SearchProcessor
 import team.sopo.parcel.domain.update.UpdateProcessor
-import team.sopo.parcel.domain.vo.deliverytracker.From
-import team.sopo.parcel.domain.vo.deliverytracker.State
-import team.sopo.parcel.domain.vo.deliverytracker.To
-import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
+import team.sopo.parcel.domain.trackinginfo.From
+import team.sopo.parcel.domain.trackinginfo.State
+import team.sopo.parcel.domain.trackinginfo.To
+import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 import team.sopo.parcel.infrastructure.JpaParcelRepository
+import team.sopo.parcel.presentation.ParcelInfoMapper
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime

@@ -2,7 +2,7 @@ package team.sopo.common.extension
 
 import team.sopo.parcel.domain.Carrier
 import team.sopo.parcel.domain.Parcel
-import team.sopo.parcel.domain.vo.deliverytracker.*
+import team.sopo.parcel.domain.trackinginfo.*
 
 fun TrackingInfo.removeSpecialCharacter(): TrackingInfo {
     return removeSpecialCharacterInTrackInfo(this)

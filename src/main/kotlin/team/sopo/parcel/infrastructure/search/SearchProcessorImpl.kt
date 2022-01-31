@@ -8,7 +8,7 @@ import team.sopo.common.extension.verifyState
 import team.sopo.parcel.domain.ParcelCommand
 import team.sopo.parcel.domain.search.SearchApiCaller
 import team.sopo.parcel.domain.search.SearchProcessor
-import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
+import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 
 @Component
 class SearchProcessorImpl(private val searchApiCallerList: List<SearchApiCaller>): SearchProcessor() {

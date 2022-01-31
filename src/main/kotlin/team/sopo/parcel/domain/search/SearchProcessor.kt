@@ -2,7 +2,7 @@ package team.sopo.parcel.domain.search
 
 import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.parcel.domain.ParcelCommand
-import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
+import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 
 abstract class SearchProcessor {
     fun search(request: ParcelCommand.SearchRequest): TrackingInfo? {

@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import team.sopo.common.exception.UnauthorizedException
 import team.sopo.common.exception.ValidationException
 import team.sopo.common.extension.asHex
-import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
+import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 import java.security.MessageDigest
 import java.time.ZonedDateTime
 import javax.persistence.*

@@ -3,6 +3,7 @@ package team.sopo.parcel
 import io.swagger.v3.oas.annotations.media.Schema
 import team.sopo.parcel.domain.Carrier
 import team.sopo.parcel.domain.Parcel
+import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 import java.time.LocalDateTime
 
 class ParcelInfo {
@@ -19,7 +20,7 @@ class ParcelInfo {
             @Schema(name = "택배 별칭", example = "사과")
             var alias: String? = null,
             @Schema(name = "택배 배송 상황")
-            var inquiryResult: String? = null,
+            var inquiryResult: TrackingInfo? = null,
             @Schema(name = "택배 배송 상황 해쉬값")
             var inquiryHash: String? = null,
             @Schema(name = "배송 상태", example = "delivered")

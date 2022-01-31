@@ -3,7 +3,7 @@ package team.sopo.common.extension
 import com.google.gson.Gson
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
+import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 
 class TrackInfoExtensionKtTest(){
 

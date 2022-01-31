@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestHeader
 import team.sopo.common.config.feign.DeliveryErrorDecoder
 import team.sopo.common.tracing.logging.DeliveryTrackerFeignLogger
-import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
+import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 
 @FeignClient(
     name = "delivery-tracing-service",

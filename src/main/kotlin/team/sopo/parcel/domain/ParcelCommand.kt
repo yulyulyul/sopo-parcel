@@ -2,7 +2,7 @@ package team.sopo.parcel.domain
 
 import org.springframework.data.domain.Pageable
 import team.sopo.parcel.domain.search.SearchMethod
-import team.sopo.parcel.domain.vo.deliverytracker.TrackingInfo
+import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 
 class ParcelCommand {
     data class GetParcel(

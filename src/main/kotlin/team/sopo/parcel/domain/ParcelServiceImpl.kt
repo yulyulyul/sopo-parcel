@@ -8,6 +8,7 @@ import team.sopo.parcel.domain.register.RegisterProcessor
 import team.sopo.parcel.domain.search.SearchProcessor
 import team.sopo.parcel.domain.update.UpdateProcessor
 import team.sopo.parcel.domain.update.UpdateStatus
+import team.sopo.parcel.presentation.ParcelInfoMapper
 
 @Service
 class ParcelServiceImpl(

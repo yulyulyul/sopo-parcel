@@ -1,4 +1,4 @@
-package team.sopo.parcel.domain.vo.deliverytracker
+package team.sopo.parcel.domain.trackinginfo
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
