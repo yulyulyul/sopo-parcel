@@ -39,3 +39,5 @@ logs/
 /src/main/resources-test/mysql/
 /src/test/resources/mysql/
 /src/main/resources-local/mysql/
+/src/main/resources-prelive/fluentd.conf
+/src/main/resources-prelive/start.sh
