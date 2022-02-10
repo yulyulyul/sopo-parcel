@@ -24,11 +24,11 @@ import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.TestConfig
 import team.sopo.parcel.domain.register.RegisterProcessor
 import team.sopo.parcel.domain.search.SearchProcessor
-import team.sopo.parcel.domain.update.UpdateProcessor
 import team.sopo.parcel.domain.trackinginfo.From
 import team.sopo.parcel.domain.trackinginfo.State
 import team.sopo.parcel.domain.trackinginfo.To
 import team.sopo.parcel.domain.trackinginfo.TrackingInfo
+import team.sopo.parcel.domain.update.UpdateProcessor
 import team.sopo.parcel.infrastructure.JpaParcelRepository
 import team.sopo.parcel.presentation.ParcelInfoMapper
 import java.time.LocalDateTime
@@ -89,7 +89,7 @@ class ParcelServiceImplTest() {
         @DisplayName("정상 케이스")
         fun retrieveParcelTestCase1() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val parcelId = 1L
             val command = ParcelCommand.GetParcel(userId, parcelId)
 
@@ -106,7 +106,7 @@ class ParcelServiceImplTest() {
         fun retrieveParcelTestCase2() {
             logger.error("start")
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val parcelId = 9999L
             val command = ParcelCommand.GetParcel(userId, parcelId)
 
@@ -126,7 +126,7 @@ class ParcelServiceImplTest() {
         @DisplayName("정상 케이스 - 현재 진행중인 택배는 parcelInfo 객체로 리턴되어야하고 택배의 deliveryStatus가 (DELIVERED & ORPHANED)가 아니어야하며 status는 1이어야한다.")
         fun retrieveOngoingParcelsTestCase1() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val command = ParcelCommand.GetOngoingParcels(userId)
 
             // when
@@ -147,7 +147,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun retrieveOngoingParcelsTestCase2() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val command = ParcelCommand.GetOngoingParcels(userId)
 
             // when
@@ -163,7 +163,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Retrieve_ongoing_Test_DataSet.xml"], type = DatabaseOperation.DELETE_ALL)
         fun retrieveOngoingParcelsTestCase3() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val command = ParcelCommand.GetOngoingParcels(userId)
 
             // when
@@ -184,7 +184,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun retrieveCompletesTestCase1() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val inquiryDate = "202108"
             val command = ParcelCommand.GetCompleteParcels(userId, inquiryDate, PageRequest.of(0, 20))
 
@@ -207,7 +207,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun retrieveCompletesTestCase2() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val inquiryDate = "202108"
             val command = ParcelCommand.GetCompleteParcels(userId, inquiryDate, PageRequest.of(0, 20))
 
@@ -227,7 +227,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun retrieveMonthlyParcelCntListTestCase1() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val monthCnt = 5
             val dayCnt = 3
 
@@ -270,7 +270,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun changeParcelAliasTestCase1() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val initParcel = Parcel(null, userId, "test_waybillNum", Carrier.CJ_LOGISTICS.CODE, "test_parcel")
             val parcel = parcelStore.store(initParcel)
             val aliasContent = "change_alias"
@@ -289,7 +289,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun changeParcelAliasTestCase2() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val initParcel = Parcel(null, userId, "test_waybillNum", Carrier.CJ_LOGISTICS.CODE, "test_parcel")
             val parcel = parcelStore.store(initParcel)
             val aliasContent = "change_alias_change_alias_change_alias"
@@ -311,7 +311,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun deleteParcelsTestCase1() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val ongoingParcels = parcelReader.getOngoingParcels(userId)
             Assertions.assertTrue(ongoingParcels.isNotEmpty())
             val idList = ongoingParcels.stream().map(Parcel::id).toList()
@@ -330,9 +330,9 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun deleteParcelsTestCase2() {
             // given
-            val user1 = "sopo@sooopo.com"
+            val user1 = 1L
             val user1ParcelId = 1L
-            val user2 = "sopo2@sooopo.com"
+            val user2 = 2L
             val user2ParcelId = 2L
 
             val user1Parcel = parcelReader.getParcel(user1ParcelId, user1)
@@ -355,7 +355,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun registerParcelTestCase1() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val carrier = Carrier.CJ_LOGISTICS
 
             val mockedSearchProcessor: SearchProcessor = mockk()
@@ -377,7 +377,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun registerParcelTestCase2() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val carrier = Carrier.CJ_LOGISTICS
             val alias = "test_alias"
             val waybillNum = "test_num"
@@ -400,7 +400,7 @@ class ParcelServiceImplTest() {
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun registerParcelTestCase3() {
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val carrier = Carrier.CJ_LOGISTICS
             val alias = "test_alias"
             val waybillNum = "test_num"
@@ -429,7 +429,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun registerParcelTestCase4() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val carrier = Carrier.CJ_LOGISTICS
             val alias = ""
             val waybillNum = "test_num"
@@ -453,7 +453,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun registerParcelTestCase5() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val carrier = Carrier.CJ_LOGISTICS
             val alias = "test_alias"
             val waybillNum = "test_num"
@@ -477,7 +477,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun registerParcelTestCase6() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val carrier = Carrier.CJ_LOGISTICS
             val alias = ""
             val waybillNum = "test_num"
@@ -509,7 +509,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun registerParcelTestCase7() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val carrier = Carrier.CJ_LOGISTICS
             val alias = "test_alias"
             val waybillNum = "test_num"
@@ -541,7 +541,7 @@ class ParcelServiceImplTest() {
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun registerParcelTestCase8() {
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val carrier = Carrier.CJ_LOGISTICS
             val alias = "test_alias"
             val waybillNum = "test_num"
@@ -581,7 +581,7 @@ class ParcelServiceImplTest() {
             val mockParcelReader: ParcelReader = mockk()
             val mockSearchProc: SearchProcessor = mockk()
 
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val parcelId = 1L
             val originalParcel =
                 Parcel(null, userId, "test_waybillNum", Carrier.CJ_LOGISTICS.CODE, "test_parcel").apply {
@@ -611,7 +611,7 @@ class ParcelServiceImplTest() {
         fun singleRefreshTestCase2() {
 
             // given
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val minusWeeks = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).minusWeeks(3L)
 
             val parcel =
@@ -648,7 +648,7 @@ class ParcelServiceImplTest() {
             type = DatabaseOperation.CLEAN_INSERT
         )
         fun entireRefreshTestCase1() {
-            val userId = "sopo@sooopo.com"
+            val userId = 1L
             val mockSearchProc: SearchProcessor = mockk()
 
             for (id in 1L..5L) {

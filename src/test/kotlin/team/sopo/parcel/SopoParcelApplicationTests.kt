@@ -17,7 +17,7 @@ class SopoParcelApplicationTests {
 
     @Test
     fun makeParcelTest(){
-        val userId = "sopo@sooopo.com"
+        val userId = 1L
         val minusWeeks = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).minusWeeks(3L)
 
         val initParcel =

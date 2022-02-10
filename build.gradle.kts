@@ -37,7 +37,7 @@ sourceSets {
 }
 
 group = "team.sopo"
-version = "0.0.39"
+version = "0.0.41"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_11
 
@@ -54,6 +54,7 @@ allOpen{
 }
 
 extra["springCloudVersion"] = "2020.0.4"
+val querydslVersion = "5.0.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter:2.6.3")
@@ -86,8 +87,9 @@ dependencies {
 
     // kapt로 dependency를 지정해 준다.
     // kotlin 코드가 아니라면 kapt 대신 annotationProcessor를 사용한다.
-    api("com.querydsl:querydsl-jpa:5.0.0")
-    kapt("com.querydsl:querydsl-apt:5.0.0:jpa") // ":jpa 꼭 붙여줘야 한다!!"
+    api("com.querydsl:querydsl-jpa:$querydslVersion")
+    api("com.querydsl:querydsl-core:$querydslVersion")
+    kapt("com.querydsl:querydsl-apt:$querydslVersion:jpa") // ":jpa 꼭 붙여줘야 한다!!"
 
     runtimeOnly("org.mariadb.jdbc", "mariadb-java-client")
 
