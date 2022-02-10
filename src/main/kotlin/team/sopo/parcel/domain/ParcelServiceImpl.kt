@@ -20,31 +20,37 @@ class ParcelServiceImpl(
 ) : ParcelService {
 
     @Transactional(readOnly = true)
-    override fun retrieveParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main {
+    override fun getParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main {
         val parcel = parcelReader.getParcel(getCommand.parcelId, getCommand.userId)
         return parcelInfoMapper.of(parcel)
     }
 
     @Transactional(readOnly = true)
-    override fun retrieveOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main> {
+    override fun getParcels(getCommand: ParcelCommand.GetParcels): List<ParcelInfo.Main> {
+        val parcels = parcelReader.getParcels(getCommand.parcelIds, getCommand.userId)
+        return parcelInfoMapper.of(parcels)
+    }
+
+    @Transactional(readOnly = true)
+    override fun getOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main> {
         val ongoingParcels = parcelReader.getOngoingParcels(getCommand.userId)
         return parcelInfoMapper.of(ongoingParcels)
     }
 
     @Transactional(readOnly = true)
-    override fun retrieveCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main> {
+    override fun getCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main> {
         val completeParcels =
             parcelReader.getCompleteParcels(getCommand.userId, getCommand.inquiryDate, getCommand.pageable)
         return parcelInfoMapper.of(completeParcels)
     }
 
     @Transactional(readOnly = true)
-    override fun retrieveMonthlyParcelCntList(getCommand: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt> {
+    override fun getMonthlyParcelCntList(getCommand: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt> {
         return parcelReader.getMonthlyParcelCntList(getCommand.userId)
     }
 
     @Transactional(readOnly = true)
-    override fun retrieveUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage {
+    override fun getUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage {
         val countIn2Week = parcelReader.getRegisteredCountIn2Week(getCommand.userId)
         val totalCount = parcelReader.getRegisteredParcelCount(getCommand.userId)
 
@@ -59,7 +65,7 @@ class ParcelServiceImpl(
 
     @Transactional
     override fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel) {
-        parcelReader.getParcels(deleteCommand.parcelIds).parallelStream()
+        parcelReader.getParcels(deleteCommand.parcelIds, deleteCommand.userId).parallelStream()
             .forEach{ parcel ->
                 parcel.verifyDeletable(deleteCommand)
                 parcel.inactivate()

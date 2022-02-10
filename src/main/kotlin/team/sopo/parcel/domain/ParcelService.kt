@@ -3,11 +3,12 @@ package team.sopo.parcel.domain
 import team.sopo.parcel.ParcelInfo
 
 interface ParcelService {
-    fun retrieveParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main
-    fun retrieveOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main>
-    fun retrieveCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main>
-    fun retrieveMonthlyParcelCntList(getCommand: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt>
-    fun retrieveUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage
+    fun getParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main
+    fun getParcels(getCommand: ParcelCommand.GetParcels): List<ParcelInfo.Main>
+    fun getOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main>
+    fun getCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main>
+    fun getMonthlyParcelCntList(getCommand: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt>
+    fun getUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage
     fun changeParcelAlias(changeCommand: ParcelCommand.ChangeParcelAlias)
     fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel)
     fun registerParcel(registerCommand: ParcelCommand.RegisterParcel): ParcelInfo.Main

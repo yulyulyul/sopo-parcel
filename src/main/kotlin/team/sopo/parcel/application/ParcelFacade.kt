@@ -12,24 +12,28 @@ class ParcelFacade(
     private val parcelService: ParcelService
 ) {
 
-    fun retrieveParcel(command: ParcelCommand.GetParcel): ParcelInfo.Main{
-        return parcelService.retrieveParcel(command)
+    fun getParcel(command: ParcelCommand.GetParcel): ParcelInfo.Main{
+        return parcelService.getParcel(command)
     }
 
-    fun retrieveOngoingParcels(command: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main>{
-        return parcelService.retrieveOngoingParcels(command)
+    fun getParcels(command: ParcelCommand.GetParcels): List<ParcelInfo.Main>{
+        return parcelService.getParcels(command)
     }
 
-    fun retrieveCompleteParcels(command: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main>{
-        return parcelService.retrieveCompleteParcels(command)
+    fun getOngoingParcels(command: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main>{
+        return parcelService.getOngoingParcels(command)
     }
 
-    fun retrieveMonthlyParcelCnt(command: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt> {
-        return parcelService.retrieveMonthlyParcelCntList(command)
+    fun getCompleteParcels(command: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main>{
+        return parcelService.getCompleteParcels(command)
     }
 
-    fun retrieveUsageInfo(command: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage{
-        return parcelService.retrieveUsageInfo(command)
+    fun getMonthlyParcelCnt(command: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt> {
+        return parcelService.getMonthlyParcelCntList(command)
+    }
+
+    fun getUsageInfo(command: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage{
+        return parcelService.getUsageInfo(command)
     }
 
     fun changeParcelAlias(command: ParcelCommand.ChangeParcelAlias){

@@ -11,20 +11,30 @@ import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.ParcelReader
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import kotlin.streams.toList
 
 @Component
-class ParcelReaderImpl(private val repository: JpaParcelRepository): ParcelReader {
+class ParcelReaderImpl(private val repository: JpaParcelRepository) : ParcelReader {
 
     override fun getParcel(parcelId: Long, userId: Long): Parcel {
-        return repository.findByIdAndUserId(parcelId, userId).orElseThrow{ ParcelNotFoundException() }
+        return repository.findByIdAndUserIdAndStatusEquals(parcelId, userId).orElseThrow { ParcelNotFoundException() }
     }
 
     override fun getParcel(userId: Long, carrier: Carrier, waybillNum: String): Parcel {
-        return repository.findByUserIdAndCarrierAndWaybillNum(userId, carrier.CODE, waybillNum).orElseThrow{ ParcelNotFoundException() }
+        return repository.findByUserIdAndCarrierAndWaybillNumAndStatusEquals(userId, carrier.CODE, waybillNum)
+            .orElseThrow { ParcelNotFoundException() }
     }
 
-    override fun getParcels(parcelIds: List<Long>): List<Parcel> {
-        return repository.findAllByIdIn(parcelIds)
+    override fun getParcels(parcelIds: List<Long>, userId: Long): List<Parcel> {
+        val parcels = repository.findAllByIdInAndUserIdAndStatusEquals(parcelIds, userId)
+        val ids = parcels.parallelStream().map(Parcel::id).toList()
+        parcelIds.filter { !ids.contains(it) }.toList().apply {
+            if(this.isNotEmpty()){
+                throw ParcelNotFoundException("${this}에 해당하는 택배를 찾을 수 없습니다.")
+            }
+        }
+
+        return parcels
     }
 
     override fun getOngoingParcels(userId: Long): List<Parcel> {
@@ -32,12 +42,19 @@ class ParcelReaderImpl(private val repository: JpaParcelRepository): ParcelReade
     }
 
     override fun getCompleteParcels(userId: Long, inquiryDate: String, pageable: Pageable): List<Parcel> {
-        val inquiryYearMonth = YearMonth.parse(inquiryDate, DateTimeFormatter.ofPattern(CompletedParcelConst.yearMonthDateTimeFormatPattern))
+        val inquiryYearMonth = YearMonth.parse(
+            inquiryDate,
+            DateTimeFormatter.ofPattern(CompletedParcelConst.yearMonthDateTimeFormatPattern)
+        )
         val completeParcels = repository.getCompleteParcels(
-            pageable = OffsetBasedPageRequest(pageable.pageNumber * CompletedParcelConst.pageableOffSet, CompletedParcelConst.pageableLimit),
+            pageable = OffsetBasedPageRequest(
+                pageable.pageNumber * CompletedParcelConst.pageableOffSet,
+                CompletedParcelConst.pageableLimit
+            ),
             user_id = userId,
             startDate = "${inquiryYearMonth.year}-${inquiryYearMonth.monthValue}-01",
-            endDate = "${inquiryYearMonth.year}-${inquiryYearMonth.monthValue}-31")
+            endDate = "${inquiryYearMonth.year}-${inquiryYearMonth.monthValue}-31"
+        )
 
         return completeParcels.content
     }

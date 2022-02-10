@@ -23,7 +23,7 @@ class InternalController(private val parcelFacade: ParcelFacade) {
         @NotNull(message = "* 유저 id를 확인해주세요.")
         userId: Long? = null
     ): ResponseEntity<ParcelInfo.ParcelUsage> {
-        val usageInfo = parcelFacade.retrieveUsageInfo(ParcelCommand.GetUsageInfo(userId!!))
+        val usageInfo = parcelFacade.getUsageInfo(ParcelCommand.GetUsageInfo(userId!!))
         return ResponseEntity.ok(usageInfo)
     }
 }

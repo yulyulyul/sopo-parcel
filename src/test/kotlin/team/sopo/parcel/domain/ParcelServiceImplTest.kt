@@ -19,7 +19,10 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestExecutionListeners
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
-import team.sopo.common.exception.*
+import team.sopo.common.exception.AlreadyRegisteredParcelException
+import team.sopo.common.exception.OverRegisteredParcelException
+import team.sopo.common.exception.ParcelNotFoundException
+import team.sopo.common.exception.ValidationException
 import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.TestConfig
 import team.sopo.parcel.domain.register.RegisterProcessor
@@ -29,7 +32,6 @@ import team.sopo.parcel.domain.trackinginfo.State
 import team.sopo.parcel.domain.trackinginfo.To
 import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 import team.sopo.parcel.domain.update.UpdateProcessor
-import team.sopo.parcel.infrastructure.JpaParcelRepository
 import team.sopo.parcel.presentation.ParcelInfoMapper
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -46,7 +48,7 @@ import kotlin.streams.toList
 @TestExecutionListeners(DbUnitTestExecutionListener::class, DependencyInjectionTestExecutionListener::class)
 @DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])
 @ActiveProfiles("test")
-class ParcelServiceImplTest() {
+class ParcelServiceImplTest {
     @Autowired
     lateinit var mapper: ParcelInfoMapper
 
@@ -65,8 +67,8 @@ class ParcelServiceImplTest() {
     @Autowired
     lateinit var parcelStore: ParcelStore
 
-    @Autowired
-    lateinit var searchProcessor: SearchProcessor
+//    @Autowired
+//    lateinit var searchProcessor: SearchProcessor
 
     @Autowired
     lateinit var registerProcessor: RegisterProcessor
@@ -74,8 +76,8 @@ class ParcelServiceImplTest() {
     @Autowired
     lateinit var updateProcessor: UpdateProcessor
 
-    @Autowired
-    lateinit var parcelRepository: JpaParcelRepository
+//    @Autowired
+//    lateinit var parcelRepository: JpaParcelRepository
 
     private val logger = LogManager.getLogger(ParcelServiceImplTest::class.java)
 
@@ -83,54 +85,96 @@ class ParcelServiceImplTest() {
     @DisplayName("단일 택배 조회 테스트")
     @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
     @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-    inner class RetrieveParcelTest() {
+    inner class GetParcelTest {
 
         @Test
         @DisplayName("정상 케이스")
-        fun retrieveParcelTestCase1() {
+        fun getParcelTestCase1() {
             // given
             val userId = 1L
             val parcelId = 1L
             val command = ParcelCommand.GetParcel(userId, parcelId)
 
             // when
-            val retrieveParcel = parcelService.retrieveParcel(command)
+            val getParcel = parcelService.getParcel(command)
 
             // then
-            Assertions.assertTrue(retrieveParcel.userId == userId)
-            Assertions.assertEquals(retrieveParcel.parcelId?.equals(parcelId), true)
+            Assertions.assertTrue(getParcel.userId == userId)
+            Assertions.assertEquals(getParcel.parcelId?.equals(parcelId), true)
         }
 
         @Test
         @DisplayName("유저에게 존재하지 않은 택배를 조회했을 때는 ParcelNotFoundException이 발생되어야한다.")
-        fun retrieveParcelTestCase2() {
+        fun getParcelTestCase2() {
             logger.error("start")
             // given
             val userId = 1L
             val parcelId = 9999L
             val command = ParcelCommand.GetParcel(userId, parcelId)
 
-            // when run retrieveParcel(command)
+            // when run getParcel(command)
             // then throw ParcelNotFoundException
-            Assertions.assertThrows(ParcelNotFoundException::class.java) { parcelService.retrieveParcel(command) }
+            Assertions.assertThrows(ParcelNotFoundException::class.java) { parcelService.getParcel(command) }
+        }
+    }
+
+    @Nested
+    @DisplayName("복수 택배 조회 테스트")
+    @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
+    @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+    inner class GetParcelsTest {
+
+        @Test
+        @DisplayName("정상 케이스")
+        fun getParcelsTestCase1() {
+            // given
+            val userId = 1L
+            val parcelId1 = 1L
+            val parcelId2 = 3L
+            val parcelId3 = 4L
+            val parcelIds = arrayListOf(parcelId1, parcelId2, parcelId3)
+            val command = ParcelCommand.GetParcels(userId, parcelIds)
+
+            // when
+            val parcels = parcelService.getParcels(command)
+
+            // then
+            val ids = parcels.map(ParcelInfo.Main::parcelId).toList()
+            Assertions.assertEquals(ids.containsAll(parcelIds), true)
+        }
+
+        @Test
+        @DisplayName("존재하지 않은 택배를 조회했을 때는 ParcelNotFoundException이 발생되어야한다.")
+        fun getParcelsTestCase2() {
+            // given
+            val userId = 1L
+            val parcelId1 = 1L
+            val parcelId2 = 3L
+            val parcelId3 = 999L
+            val parcelIds = arrayListOf(parcelId1, parcelId2, parcelId3)
+            val command = ParcelCommand.GetParcels(userId, parcelIds)
+
+            // when run getParcels(command)
+            // then
+            Assertions.assertThrows(ParcelNotFoundException::class.java) { parcelService.getParcels(command) }
         }
     }
 
     @Nested
     @DisplayName("현재 진행중인 택배 조회 테스트")
-    inner class RetrieveOngoingParcelsTest() {
+    inner class GetOngoingParcelsTest {
 
         @Test
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         @DisplayName("정상 케이스 - 현재 진행중인 택배는 parcelInfo 객체로 리턴되어야하고 택배의 deliveryStatus가 (DELIVERED & ORPHANED)가 아니어야하며 status는 1이어야한다.")
-        fun retrieveOngoingParcelsTestCase1() {
+        fun getOngoingParcelsTestCase1() {
             // given
             val userId = 1L
             val command = ParcelCommand.GetOngoingParcels(userId)
 
             // when
-            val ongoingParcels = parcelService.retrieveOngoingParcels(command)
+            val ongoingParcels = parcelService.getOngoingParcels(command)
 
             // then
             ongoingParcels.parallelStream().forEach { parcel ->
@@ -145,13 +189,13 @@ class ParcelServiceImplTest() {
         @DisplayName("진행 중인 택배가 없다면 빈 리스트를 리턴해야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-        fun retrieveOngoingParcelsTestCase2() {
+        fun getOngoingParcelsTestCase2() {
             // given
             val userId = 1L
             val command = ParcelCommand.GetOngoingParcels(userId)
 
             // when
-            val ongoingParcels = parcelService.retrieveOngoingParcels(command)
+            val ongoingParcels = parcelService.getOngoingParcels(command)
 
             // then
             Assertions.assertTrue(ongoingParcels.isEmpty())
@@ -159,15 +203,21 @@ class ParcelServiceImplTest() {
 
         @Test
         @DisplayName("진행 중인 택배가 20개 이상 존재할 수 있다.(과거에는 20개로 제한되었음)")
-        @DatabaseSetup(value = ["classpath:/dbunit/Retrieve_ongoing_Test_DataSet.xml"], type = DatabaseOperation.CLEAN_INSERT)
-        @DatabaseTearDown(value = ["classpath:/dbunit/Retrieve_ongoing_Test_DataSet.xml"], type = DatabaseOperation.DELETE_ALL)
-        fun retrieveOngoingParcelsTestCase3() {
+        @DatabaseSetup(
+            value = ["classpath:/dbunit/get_ongoing_Test_DataSet.xml"],
+            type = DatabaseOperation.CLEAN_INSERT
+        )
+        @DatabaseTearDown(
+            value = ["classpath:/dbunit/get_ongoing_Test_DataSet.xml"],
+            type = DatabaseOperation.DELETE_ALL
+        )
+        fun getOngoingParcelsTestCase3() {
             // given
             val userId = 1L
             val command = ParcelCommand.GetOngoingParcels(userId)
 
             // when
-            val ongoingParcels = parcelService.retrieveOngoingParcels(command)
+            val ongoingParcels = parcelService.getOngoingParcels(command)
 
             // then
             Assertions.assertTrue(ongoingParcels.size >= 20)
@@ -176,20 +226,20 @@ class ParcelServiceImplTest() {
 
     @Nested
     @DisplayName("완료된 택배 조회 테스트")
-    inner class RetrieveCompleteParcelsTest() {
+    inner class GetCompleteParcelsTest {
 
         @Test
         @DisplayName("정상 케이스")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-        fun retrieveCompletesTestCase1() {
+        fun getCompletesTestCase1() {
             // given
             val userId = 1L
             val inquiryDate = "202108"
             val command = ParcelCommand.GetCompleteParcels(userId, inquiryDate, PageRequest.of(0, 20))
 
             // when
-            val completeParcels = parcelService.retrieveCompleteParcels(command)
+            val completeParcels = parcelService.getCompleteParcels(command)
 
             // then
             Assertions.assertTrue(completeParcels.size <= 20)
@@ -205,14 +255,14 @@ class ParcelServiceImplTest() {
         @DisplayName("진행 중인 택배가 없다면 빈 리스트를 리턴해야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-        fun retrieveCompletesTestCase2() {
+        fun getCompletesTestCase2() {
             // given
             val userId = 1L
             val inquiryDate = "202108"
             val command = ParcelCommand.GetCompleteParcels(userId, inquiryDate, PageRequest.of(0, 20))
 
             // when
-            val completeParcels = parcelService.retrieveCompleteParcels(command)
+            val completeParcels = parcelService.getCompleteParcels(command)
 
             Assertions.assertTrue(completeParcels.isEmpty())
         }
@@ -220,12 +270,12 @@ class ParcelServiceImplTest() {
 
     @Nested
     @DisplayName("월별 등록된 '완료 택배' 개수 조회 테스트")
-    inner class RetrieveMonthlyParcelCntListTest() {
+    inner class GetMonthlyParcelCntListTest {
         @Test
         @DisplayName("정상 케이스 - 유저에게 월별 특정 개수의 택배가 주어진다면, 월별 등록된 완료된 택배의 개수는 특정 개수랑 일치해야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-        fun retrieveMonthlyParcelCntListTestCase1() {
+        fun getMonthlyParcelCntListTestCase1() {
             // given
             val userId = 1L
             val monthCnt = 5
@@ -250,7 +300,7 @@ class ParcelServiceImplTest() {
 
             // when
             val monthlyParcelCntList =
-                parcelService.retrieveMonthlyParcelCntList(ParcelCommand.GetMonthlyParcelCnt(userId))
+                parcelService.getMonthlyParcelCntList(ParcelCommand.GetMonthlyParcelCnt(userId))
             logger.info("list : $monthlyParcelCntList")
 
             // then
@@ -263,7 +313,7 @@ class ParcelServiceImplTest() {
 
     @Nested
     @DisplayName("택배 별칭 수정 테스트")
-    inner class ChangeParcelAliasTest() {
+    inner class ChangeParcelAliasTest {
         @Test
         @DisplayName("정상 케이스 - 유저가 택배의 별칭을 변경한다면, 변경되어야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
@@ -304,7 +354,7 @@ class ParcelServiceImplTest() {
 
     @Nested
     @DisplayName("택배 삭제 테스트")
-    inner class DeleteParcelTest() {
+    inner class DeleteParcelTest {
         @Test
         @DisplayName("현재 진행중인 택배가 복수로 주어지고, 모두 삭제한다고 다시 조회한다면, 현재 진행중인 택배는 0건이어야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
@@ -325,7 +375,7 @@ class ParcelServiceImplTest() {
         }
 
         @Test
-        @DisplayName("유저 소유가 아닌 택배를 삭제하려한다면, UnauthorizedException가 발생되어야한다.")
+        @DisplayName("유저 소유가 아닌 택배를 삭제하려한다면, ParcelNotFoundException가 발생되어야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
         @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
         fun deleteParcelsTestCase2() {
@@ -339,7 +389,7 @@ class ParcelServiceImplTest() {
             val user2Parcel = parcelReader.getParcel(user2ParcelId, user2)
 
             // when / then
-            Assertions.assertThrows(UnauthorizedException::class.java) {
+            Assertions.assertThrows(ParcelNotFoundException::class.java) {
                 parcelService.deleteParcel(ParcelCommand.DeleteParcel(user1, listOf(user2Parcel.id)))
                 parcelService.deleteParcel(ParcelCommand.DeleteParcel(user2, listOf(user1Parcel.id)))
             }
@@ -348,7 +398,7 @@ class ParcelServiceImplTest() {
 
     @Nested
     @DisplayName("택배 등록 테스트")
-    inner class RegisterParcelTest() {
+    inner class RegisterParcelTest {
         @Test
         @DisplayName("searchProcessor에서 조회한 결과가 null이라면, 배송 상태가 NOT_REGISTERED로 설정되어야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
@@ -571,7 +621,7 @@ class ParcelServiceImplTest() {
 
     @Nested
     @DisplayName("단일 택배 업데이트 테스트")
-    inner class SingleRefreshTest() {
+    inner class SingleRefreshTest {
         @Test
         @DisplayName("택배가 주어졌을 때, 추적 정보가 변경된다면, 택배는 업데이트 되어야한다.")
         @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
@@ -589,7 +639,14 @@ class ParcelServiceImplTest() {
                     inquiryHash = "1111111"
                 }
             val updatedTracingInfo =
-                TrackingInfo(From(null, null, null), To("name", null), State("IN_TRANSIT", "text"), null, arrayListOf(), null)
+                TrackingInfo(
+                    From(null, null, null),
+                    To("name", null),
+                    State("IN_TRANSIT", "text"),
+                    null,
+                    arrayListOf(),
+                    null
+                )
 
             every { mockParcelReader.getParcel(any(), any()) } returns originalParcel
             every { mockSearchProc.search(any()) } returns updatedTracingInfo
@@ -640,7 +697,7 @@ class ParcelServiceImplTest() {
     @Nested
     @DisplayName("전체 택배 업데이트 테스트")
     @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
-    inner class EntireRefreshTest() {
+    inner class EntireRefreshTest {
         @Test
         @DisplayName("5개의 진행 중인 택배가 주어지고, 3번째 업데이트 시도에서 Exception이 발생하더라도 4번째, 5번째 택배까지 업데이트 시도가 되어야하며, 업데이트된 택배는 4개여야한다.")
         @DatabaseSetup(
@@ -680,7 +737,8 @@ class ParcelServiceImplTest() {
                 ParcelServiceImpl(parcelReader, mockSearchProc, updateProcessor, registerProcessor, mapper)
 
             // when
-            val refreshedParcelIds = mockedService.entireRefresh(ParcelCommand.EntireRefresh(userId)).sorted().toTypedArray()
+            val refreshedParcelIds =
+                mockedService.entireRefresh(ParcelCommand.EntireRefresh(userId)).sorted().toTypedArray()
 
             // then
             Assertions.assertEquals(4, refreshedParcelIds.size)

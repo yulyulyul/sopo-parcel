@@ -22,10 +22,23 @@ interface JpaParcelRepository : JpaRepository<Parcel, Long>, ParcelRepositorySup
         @Param("endDate") endDate: String
     ): Page<Parcel>
 
-    fun findByIdAndUserId(id: Long, userId: Long): Optional<Parcel>
+    fun findByIdAndUserIdAndStatusEquals(
+        id: Long,
+        userId: Long,
+        status: Parcel.Activeness = Parcel.Activeness.ACTIVE
+    ): Optional<Parcel>
 
-    fun findAllByIdIn(ids: List<Long>): List<Parcel>
+    fun findAllByIdInAndUserIdAndStatusEquals(
+        ids: List<Long>,
+        userId: Long,
+        status: Parcel.Activeness = Parcel.Activeness.ACTIVE
+    ): List<Parcel>
 
-    fun findByUserIdAndCarrierAndWaybillNum(userId: Long, carrier: String, waybillNum: String): Optional<Parcel>
+    fun findByUserIdAndCarrierAndWaybillNumAndStatusEquals(
+        userId: Long,
+        carrier: String,
+        waybillNum: String,
+        status: Parcel.Activeness = Parcel.Activeness.ACTIVE
+    ): Optional<Parcel>
 
 }

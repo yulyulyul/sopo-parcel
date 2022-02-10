@@ -53,7 +53,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
             userId = principal.name.toLong(),
             parcelId = parcelId ?: throw ConstraintViolationException("* 택배 id를 확인해주세요.", mutableSetOf())
         )
-        val parcel = parcelFacade.retrieveParcel(command)
+        val parcel = parcelFacade.getParcel(command)
         val result = ApiResult(data = parcel)
         return ResponseEntity.ok(result)
     }
@@ -92,8 +92,31 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
     fun getOngoingParcels(principal: Principal): ResponseEntity<ApiResult<List<ParcelInfo.Main>>> {
 
         val command = ParcelCommand.GetOngoingParcels(principal.name.toLong())
-        val ongoings = parcelFacade.retrieveOngoingParcels(command)
+        val ongoings = parcelFacade.getOngoingParcels(command)
         val result = ApiResult(data = ongoings)
+
+        return ResponseEntity.ok(result)
+    }
+
+    @Operation(
+        summary = "복수의 택배 조회 API",
+        security = [SecurityRequirement(
+            name = "Oauth2",
+            scopes = ["read", "write"]
+        ), SecurityRequirement(name = "BearerToken")]
+    )
+    @GetMapping("/parcels")
+    fun getParcels(
+        @Parameter(name = "parcels", description = "복수 조회할 택배 식별값 리스트", required = true)
+        @RequestParam(value = "parcel", required = true)
+        @NotNull(message = "* 택배 id를 확인해주세요.")
+        parcels: List<Long>,
+        principal: Principal
+    ): ResponseEntity<ApiResult<List<ParcelInfo.Main>>> {
+
+        val command = ParcelCommand.GetParcels(principal.name.toLong(), parcels)
+        val parcelInfos = parcelFacade.getParcels(command)
+        val result = ApiResult(data = parcelInfos)
 
         return ResponseEntity.ok(result)
     }
@@ -126,7 +149,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
     ): ResponseEntity<ApiResult<List<ParcelInfo.Main>>> {
 
         val command = ParcelCommand.GetCompleteParcels(principal.name.toLong(), inquiryDate, pageable)
-        val completes = parcelFacade.retrieveCompleteParcels(command)
+        val completes = parcelFacade.getCompleteParcels(command)
         val result = ApiResult(data = completes)
 
         return ResponseEntity.ok(result)
@@ -143,7 +166,7 @@ class ParcelController(private val parcelFacade: ParcelFacade) {
     fun getMonths(principal: Principal): ResponseEntity<ApiResult<List<ParcelInfo.MonthlyParcelCnt>>> {
 
         val command = ParcelCommand.GetMonthlyParcelCnt(principal.name.toLong())
-        val monthlyParcelCnt = parcelFacade.retrieveMonthlyParcelCnt(command)
+        val monthlyParcelCnt = parcelFacade.getMonthlyParcelCnt(command)
         val successResult = ApiResult(data = monthlyParcelCnt)
         return ResponseEntity.ok(successResult)
     }
