@@ -3,12 +3,10 @@ package team.sopo.parcel.domain
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.sopo.common.exception.SopoException
-import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.domain.register.RegisterProcessor
 import team.sopo.parcel.domain.search.SearchProcessor
 import team.sopo.parcel.domain.update.UpdateProcessor
 import team.sopo.parcel.domain.update.UpdateStatus
-import team.sopo.parcel.presentation.ParcelInfoMapper
 
 @Service
 class ParcelServiceImpl(

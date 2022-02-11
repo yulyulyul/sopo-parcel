@@ -23,7 +23,6 @@ import team.sopo.common.exception.AlreadyRegisteredParcelException
 import team.sopo.common.exception.OverRegisteredParcelException
 import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.common.exception.ValidationException
-import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.TestConfig
 import team.sopo.parcel.domain.register.RegisterProcessor
 import team.sopo.parcel.domain.search.SearchProcessor
@@ -32,7 +31,6 @@ import team.sopo.parcel.domain.trackinginfo.State
 import team.sopo.parcel.domain.trackinginfo.To
 import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 import team.sopo.parcel.domain.update.UpdateProcessor
-import team.sopo.parcel.presentation.ParcelInfoMapper
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -49,6 +47,7 @@ import kotlin.streams.toList
 @DbUnitConfiguration(databaseConnection = ["dbUnitDatabaseConnection"])
 @ActiveProfiles("test")
 class ParcelServiceImplTest {
+
     @Autowired
     lateinit var mapper: ParcelInfoMapper
 

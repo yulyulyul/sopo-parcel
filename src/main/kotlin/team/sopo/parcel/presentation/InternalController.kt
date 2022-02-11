@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import team.sopo.parcel.ParcelInfo
+import team.sopo.parcel.domain.ParcelInfo
 import team.sopo.parcel.application.ParcelFacade
 import team.sopo.parcel.domain.ParcelCommand
 import javax.validation.constraints.NotNull

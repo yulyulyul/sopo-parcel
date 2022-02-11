@@ -1,4 +1,4 @@
-package team.sopo.parcel.presentation.request
+package team.sopo.push.presentation.request
 
 import javax.validation.constraints.NotNull
 

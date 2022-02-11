@@ -1,6 +1,6 @@
 package team.sopo.parcel.infrastructure.support
 
-import team.sopo.parcel.ParcelInfo
+import team.sopo.parcel.domain.ParcelInfo
 import team.sopo.parcel.domain.Parcel
 
 interface ParcelRepositorySupport {

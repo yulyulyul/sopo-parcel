@@ -1,7 +1,7 @@
 package team.sopo.parcel.application
 
 import org.springframework.stereotype.Service
-import team.sopo.parcel.ParcelInfo
+import team.sopo.parcel.domain.ParcelInfo
 import team.sopo.parcel.domain.ParcelCommand
 import team.sopo.parcel.domain.ParcelService
 import team.sopo.push.domain.PushService

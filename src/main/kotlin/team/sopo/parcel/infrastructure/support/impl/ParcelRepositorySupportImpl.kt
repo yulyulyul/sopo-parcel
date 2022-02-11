@@ -4,8 +4,8 @@ import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import team.sopo.common.exception.ParcelNotFoundException
-import team.sopo.parcel.ParcelInfo
 import team.sopo.parcel.domain.Parcel
+import team.sopo.parcel.domain.ParcelInfo
 import team.sopo.parcel.domain.QParcel
 import team.sopo.parcel.domain.QParcel.parcel
 import team.sopo.parcel.infrastructure.support.ParcelRepositorySupport
@@ -18,7 +18,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
         return queryFactory
             .selectFrom(parcel)
             .where(parcel.userId.eq(userId))
-            .fetchCount()
+            .fetch().size.toLong()
     }
 
     override fun getRegisterParcelCountIn2Week(userId: Long): Long {
@@ -30,7 +30,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
                 parcel.regDte.between(ZonedDateTime.now().minusWeeks(2L), ZonedDateTime.now())
                     .and(parcel.userId.eq(userId))
             )
-            .fetchCount()
+            .fetch().size.toLong()
     }
 
     override fun getParcel(userId: Long, parcelId: Long): Parcel {
@@ -64,7 +64,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
                     .and(parcel.waybillNum.eq(waybillNum))
                     .and(parcel.carrier.eq(carrier))
             )
-            .fetchCount().toInt()
+            .fetch().size
 
         return flag > 0
     }
@@ -106,7 +106,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
                 parcel.userId.eq(userId)
                     .and(parcel.regDte.month().eq(Expressions.currentDate().month()))
             )
-            .fetchCount().toInt() > 50
+            .fetch().size > 50
     }
 
     override fun getCurrentMonthRegisteredCount(userId: Long): Int {
@@ -116,7 +116,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
                 parcel.userId.eq(userId)
                     .and(parcel.regDte.month().eq(Expressions.currentDate().month()))
             )
-            .fetchCount().toInt()
+            .fetch().size
     }
 
 }

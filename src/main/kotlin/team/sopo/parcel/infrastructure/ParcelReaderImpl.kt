@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import team.sopo.common.consts.CompletedParcelConst
 import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.common.util.OffsetBasedPageRequest
-import team.sopo.parcel.ParcelInfo
+import team.sopo.parcel.domain.ParcelInfo
 import team.sopo.parcel.domain.Carrier
 import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.ParcelReader

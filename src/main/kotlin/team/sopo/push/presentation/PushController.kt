@@ -1,4 +1,4 @@
-package team.sopo.parcel.presentation
+package team.sopo.push.presentation
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import team.sopo.parcel.application.ParcelFacade
 import team.sopo.parcel.domain.ParcelCommand
-import team.sopo.parcel.presentation.request.DeviceAwakenRequest
-import team.sopo.parcel.presentation.request.PushParcelsRequest
+import team.sopo.push.presentation.request.DeviceAwakenRequest
+import team.sopo.push.presentation.request.PushParcelsRequest
 import javax.validation.Valid
 
 @Validated

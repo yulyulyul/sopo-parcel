@@ -1,10 +1,7 @@
-package team.sopo.parcel.presentation
+package team.sopo.parcel.domain
 
 import com.google.gson.Gson
 import org.mapstruct.*
-import team.sopo.parcel.ParcelInfo
-import team.sopo.parcel.domain.Carrier
-import team.sopo.parcel.domain.Parcel
 import team.sopo.parcel.domain.trackinginfo.TrackingInfo
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
