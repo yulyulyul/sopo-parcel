@@ -108,7 +108,7 @@ class ParcelController(
     )
     @GetMapping("/parcels")
     fun getParcels(
-        @Parameter(name = "parcels", description = "복수 조회할 택배 식별값 리스트", required = true)
+        @Parameter(name = "parcel", description = "복수 조회할 택배 식별값 리스트", required = true)
         @RequestParam(value = "parcel", required = true)
         @NotNull(message = "* 택배 id를 확인해주세요.")
         parcels: List<Long>,
