@@ -6,6 +6,7 @@ import feign.codec.ErrorDecoder
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import team.sopo.common.exception.SopoOauthException
+import team.sopo.common.exception.error.SopoError
 
 class TokenErrorDecoder: ErrorDecoder {
 
@@ -17,7 +18,16 @@ class TokenErrorDecoder: ErrorDecoder {
         val body = getErrorBody(response)
         logger.info("errorResponse : $body")
 
-        throw SopoOauthException(body.error, body.error_description, body.sopoErrorCode.toInt())
+        if(body.sopoErrorCode != null){
+            throw SopoOauthException(body.error, body.error_description, body.sopoErrorCode.toInt())
+        }
+
+        if(body.error_description == "Token has expired"){
+            throw SopoOauthException(body.error, body.error_description, SopoError.OAUTH2_INVALID_TOKEN.code)
+        }
+
+        throw SopoOauthException(body.error, body.error_description, SopoError.OAUTH2_UNKNOWN.code)
+
     }
 
     private fun getErrorBody(response: Response): SopoExceptionDTO {
