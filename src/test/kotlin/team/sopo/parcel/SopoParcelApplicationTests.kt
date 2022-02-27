@@ -1,8 +1,8 @@
 package team.sopo.parcel
 
 import org.junit.jupiter.api.Test
-import team.sopo.parcel.domain.Carrier
-import team.sopo.parcel.domain.Parcel
+import team.sopo.domain.parcel.Carrier
+import team.sopo.domain.parcel.Parcel
 import java.time.ZoneId
 import java.time.ZonedDateTime
 

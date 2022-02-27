@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository
 import org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST
 import org.springframework.web.context.request.RequestContextHolder
 import team.sopo.common.tracing.content.DeliveryTrackerContent
-import team.sopo.parcel.domain.ParcelCommand
+import team.sopo.domain.parcel.ParcelCommand
 
 @Repository
 class DeliveryTrackerRepository: TracingRepository<Map<String, DeliveryTrackerContent>> {
