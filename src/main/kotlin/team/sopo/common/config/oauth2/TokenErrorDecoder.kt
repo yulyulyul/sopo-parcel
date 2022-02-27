@@ -27,7 +27,6 @@ class TokenErrorDecoder: ErrorDecoder {
         }
 
         throw SopoOauthException(body.error, body.error_description, SopoError.OAUTH2_UNKNOWN.code)
-
     }
 
     private fun getErrorBody(response: Response): SopoExceptionDTO {
