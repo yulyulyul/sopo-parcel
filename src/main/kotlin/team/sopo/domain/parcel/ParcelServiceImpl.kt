@@ -38,7 +38,7 @@ class ParcelServiceImpl(
     @Transactional(readOnly = true)
     override fun getCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main> {
         val completeParcels =
-            parcelReader.getCompleteParcels(getCommand.userId, getCommand.inquiryDate, getCommand.pageable)
+            parcelReader.getCompleteParcels(getCommand.userId, getCommand.inquiryDate, getCommand.pageable, getCommand.itemCnt)
         return parcelInfoMapper.of(completeParcels)
     }
 

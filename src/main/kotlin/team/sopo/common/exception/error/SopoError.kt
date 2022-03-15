@@ -29,6 +29,7 @@ enum class SopoError(
     OAUTH2_UNSUPPORTED_RESPONSE_TYPE(HttpStatus.BAD_REQUEST, ErrorType.OAUTH2, 809, "지원하지 않는 응답 타입 입니다."),
     OAUTH2_ACCESS_DENIED(HttpStatus.FORBIDDEN, ErrorType.OAUTH2, 810, "허가되지 않은 접근입니다."),
     OAUTH2_UNKNOWN(HttpStatus.UNAUTHORIZED, ErrorType.OAUTH2, 811, "토큰 인증에 실패하였습니다."),
+    OAUTH2_DELETED_TOKEN(HttpStatus.BAD_REQUEST, ErrorType.OAUTH2, 812, "존재하지 않는 토큰입니다.(중복 로그인)"),
 
     // Specific
     ALREADY_REGISTERED_PARCEL(HttpStatus.CONFLICT, ErrorType.CONFLICT, 701,"이미 등록된 택배입니다."),

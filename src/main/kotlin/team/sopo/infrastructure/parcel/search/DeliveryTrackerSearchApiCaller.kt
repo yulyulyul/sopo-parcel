@@ -9,11 +9,14 @@ import team.sopo.domain.parcel.ParcelCommand
 import team.sopo.domain.parcel.search.SearchApiCaller
 import team.sopo.domain.parcel.search.SearchMethod
 import team.sopo.domain.parcel.trackinginfo.TrackingInfo
-import team.sopo.infrastructure.parcel.DeliveryTrackerClient
+import team.sopo.infrastructure.parcel.tracker.delivery.DeliveryTrackerClient
 
 @Component
-class DeliveryTrackerSearchApiCaller(private val deliveryTrackerClient: DeliveryTrackerClient, private val repository: DeliveryTrackerRepository) :
-    SearchApiCaller {
+class DeliveryTrackerSearchApiCaller(
+    private val client: DeliveryTrackerClient,
+    private val mapper: TrackerMapper,
+    private val repository: DeliveryTrackerRepository
+) : SearchApiCaller {
 
     override fun support(searchMethod: SearchMethod): Boolean {
         return searchMethod == SearchMethod.DeliveryTracker
@@ -24,13 +27,18 @@ class DeliveryTrackerSearchApiCaller(private val deliveryTrackerClient: Delivery
 
         return try {
             repository.saveTrackingPersonalData(search.toTrackingPersonalData(apiId))
-            deliveryTrackerClient.getTrackingInfo(apiId, search.carrier.CODE, search.waybillNum)
+            val trackingInfo = client.getTrackingInfo(apiId, findCarrier(search.carrier), search.waybillNum)
+            mapper.of(trackingInfo)
         } catch (e: feign.RetryableException) {
             repository.saveError(apiId, e::class.simpleName.toString(), e.message)
             logContent(apiId)
 
-            throw FailToSearchParcelException(search.carrier.CODE, search.waybillNum, e)
+            throw FailToSearchParcelException(search.carrier, search.waybillNum, e)
         }
+    }
+
+    override fun findCarrier(code: String): String {
+        return code
     }
 
     private fun logContent(apiId: String) {

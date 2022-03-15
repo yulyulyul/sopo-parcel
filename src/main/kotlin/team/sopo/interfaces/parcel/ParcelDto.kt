@@ -42,7 +42,7 @@ class ParcelDto {
         val alias: String = ""
     ) {
         fun toCommand(userId: Long): ParcelCommand.RegisterParcel {
-            return ParcelCommand.RegisterParcel(userId, Carrier.valueOf(carrier!!), waybillNum, alias)
+            return ParcelCommand.RegisterParcel(userId, Carrier.valueOf(carrier!!).CODE, waybillNum, alias)
         }
     }
 

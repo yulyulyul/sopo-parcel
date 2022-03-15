@@ -6,8 +6,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.domain.parcel.Parcel
 import team.sopo.domain.parcel.ParcelInfo
-import team.sopo.parcel.domain.QParcel
-import team.sopo.parcel.domain.QParcel.parcel
+import team.sopo.domain.parcel.QParcel
+import team.sopo.domain.parcel.QParcel.parcel
 import team.sopo.infrastructure.parcel.support.ParcelRepositorySupport
 import java.time.ZonedDateTime
 

@@ -26,6 +26,10 @@ class TokenErrorDecoder: ErrorDecoder {
             throw SopoOauthException(body.error, body.error_description, SopoError.OAUTH2_INVALID_TOKEN.code)
         }
 
+        if(body.error_description == "Token was not recognised"){
+            throw SopoOauthException(body.error, body.error_description, SopoError.OAUTH2_DELETED_TOKEN.code)
+        }
+
         throw SopoOauthException(body.error, body.error_description, SopoError.OAUTH2_UNKNOWN.code)
     }
 

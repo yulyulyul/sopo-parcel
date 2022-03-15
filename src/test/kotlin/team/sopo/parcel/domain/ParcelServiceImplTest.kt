@@ -23,8 +23,8 @@ import team.sopo.common.exception.AlreadyRegisteredParcelException
 import team.sopo.common.exception.OverRegisteredParcelException
 import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.common.exception.ValidationException
+import team.sopo.common.util.OffsetBasedPageRequest
 import team.sopo.domain.parcel.*
-import team.sopo.parcel.TestConfig
 import team.sopo.domain.parcel.register.RegisterProcessor
 import team.sopo.domain.parcel.search.SearchProcessor
 import team.sopo.domain.parcel.trackinginfo.From
@@ -32,6 +32,7 @@ import team.sopo.domain.parcel.trackinginfo.State
 import team.sopo.domain.parcel.trackinginfo.To
 import team.sopo.domain.parcel.trackinginfo.TrackingInfo
 import team.sopo.domain.parcel.update.UpdateProcessor
+import team.sopo.parcel.TestConfig
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -236,7 +237,7 @@ class ParcelServiceImplTest {
             // given
             val userId = 1L
             val inquiryDate = "202108"
-            val command = ParcelCommand.GetCompleteParcels(userId, inquiryDate, PageRequest.of(0, 20))
+            val command = ParcelCommand.GetCompleteParcels(userId, inquiryDate, 10, OffsetBasedPageRequest(0, 10))
 
             // when
             val completeParcels = parcelService.getCompleteParcels(command)
@@ -259,12 +260,55 @@ class ParcelServiceImplTest {
             // given
             val userId = 1L
             val inquiryDate = "202108"
-            val command = ParcelCommand.GetCompleteParcels(userId, inquiryDate, PageRequest.of(0, 20))
+            val command = ParcelCommand.GetCompleteParcels(userId, inquiryDate, 5, PageRequest.of(0, 10))
 
             // when
             val completeParcels = parcelService.getCompleteParcels(command)
 
             Assertions.assertTrue(completeParcels.isEmpty())
+        }
+
+        @Test
+        @DisplayName("itemCnt의 숫자대로 완료된 택배를 가져올 수 있어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"], type = DatabaseOperation.CLEAN_INSERT)
+        @DatabaseTearDown(value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun getCompletesTestCase3() {
+            // given
+            val userId = 1L
+            val inquiryDate = "202201"
+            val itemCnt = 4
+            val command = ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(0, itemCnt))
+
+            // when
+            val completeParcels = parcelService.getCompleteParcels(command)
+
+            Assertions.assertEquals(itemCnt, completeParcels.size)
+        }
+
+        @Test
+        @DisplayName("itemCnt의 개수대로 페이징 처리가 되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"], type = DatabaseOperation.CLEAN_INSERT)
+        @DatabaseTearDown(value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun getCompletesTestCase4() {
+            // given
+            val userId = 1L
+            val inquiryDate = "202201"
+            val itemCnt = 7 // 총 18개 = ( 7 / 7 / 4 )
+            var offset = 0
+
+            val command1 = ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(offset++, itemCnt))
+            val command2 = ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(offset++, itemCnt))
+            val command3 = ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(offset, itemCnt))
+
+            // when
+            val completeParcels1 = parcelService.getCompleteParcels(command1)
+            val completeParcels2 = parcelService.getCompleteParcels(command2)
+            val completeParcels3 = parcelService.getCompleteParcels(command3)
+
+            Assertions.assertEquals(itemCnt, completeParcels1.size)
+            Assertions.assertEquals(itemCnt, completeParcels2.size)
+            Assertions.assertEquals(4, completeParcels3.size)
+
         }
     }
 
@@ -415,7 +459,7 @@ class ParcelServiceImplTest {
             val parcelService =
                 ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
             val registerParcel =
-                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, "test_123123", "test_alias"))
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier.CODE, "test_123123", "test_alias"))
 
             // then
             Assertions.assertEquals(Parcel.DeliveryStatus.NOT_REGISTERED, registerParcel.deliveryStatus)
@@ -441,7 +485,7 @@ class ParcelServiceImplTest {
 
             // when, then
             Assertions.assertThrows(AlreadyRegisteredParcelException::class.java) {
-                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier.CODE, waybillNum, alias))
             }
         }
 
@@ -469,7 +513,7 @@ class ParcelServiceImplTest {
                 ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
 
             Assertions.assertThrows(OverRegisteredParcelException::class.java) {
-                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier.CODE, waybillNum, alias))
             }
         }
 
@@ -491,7 +535,7 @@ class ParcelServiceImplTest {
 
             // when
             val parcelInfo =
-                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier.CODE, waybillNum, alias))
 
             // then
             Assertions.assertEquals(waybillNum, parcelInfo.alias)
@@ -515,7 +559,7 @@ class ParcelServiceImplTest {
 
             // when
             val parcelInfo =
-                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier.CODE, waybillNum, alias))
 
             // then
             Assertions.assertEquals(alias, parcelInfo.alias)
@@ -547,7 +591,7 @@ class ParcelServiceImplTest {
 
             // when
             val parcelInfo =
-                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier.CODE, waybillNum, alias))
 
             // then
             Assertions.assertEquals("보내는 이 (${from.name})", parcelInfo.alias)
@@ -579,7 +623,7 @@ class ParcelServiceImplTest {
 
             // when
             val parcelInfo =
-                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier.CODE, waybillNum, alias))
 
             // then
             Assertions.assertEquals(alias, parcelInfo.alias)
@@ -611,7 +655,7 @@ class ParcelServiceImplTest {
 
             // when
             val parcelInfo =
-                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier, waybillNum, alias))
+                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier.CODE, waybillNum, alias))
 
             // then
             Assertions.assertEquals(null, parcelInfo.arrivalDte)
@@ -716,7 +760,7 @@ class ParcelServiceImplTest {
                         mockSearchProc.search(
                             ParcelCommand.SearchRequest(
                                 parcel.userId,
-                                Carrier.getCarrierByCode(parcel.carrier),
+                                Carrier.getCarrierByCode(parcel.carrier).CODE,
                                 parcel.waybillNum
                             )
                         )
@@ -726,7 +770,7 @@ class ParcelServiceImplTest {
                         mockSearchProc.search(
                             ParcelCommand.SearchRequest(
                                 parcel.userId,
-                                Carrier.getCarrierByCode(parcel.carrier),
+                                Carrier.getCarrierByCode(parcel.carrier).CODE,
                                 parcel.waybillNum
                             )
                         )

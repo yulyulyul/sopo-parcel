@@ -20,6 +20,7 @@ class ParcelCommand {
     data class GetCompleteParcels(
         val userId: Long,
         val inquiryDate: String,
+        val itemCnt: Int,
         val pageable: Pageable
     )
 
@@ -27,13 +28,13 @@ class ParcelCommand {
 
     data class RegisterParcel(
         val userId: Long,
-        val carrier: Carrier,
+        val carrier: String,
         val waybillNum: String,
         val alias: String,
         val trackingInfo: TrackingInfo? = null
     ) {
         fun toEntity(trackingInfo: TrackingInfo?): Parcel {
-            return Parcel(trackingInfo, userId, waybillNum, carrier.CODE, alias)
+            return Parcel(trackingInfo, userId, waybillNum, carrier, alias)
         }
 
         fun toSearchRequest(): SearchRequest {
@@ -65,18 +66,18 @@ class ParcelCommand {
 
     data class SearchRequest(
         val userId: Long,
-        val carrier: Carrier,
+        val carrier: String,
         val waybillNum: String,
-        val searchMethod: SearchMethod = SearchMethod.DeliveryTracker
-    ){
+        val searchMethod: SearchMethod = SearchMethod.SweetTracker
+    ) {
         fun toTrackingPersonalData(apiId: String): TrackingPersonalData {
-            return TrackingPersonalData(userId, apiId, carrier, waybillNum)
+            return TrackingPersonalData(userId, apiId, Carrier.getCarrierByCode(carrier), waybillNum)
         }
     }
 
     data class RegisterRequest(
         val userId: Long,
-        val carrier: Carrier,
+        val carrier: String,
         val waybillNum: String,
         val parcel: Parcel
     )
@@ -112,7 +113,7 @@ class ParcelCommand {
         fun toSearchRequest(originalParcel: Parcel): SearchRequest {
             return SearchRequest(
                 originalParcel.userId,
-                Carrier.getCarrierByCode(originalParcel.carrier),
+                originalParcel.carrier,
                 originalParcel.waybillNum
             )
         }

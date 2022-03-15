@@ -7,7 +7,7 @@ interface ParcelReader {
     fun getParcel(userId: Long, carrier: Carrier, waybillNum: String): Parcel
     fun getParcels(parcelIds: List<Long>, userId: Long): List<Parcel>
     fun getOngoingParcels(userId: Long): List<Parcel>
-    fun getCompleteParcels(userId: Long, inquiryDate: String, pageable: Pageable): List<Parcel>
+    fun getCompleteParcels(userId: Long, inquiryDate: String, pageable: Pageable, itemCnt: Int): List<Parcel>
     fun getRegisteredCountIn2Week(userId: Long): Long
     fun getRegisteredParcelCount(userId: Long): Long
     fun getMonthlyParcelCntList(userId: Long): List<ParcelInfo.MonthlyParcelCnt>

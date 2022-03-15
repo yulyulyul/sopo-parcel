@@ -1,7 +1,5 @@
 package team.sopo.domain.parcel
 
-import java.lang.NullPointerException
-
 enum class Carrier(val CODE: String, val NAME: String) {
     CHUNILPS("kr.chunilps", "천일택배"),
     CJ_LOGISTICS("kr.cjlogistics", "CJ대한통운"),
@@ -20,7 +18,7 @@ enum class Carrier(val CODE: String, val NAME: String) {
             val carrier = values().findLast {
                 it.CODE == code
             }
-            carrier ?: throw NullPointerException("정의되지 않은 배송사입니다.")
+            carrier ?: throw IllegalStateException("정의되지 않은 배송사입니다.")
             return carrier
         }
     }

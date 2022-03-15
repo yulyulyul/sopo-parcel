@@ -34,6 +34,7 @@ class SopoOauthException: OAuth2Exception{
             SopoError.OAUTH2_UNSUPPORTED_GRANT_TYPE.code -> SopoError.OAUTH2_UNSUPPORTED_GRANT_TYPE
             SopoError.OAUTH2_UNSUPPORTED_RESPONSE_TYPE.code -> SopoError.OAUTH2_UNSUPPORTED_RESPONSE_TYPE
             SopoError.OAUTH2_ACCESS_DENIED.code -> SopoError.OAUTH2_ACCESS_DENIED
+            SopoError.OAUTH2_DELETED_TOKEN.code -> SopoError.OAUTH2_DELETED_TOKEN
             else -> {
                 SopoError.OAUTH2_UNKNOWN
             }

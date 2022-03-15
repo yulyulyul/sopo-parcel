@@ -5,6 +5,7 @@ import team.sopo.domain.parcel.Carrier
 import team.sopo.domain.parcel.Parcel
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.*
 
 class SopoParcelApplicationTests {
 
@@ -31,4 +32,9 @@ class SopoParcelApplicationTests {
         println("auditDte : ${initParcel.auditDte}")
     }
 
+    @Test
+    fun dateTest(){
+        val date = Date(1646292849000)
+        println(date)
+    }
 }

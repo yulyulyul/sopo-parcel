@@ -22,8 +22,8 @@ fun TrackingInfo.sortProgress() {
 }
 
 fun TrackingInfo.verifyState() {
-    if(this.progresses.isEmpty()){
-       return
+    if (this.progresses.isEmpty()) {
+        return
     }
     this.progresses.last()?.status?.apply {
         this@verifyState.state.id = this.id
@@ -44,8 +44,8 @@ private fun removeSpecialCharacterInTrackInfo(trackingInfo: TrackingInfo): Track
                 To::class.java -> {
                     removeSpecialCharacterByReflection(trackInfoAny, To::class.java)
                 }
-                String::class.java -> {
-                    field.set(trackInfoAny, removeSpecialCharacter(trackInfoAny as String?))
+                TrackingInfo::item::class.java -> {
+                    removeSpecialCharacterByReflection(trackInfoAny, TrackingInfo::item::class.java)
                 }
                 State::class.java -> {
                     removeSpecialCharacterByReflection(trackInfoAny, State::class.java)
@@ -94,5 +94,7 @@ private fun <T : Any> removeSpecialCharacterByReflection(obj: Any, classType: Cl
 private fun removeSpecialCharacter(str: String?): String? {
     if (str == null)
         return null
+    if (str.isEmpty())
+        return str
     return str.replace("\n", "").replace("\t", "").trim()
 }

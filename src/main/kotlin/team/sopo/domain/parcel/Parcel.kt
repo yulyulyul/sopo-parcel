@@ -1,28 +1,30 @@
 package team.sopo.domain.parcel
 
 import com.google.gson.Gson
+import org.apache.commons.lang3.StringUtils
 import team.sopo.common.exception.UnauthorizedException
 import team.sopo.common.exception.ValidationException
 import team.sopo.common.extension.asHex
 import team.sopo.domain.parcel.trackinginfo.TrackingInfo
 import java.security.MessageDigest
 import java.time.ZonedDateTime
+import java.time.format.DateTimeParseException
 import javax.persistence.*
 
 @Entity
 @Table(name = "parcel")
 class Parcel() : AbstractEntity() {
 
-    enum class DeliveryStatus {
-        NOT_REGISTERED,
-        CHANGED,
-        UNCHANGED,
-        ORPHANED,
-        DELIVERED, // 배송완료
-        OUT_FOR_DELIVERY, // 배송출발
-        IN_TRANSIT, // 상품이동중
-        AT_PICKUP, // 상품인수
-        INFORMATION_RECEIVED // 상품준비중
+    enum class DeliveryStatus(val id: String, val description: String) {
+        NOT_REGISTERED("not_registered", "등록되지 않았음"),
+        CHANGED("changed", "상태가 변경되었음"),
+        UNCHANGED("unchanged", "상태가 변경되지 않았음"),
+        ORPHANED("orphaned", "택배가 오랫동안 변경이 없음"),
+        DELIVERED("delivered", "배송완료"), // 배송완료
+        OUT_FOR_DELIVERY("out_for_delivery", "배송출발"), // 배송출발
+        IN_TRANSIT("in_transit", "상품이동중"), // 상품이동중
+        AT_PICKUP("at_pickup", "상품인수"), // 상품인수
+        INFORMATION_RECEIVED("information_received", "상품준비중") // 상품준비중
     }
 
     enum class Activeness {
@@ -85,7 +87,7 @@ class Parcel() : AbstractEntity() {
     }
 
     fun changeParcelAlias(alias: String) {
-        if(alias.length > 25){
+        if (alias.length > 25) {
             throw ValidationException("택배 별칭은 25글자를 초과할 수 없습니다.")
         }
         this.alias = alias
@@ -99,19 +101,19 @@ class Parcel() : AbstractEntity() {
         return this.deliveryStatus != DeliveryStatus.ORPHANED
     }
 
-    fun verifyDeletable(command: ParcelCommand.DeleteParcel){
-        if(userId != command.userId){
+    fun verifyDeletable(command: ParcelCommand.DeleteParcel) {
+        if (userId != command.userId) {
             throw UnauthorizedException("삭제하시려는 택배는 ${command.userId}님의 택배가 아닙니다.")
         }
     }
 
-    fun verifyRefreshable(){
-      /*
-        TODO 택배서버에서 일어나는 이슈를 좀 더 알아보고 결정하기 위해서 아래 사항은 후에 적용하기로 의사결정함. (의사결정 일자 : 2021-11-21)
-        if(this.deliveryStatus == DeliveryStatus.DELIVERED){
-            throw ParcelRefreshValidateException("이미 완료된 택배는 업데이트할 수 없습니다.")
-        }
-      */
+    fun verifyRefreshable() {
+        /*
+          TODO 택배서버에서 일어나는 이슈를 좀 더 알아보고 결정하기 위해서 아래 사항은 후에 적용하기로 의사결정함. (의사결정 일자 : 2021-11-21)
+          if(this.deliveryStatus == DeliveryStatus.DELIVERED){
+              throw ParcelRefreshValidateException("이미 완료된 택배는 업데이트할 수 없습니다.")
+          }
+        */
     }
 
     fun inactivate() {
@@ -153,12 +155,17 @@ class Parcel() : AbstractEntity() {
 
     private fun createArrivalDateTime(trackingInfo: TrackingInfo?): ZonedDateTime? {
         val status = createDeliveryStatus(trackingInfo)
-        return if (trackingInfo != null && status == DeliveryStatus.DELIVERED) {
-            ZonedDateTime.parse(trackingInfo.progresses.last()?.time.let {
-                it?.plus("[Asia/Seoul]")
-            })
-        } else {
-            null
+        val time = trackingInfo?.progresses?.lastOrNull()?.time ?: return null
+
+        return try{
+            if (status == DeliveryStatus.DELIVERED) {
+                ZonedDateTime.parse(time.plus("[Asia/Seoul]"))
+            } else {
+                null
+            }
+        }
+        catch (e: DateTimeParseException){
+            ZonedDateTime.parse(time)
         }
     }
 
@@ -166,11 +173,19 @@ class Parcel() : AbstractEntity() {
         val returnObj by lazy {
 
             inputAlias.ifEmpty {
-                if (trackingInfo != null) {
-                    trackingInfo.from?.let { "보내는 이 (${it.name})" } ?: waybillNum
-                } else {
-                    waybillNum
+                if (trackingInfo == null) {
+                    return@ifEmpty waybillNum
                 }
+
+                if (trackingInfo.from != null && StringUtils.isNotBlank(trackingInfo.from.name)) {
+                    return@ifEmpty "보내는 이 (${trackingInfo.from.name})"
+                }
+
+                if (trackingInfo.item != null) {
+                    return@ifEmpty trackingInfo.item
+                }
+
+                waybillNum
             }
         }
         return returnObj

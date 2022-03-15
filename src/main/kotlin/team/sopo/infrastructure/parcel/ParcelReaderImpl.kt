@@ -2,12 +2,11 @@ package team.sopo.infrastructure.parcel
 
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
-import team.sopo.common.consts.CompletedParcelConst
 import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.common.util.OffsetBasedPageRequest
-import team.sopo.domain.parcel.ParcelInfo
 import team.sopo.domain.parcel.Carrier
 import team.sopo.domain.parcel.Parcel
+import team.sopo.domain.parcel.ParcelInfo
 import team.sopo.domain.parcel.ParcelReader
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -29,7 +28,7 @@ class ParcelReaderImpl(private val repository: JpaParcelRepository) : ParcelRead
         val parcels = repository.findAllByIdInAndUserIdAndStatusEquals(parcelIds, userId)
         val ids = parcels.parallelStream().map(Parcel::id).toList()
         parcelIds.filter { !ids.contains(it) }.toList().apply {
-            if(this.isNotEmpty()){
+            if (this.isNotEmpty()) {
                 throw ParcelNotFoundException("${this}에 해당하는 택배를 찾을 수 없습니다.")
             }
         }
@@ -41,16 +40,13 @@ class ParcelReaderImpl(private val repository: JpaParcelRepository) : ParcelRead
         return repository.getParcelsOngoing(userId).orEmpty()
     }
 
-    override fun getCompleteParcels(userId: Long, inquiryDate: String, pageable: Pageable): List<Parcel> {
+    override fun getCompleteParcels(userId: Long, inquiryDate: String, pageable: Pageable, itemCnt: Int): List<Parcel> {
         val inquiryYearMonth = YearMonth.parse(
             inquiryDate,
-            DateTimeFormatter.ofPattern(CompletedParcelConst.yearMonthDateTimeFormatPattern)
+            DateTimeFormatter.ofPattern("yyyyMM")
         )
         val completeParcels = repository.getCompleteParcels(
-            pageable = OffsetBasedPageRequest(
-                pageable.pageNumber * CompletedParcelConst.pageableOffSet,
-                CompletedParcelConst.pageableLimit
-            ),
+            pageable = OffsetBasedPageRequest(pageable.pageNumber * itemCnt, itemCnt),
             user_id = userId,
             startDate = "${inquiryYearMonth.year}-${inquiryYearMonth.monthValue}-01",
             endDate = "${inquiryYearMonth.year}-${inquiryYearMonth.monthValue}-31"

@@ -139,6 +139,13 @@ class ParcelController(
         @NotNull(message = "* 페이징 번호를 확인해주세요.")
         pageable: Pageable,
         @Parameter(
+            name = "itemCnt", description = "아이템 조회 개수",
+            required = true, `in` = ParameterIn.QUERY,
+            schema = Schema(implementation = Integer::class, example = "10")
+        )
+        @NotNull(message = "* 아이템 개수를 확인해주세요.")
+        itemCnt: Int,
+        @Parameter(
             name = "inquiryDate", description = "조회 날짜(202103 - 년월)",
             required = true, `in` = ParameterIn.QUERY,
             schema = Schema(implementation = String::class, example = "202006")
@@ -149,7 +156,7 @@ class ParcelController(
         principal: Principal
     ): ResponseEntity<ApiResult<List<ParcelDto.Main>>> {
 
-        val command = ParcelCommand.GetCompleteParcels(principal.name.toLong(), inquiryDate, pageable)
+        val command = ParcelCommand.GetCompleteParcels(principal.name.toLong(), inquiryDate, itemCnt, pageable)
         val completes = parcelFacade.getCompleteParcels(command)
         val result = ApiResult(data = parcelDtoMapper.of(completes))
 

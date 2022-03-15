@@ -1,6 +1,5 @@
 ﻿package team.sopo.common.annotation
 
-import team.sopo.common.consts.CompletedParcelConst
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import javax.validation.ConstraintValidator
@@ -12,14 +11,10 @@ class YearMonthValidator: ConstraintValidator<DateFormatYearMonth, String> {
             if (value== null){
                 throw NullPointerException("value is null")
             }
-            YearMonth.parse(value, DateTimeFormatter.ofPattern(CompletedParcelConst.yearMonthDateTimeFormatPattern))
+            YearMonth.parse(value, DateTimeFormatter.ofPattern("yyyyMM"))
             true
         }
         catch (e: Exception){
-//            context.disableDefaultConstraintViolation()
-//            context
-//                .buildConstraintViolationWithTemplate("$value, please check date format")
-//                .addConstraintViolation()
             false
         }
     }

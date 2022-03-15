@@ -13,6 +13,7 @@ interface JpaParcelRepository : JpaRepository<Parcel, Long>, ParcelRepositorySup
 
     @Query(
         value = "SELECT * FROM parcel WHERE user_id = :user_id AND status = 'ACTIVE' AND delivery_status = 'DELIVERED' AND date(arrival_dte) BETWEEN :startDate AND :endDate",
+        countQuery = "SELECT COUNT(*) FROM parcel WHERE user_id = :user_id AND status = 'ACTIVE' AND delivery_status = 'DELIVERED' AND date(arrival_dte) BETWEEN :startDate AND :endDate",
         nativeQuery = true
     )
     fun getCompleteParcels(
