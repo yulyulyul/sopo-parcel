@@ -12,10 +12,11 @@ fun TrackingInfo.sortProgress() {
     return this.progresses.sortWith(compareBy {
         when (it?.status?.id?.uppercase()) {
             Parcel.DeliveryStatus.NOT_REGISTERED.name -> 0
-            Parcel.DeliveryStatus.AT_PICKUP.name -> 1
-            Parcel.DeliveryStatus.IN_TRANSIT.name -> 2
-            Parcel.DeliveryStatus.OUT_FOR_DELIVERY.name -> 3
-            Parcel.DeliveryStatus.DELIVERED.name -> 4
+            Parcel.DeliveryStatus.INFORMATION_RECEIVED.name -> 1
+            Parcel.DeliveryStatus.AT_PICKUP.name -> 2
+            Parcel.DeliveryStatus.IN_TRANSIT.name -> 3
+            Parcel.DeliveryStatus.OUT_FOR_DELIVERY.name -> 4
+            Parcel.DeliveryStatus.DELIVERED.name -> 5
             else -> 999
         }
     })
