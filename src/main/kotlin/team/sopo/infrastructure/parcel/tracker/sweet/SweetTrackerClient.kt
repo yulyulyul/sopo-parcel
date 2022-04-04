@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @FeignClient(
     name = "sweet-tracker",
-    url = "https://info.sweettracker.co.kr/"
+    url = "\${tracker.sweet.url}",
 )
 interface SweetTrackerClient {
     @GetMapping("api/v1/trackingInfo")

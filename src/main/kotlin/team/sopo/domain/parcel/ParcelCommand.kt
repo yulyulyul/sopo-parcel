@@ -68,7 +68,7 @@ class ParcelCommand {
         val userId: Long,
         val carrier: String,
         val waybillNum: String,
-        val searchMethod: SearchMethod = SearchMethod.SweetTracker
+        val searchMethod: SearchMethod = SearchMethod.SopoTracker
     ) {
         fun toTrackingPersonalData(apiId: String): TrackingPersonalData {
             return TrackingPersonalData(userId, apiId, Carrier.getCarrierByCode(carrier), waybillNum)
