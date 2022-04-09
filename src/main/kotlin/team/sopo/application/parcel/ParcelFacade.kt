@@ -1,8 +1,8 @@
 package team.sopo.application.parcel
 
 import org.springframework.stereotype.Service
-import team.sopo.domain.parcel.ParcelInfo
 import team.sopo.domain.parcel.ParcelCommand
+import team.sopo.domain.parcel.ParcelInfo
 import team.sopo.domain.parcel.ParcelService
 import team.sopo.domain.push.PushService
 
@@ -12,19 +12,23 @@ class ParcelFacade(
     private val parcelService: ParcelService
 ) {
 
-    fun getParcel(command: ParcelCommand.GetParcel): ParcelInfo.Main{
+    fun reporting(command: ParcelCommand.Reporting) {
+        parcelService.reporting(command)
+    }
+
+    fun getParcel(command: ParcelCommand.GetParcel): ParcelInfo.Main {
         return parcelService.getParcel(command)
     }
 
-    fun getParcels(command: ParcelCommand.GetParcels): List<ParcelInfo.Main>{
+    fun getParcels(command: ParcelCommand.GetParcels): List<ParcelInfo.Main> {
         return parcelService.getParcels(command)
     }
 
-    fun getOngoingParcels(command: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main>{
+    fun getOngoingParcels(command: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main> {
         return parcelService.getOngoingParcels(command)
     }
 
-    fun getCompleteParcels(command: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main>{
+    fun getCompleteParcels(command: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main> {
         return parcelService.getCompleteParcels(command)
     }
 
@@ -32,39 +36,39 @@ class ParcelFacade(
         return parcelService.getMonthlyParcelCntList(command)
     }
 
-    fun getUsageInfo(command: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage{
+    fun getUsageInfo(command: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage {
         return parcelService.getUsageInfo(command)
     }
 
-    fun changeParcelAlias(command: ParcelCommand.ChangeParcelAlias){
+    fun changeParcelAlias(command: ParcelCommand.ChangeParcelAlias) {
         parcelService.changeParcelAlias(command)
     }
 
-    fun deleteParcel(command: ParcelCommand.DeleteParcel){
+    fun deleteParcel(command: ParcelCommand.DeleteParcel) {
         parcelService.deleteParcel(command)
     }
 
-    fun registerParcel(command: ParcelCommand.RegisterParcel): ParcelInfo.Main{
+    fun registerParcel(command: ParcelCommand.RegisterParcel): ParcelInfo.Main {
         return parcelService.registerParcel(command)
     }
 
-    fun singleRefresh(command: ParcelCommand.SingleRefresh): ParcelInfo.RefreshedParcel{
+    fun singleRefresh(command: ParcelCommand.SingleRefresh): ParcelInfo.RefreshedParcel {
         return parcelService.singleRefresh(command)
     }
 
-    fun entireRefresh(command: ParcelCommand.EntireRefresh){
+    fun entireRefresh(command: ParcelCommand.EntireRefresh) {
         parcelService.entireRefresh(command).apply {
-            if(this.isNotEmpty()){
+            if (this.isNotEmpty()) {
                 pushService.pushCompleteParcels(command.userId, this)
             }
         }
     }
 
-    fun pushParcels(command: ParcelCommand.PushRequest){
+    fun pushParcels(command: ParcelCommand.PushRequest) {
         pushService.pushCompleteParcels(command.userId, command.parcelIds)
     }
 
-    fun pushDeviceAwaken(command: ParcelCommand.DeviceAwakenRequest){
+    fun pushDeviceAwaken(command: ParcelCommand.DeviceAwakenRequest) {
         pushService.pushAwakenDevice(command.topic)
     }
 

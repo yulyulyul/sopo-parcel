@@ -14,9 +14,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import team.sopo.application.parcel.ParcelFacade
 import team.sopo.common.annotation.DateFormatYearMonth
 import team.sopo.common.model.api.ApiResult
-import team.sopo.application.parcel.ParcelFacade
 import team.sopo.domain.parcel.ParcelCommand
 import java.security.Principal
 import javax.validation.ConstraintViolationException
@@ -28,11 +28,32 @@ import javax.validation.constraints.NotNull
 @Tag(name = "SOPO 택배 관리 API")
 @RequestMapping("/api/v1/sopo-parcel/delivery")
 @PreAuthorize("hasRole('ROLE_USER')")
-class ParcelController(
+class DeliveryController(
     private val parcelFacade: ParcelFacade,
     private val parcelDtoMapper: ParcelDtoMapper
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(ParcelController::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(DeliveryController::class.java)
+
+    @Operation(
+        summary = "택배 Reporting API",
+        security = [SecurityRequirement(
+            name = "Oauth2",
+            scopes = ["read", "write"]
+        ), SecurityRequirement(name = "BearerToken")]
+    )
+    @PostMapping("/parcel/reporting")
+    fun reportParcel(
+        @RequestBody @Valid request: ParcelDto.ReportingRequest,
+        principal: Principal
+    ): ResponseEntity<Unit> {
+        val command = ParcelCommand.Reporting(
+            userId = principal.name.toLong(),
+            parcelIds = request.parcelIds ?: throw ConstraintViolationException("* 택배 id를 확인해주세요.", mutableSetOf())
+        )
+        parcelFacade.reporting(command)
+
+        return ResponseEntity.noContent().build()
+    }
 
     @Operation(
         summary = "단일 택배 조회 API",

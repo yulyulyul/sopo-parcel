@@ -36,10 +36,9 @@ import team.sopo.parcel.TestConfig
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import javax.transaction.Transactional
 import kotlin.streams.toList
 
-@Transactional
+//@Transactional
 @Import(TestConfig::class)
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -270,8 +269,14 @@ class ParcelServiceImplTest {
 
         @Test
         @DisplayName("itemCnt의 숫자대로 완료된 택배를 가져올 수 있어야한다.")
-        @DatabaseSetup(value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"], type = DatabaseOperation.CLEAN_INSERT)
-        @DatabaseTearDown(value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"], type = DatabaseOperation.DELETE_ALL)
+        @DatabaseSetup(
+            value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"],
+            type = DatabaseOperation.CLEAN_INSERT
+        )
+        @DatabaseTearDown(
+            value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"],
+            type = DatabaseOperation.DELETE_ALL
+        )
         fun getCompletesTestCase3() {
             // given
             val userId = 1L
@@ -287,8 +292,14 @@ class ParcelServiceImplTest {
 
         @Test
         @DisplayName("itemCnt의 개수대로 페이징 처리가 되어야한다.")
-        @DatabaseSetup(value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"], type = DatabaseOperation.CLEAN_INSERT)
-        @DatabaseTearDown(value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"], type = DatabaseOperation.DELETE_ALL)
+        @DatabaseSetup(
+            value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"],
+            type = DatabaseOperation.CLEAN_INSERT
+        )
+        @DatabaseTearDown(
+            value = ["classpath:/dbunit/Get_Complete_Test_DataSet.xml"],
+            type = DatabaseOperation.DELETE_ALL
+        )
         fun getCompletesTestCase4() {
             // given
             val userId = 1L
@@ -296,9 +307,12 @@ class ParcelServiceImplTest {
             val itemCnt = 7 // 총 18개 = ( 7 / 7 / 4 )
             var offset = 0
 
-            val command1 = ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(offset++, itemCnt))
-            val command2 = ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(offset++, itemCnt))
-            val command3 = ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(offset, itemCnt))
+            val command1 =
+                ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(offset++, itemCnt))
+            val command2 =
+                ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(offset++, itemCnt))
+            val command3 =
+                ParcelCommand.GetCompleteParcels(userId, inquiryDate, itemCnt, PageRequest.of(offset, itemCnt))
 
             // when
             val completeParcels1 = parcelService.getCompleteParcels(command1)
@@ -459,7 +473,14 @@ class ParcelServiceImplTest {
             val parcelService =
                 ParcelServiceImpl(parcelReader, mockedSearchProcessor, updateProcessor, registerProcessor, mapper)
             val registerParcel =
-                parcelService.registerParcel(ParcelCommand.RegisterParcel(userId, carrier.CODE, "test_123123", "test_alias"))
+                parcelService.registerParcel(
+                    ParcelCommand.RegisterParcel(
+                        userId,
+                        carrier.CODE,
+                        "test_123123",
+                        "test_alias"
+                    )
+                )
 
             // then
             Assertions.assertEquals(Parcel.DeliveryStatus.NOT_REGISTERED, registerParcel.deliveryStatus)
@@ -735,6 +756,41 @@ class ParcelServiceImplTest {
 
             // then
             Assertions.assertEquals(Parcel.DeliveryStatus.ORPHANED, result.parcel.deliveryStatus)
+        }
+
+        @Test
+        @DisplayName("택배 업데이트 결과, 이미 Reporting(reported => true)된 택배에 deliveryStatus의 변화가 있다면 reported가 false로 변경되어야한다.")
+        @DatabaseSetup(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.CLEAN_INSERT)
+        @DatabaseTearDown(value = ["classpath:/dbunit/Parcel.xml"], type = DatabaseOperation.DELETE_ALL)
+        fun singleRefreshTestCase3() {
+            // given
+            val mockSearchProc: SearchProcessor = mockk()
+
+            val userId = 1L
+            val parcelId = 7L
+
+            val updatedTracingInfo =
+                TrackingInfo(
+                    From(null, null, null),
+                    To("name", null),
+                    State("DELIVERED", "text"),
+                    null,
+                    arrayListOf(),
+                    null
+                )
+
+//            every { mockParcelReader.getParcel(any(), any()) } returns originalParcel
+            every { mockSearchProc.search(any()) } returns updatedTracingInfo
+
+            val mockedService =
+                ParcelServiceImpl(parcelReader, mockSearchProc, updateProcessor, registerProcessor, mapper)
+
+            // when
+            val singleRefresh =
+                mockedService.singleRefresh(refreshCommand = ParcelCommand.SingleRefresh(userId, parcelId))
+
+            // then
+            Assertions.assertFalse(singleRefresh.parcel.reported!!)
         }
     }
 

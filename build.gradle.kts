@@ -37,7 +37,7 @@ sourceSets {
 }
 
 group = "team.sopo"
-version = "0.0.48"
+version = "0.0.50"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_11
 

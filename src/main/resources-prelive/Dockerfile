@@ -2,7 +2,7 @@ FROM www.sooopo.com/base_image/debian_java11_fluentd:1.0.4
 
 USER root
 
-ARG JAR_FILE=sopo-parcel-prelive-0.0.48.jar
+ARG JAR_FILE=sopo-parcel-prelive-0.0.50.jar
 ENV JAR_FILE_PATH=/usr/app/$JAR_FILE
 
 COPY ./src/main/resources-prelive/start.sh /usr/app

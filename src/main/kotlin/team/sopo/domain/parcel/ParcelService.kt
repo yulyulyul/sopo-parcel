@@ -3,6 +3,7 @@ package team.sopo.domain.parcel
 interface ParcelService {
     fun getParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main
     fun getParcels(getCommand: ParcelCommand.GetParcels): List<ParcelInfo.Main>
+    fun reporting(command: ParcelCommand.Reporting)
     fun getOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main>
     fun getCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main>
     fun getMonthlyParcelCntList(getCommand: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt>

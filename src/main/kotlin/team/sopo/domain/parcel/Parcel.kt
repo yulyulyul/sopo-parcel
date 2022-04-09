@@ -65,6 +65,9 @@ class Parcel() : AbstractEntity() {
     @Enumerated(EnumType.STRING)
     var status: Activeness = Activeness.ACTIVE
 
+    @Column(name = "is_reported")
+    var reported: Boolean = false
+
     constructor(
         trackingInfo: TrackingInfo?,
         _userId: Long,
@@ -80,6 +83,11 @@ class Parcel() : AbstractEntity() {
         inquiryHash = createInquiryHash(inquiryResult)
         deliveryStatus = createDeliveryStatus(trackingInfo)
         arrivalDte = createArrivalDateTime(trackingInfo)
+    }
+
+    fun reporting(){
+        if(!reported)
+            reported = true
     }
 
     fun changeToOrphaned() {
@@ -125,6 +133,9 @@ class Parcel() : AbstractEntity() {
     fun updateParcel(refreshedParcel: Parcel): Parcel {
         inquiryResult = refreshedParcel.inquiryResult
         inquiryHash = refreshedParcel.inquiryHash
+        if(deliveryStatus.toString() != refreshedParcel.deliveryStatus.toString()){
+            reported = false
+        }
         deliveryStatus = refreshedParcel.deliveryStatus
         arrivalDte = refreshedParcel.arrivalDte
         auditDte = refreshedParcel.auditDte

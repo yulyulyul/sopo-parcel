@@ -19,6 +19,11 @@ class ParcelDto {
         val alias: String = ""
     )
 
+    data class ReportingRequest(
+        @field: NotNull(message = "* 리포팅할 택배 목록을 확인해주세요.")
+        val parcelIds: MutableList<Long>? = null
+    )
+
     data class DeleteParcelsRequest(
         @field: NotNull(message = "* 삭제할 택배 목록을 확인해주세요.")
         val parcelIds: MutableList<Long>? = null
@@ -72,7 +77,9 @@ class ParcelDto {
         @Schema(name = "데이터 수정 날짜", example = "2021-06-23")
         var auditDte: LocalDateTime? = null,
         @Schema(name = "택배 데이터의 상태", example = "1")
-        var status: Int? = null
+        var status: Int? = null,
+        @Schema(name = "택배 Reporting", example = "false")
+        var reported: Boolean? = null
     )
 
 

@@ -29,6 +29,12 @@ class ParcelServiceImpl(
         return parcelInfoMapper.of(parcels)
     }
 
+    @Transactional
+    override fun reporting(command: ParcelCommand.Reporting) {
+        val parcels = parcelReader.getParcels(command.parcelIds, command.userId)
+        parcels.forEach { it.reporting() }
+    }
+
     @Transactional(readOnly = true)
     override fun getOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main> {
         val ongoingParcels = parcelReader.getOngoingParcels(getCommand.userId)
@@ -38,7 +44,12 @@ class ParcelServiceImpl(
     @Transactional(readOnly = true)
     override fun getCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main> {
         val completeParcels =
-            parcelReader.getCompleteParcels(getCommand.userId, getCommand.inquiryDate, getCommand.pageable, getCommand.itemCnt)
+            parcelReader.getCompleteParcels(
+                getCommand.userId,
+                getCommand.inquiryDate,
+                getCommand.pageable,
+                getCommand.itemCnt
+            )
         return parcelInfoMapper.of(completeParcels)
     }
 
@@ -64,7 +75,7 @@ class ParcelServiceImpl(
     @Transactional
     override fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel) {
         parcelReader.getParcels(deleteCommand.parcelIds, deleteCommand.userId).parallelStream()
-            .forEach{ parcel ->
+            .forEach { parcel ->
                 parcel.verifyDeletable(deleteCommand)
                 parcel.inactivate()
             }

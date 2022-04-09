@@ -15,6 +15,11 @@ class ParcelCommand {
         val parcelIds: List<Long>
     )
 
+    data class Reporting(
+        val userId: Long,
+        val parcelIds: List<Long>
+    )
+
     data class GetOngoingParcels(val userId: Long)
 
     data class GetCompleteParcels(

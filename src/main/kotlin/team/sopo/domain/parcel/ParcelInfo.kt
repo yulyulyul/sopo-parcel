@@ -16,7 +16,8 @@ class ParcelInfo {
         var regDte: LocalDateTime? = null,
         var arrivalDte: LocalDateTime? = null,
         var auditDte: LocalDateTime? = null,
-        var status: Int? = null
+        var status: Int? = null,
+        var reported: Boolean? = null
     )
 
     class RefreshedParcel(
