@@ -19,7 +19,7 @@ class DeliveryTrackerRepository : TracingRepository<Map<String, DeliveryTrackerC
             this.getOrPut(req.apiId) {
                 DeliveryTrackerContent(
                     api_id = req.apiId,
-                    user = req.userId,
+                    userToken = req.userToken,
                     carrier = req.carrier,
                     waybillNum = req.waybillNum
                 )

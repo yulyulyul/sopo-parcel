@@ -17,13 +17,13 @@ import javax.validation.constraints.NotNull
 @RequestMapping("/internal")
 class InternalController(private val parcelFacade: ParcelFacade) {
     @Operation(summary = "유저의 사용 정보를 조회하는 API")
-    @GetMapping("/parcel/usage-info/{userId}")
+    @GetMapping("/parcel/usage-info/{userToken}")
     fun getServiceUsageInfo(
-        @PathVariable("userId", required = true)
-        @NotNull(message = "* 유저 id를 확인해주세요.")
-        userId: Long? = null
+        @PathVariable("userToken", required = true)
+        @NotNull(message = "* userToken를 확인해주세요.")
+        userToken: String? = null
     ): ResponseEntity<ParcelInfo.ParcelUsage> {
-        val usageInfo = parcelFacade.getUsageInfo(ParcelCommand.GetUsageInfo(userId!!))
+        val usageInfo = parcelFacade.getUsageInfo(ParcelCommand.GetUsageInfo(userToken!!))
         return ResponseEntity.ok(usageInfo)
     }
 }

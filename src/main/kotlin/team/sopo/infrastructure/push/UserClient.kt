@@ -7,6 +7,6 @@ import team.sopo.common.config.feign.BasicAuthConfiguration
 
 @FeignClient(name = "user-client", url = "\${discovery.user}", configuration = [BasicAuthConfiguration::class])
 interface UserClient {
-    @GetMapping("api/v1/sopo-user/internal/push-token/{userId}")
-    fun getPushToken(@PathVariable("userId") userId: Long): PushToken
+    @GetMapping("api/v1/sopo-user/internal/push-token/{userToken}")
+    fun getPushToken(@PathVariable("userToken") userToken: String): PushToken
 }

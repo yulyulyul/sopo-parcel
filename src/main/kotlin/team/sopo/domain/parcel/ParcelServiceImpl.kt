@@ -19,25 +19,25 @@ class ParcelServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main {
-        val parcel = parcelReader.getParcel(getCommand.parcelId, getCommand.userId)
+        val parcel = parcelReader.getParcel(getCommand.parcelId, getCommand.userToken)
         return parcelInfoMapper.of(parcel)
     }
 
     @Transactional(readOnly = true)
     override fun getParcels(getCommand: ParcelCommand.GetParcels): List<ParcelInfo.Main> {
-        val parcels = parcelReader.getParcels(getCommand.parcelIds, getCommand.userId)
+        val parcels = parcelReader.getParcels(getCommand.parcelIds, getCommand.userToken)
         return parcelInfoMapper.of(parcels)
     }
 
     @Transactional
     override fun reporting(command: ParcelCommand.Reporting) {
-        val parcels = parcelReader.getParcels(command.parcelIds, command.userId)
+        val parcels = parcelReader.getParcels(command.parcelIds, command.userToken)
         parcels.forEach { it.reporting() }
     }
 
     @Transactional(readOnly = true)
     override fun getOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main> {
-        val ongoingParcels = parcelReader.getOngoingParcels(getCommand.userId)
+        val ongoingParcels = parcelReader.getOngoingParcels(getCommand.userToken)
         return parcelInfoMapper.of(ongoingParcels)
     }
 
@@ -45,7 +45,7 @@ class ParcelServiceImpl(
     override fun getCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main> {
         val completeParcels =
             parcelReader.getCompleteParcels(
-                getCommand.userId,
+                getCommand.userToken,
                 getCommand.inquiryDate,
                 getCommand.pageable,
                 getCommand.itemCnt
@@ -55,26 +55,26 @@ class ParcelServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getMonthlyParcelCntList(getCommand: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt> {
-        return parcelReader.getMonthlyParcelCntList(getCommand.userId)
+        return parcelReader.getMonthlyParcelCntList(getCommand.userToken)
     }
 
     @Transactional(readOnly = true)
     override fun getUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage {
-        val countIn2Week = parcelReader.getRegisteredCountIn2Week(getCommand.userId)
-        val totalCount = parcelReader.getRegisteredParcelCount(getCommand.userId)
+        val countIn2Week = parcelReader.getRegisteredCountIn2Week(getCommand.userToken)
+        val totalCount = parcelReader.getRegisteredParcelCount(getCommand.userToken)
 
         return ParcelInfo.ParcelUsage(countIn2Week, totalCount)
     }
 
     @Transactional
     override fun changeParcelAlias(changeCommand: ParcelCommand.ChangeParcelAlias) {
-        val parcel = parcelReader.getParcel(changeCommand.parcelId, changeCommand.userId)
+        val parcel = parcelReader.getParcel(changeCommand.parcelId, changeCommand.userToken)
         parcel.changeParcelAlias(changeCommand.alias)
     }
 
     @Transactional
     override fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel) {
-        parcelReader.getParcels(deleteCommand.parcelIds, deleteCommand.userId).parallelStream()
+        parcelReader.getParcels(deleteCommand.parcelIds, deleteCommand.userToken).parallelStream()
             .forEach { parcel ->
                 parcel.verifyDeletable(deleteCommand)
                 parcel.inactivate()
@@ -93,7 +93,7 @@ class ParcelServiceImpl(
     @Transactional
     override fun singleRefresh(refreshCommand: ParcelCommand.SingleRefresh): ParcelInfo.RefreshedParcel {
         val originalParcel =
-            parcelReader.getParcel(refreshCommand.parcelId, refreshCommand.userId).also { it.verifyRefreshable() }
+            parcelReader.getParcel(refreshCommand.parcelId, refreshCommand.userToken).also { it.verifyRefreshable() }
         val searchResult = searchProcessor.search(refreshCommand.toSearchRequest(originalParcel))
         val refreshedParcel = refreshCommand.toEntity(searchResult, originalParcel)
 
@@ -107,7 +107,7 @@ class ParcelServiceImpl(
 
     @Transactional
     override fun entireRefresh(refreshCommand: ParcelCommand.EntireRefresh): List<Long> {
-        val ongoingParcels = parcelReader.getOngoingParcels(refreshCommand.userId)
+        val ongoingParcels = parcelReader.getOngoingParcels(refreshCommand.userToken)
         return ongoingParcels
             .filter { parcel -> parcel.isEntireRefreshable() }
             .filter { parcel ->

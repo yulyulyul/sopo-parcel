@@ -23,7 +23,7 @@ class PushController(private val parcelFacade: ParcelFacade) {
     fun pushParcel(
         @RequestBody @Valid request: PushDto.PushParcelsRequest
     ): ResponseEntity<Unit> {
-        parcelFacade.pushParcels(command = ParcelCommand.PushRequest(request.userId!!, request.parcelIds!!))
+        parcelFacade.pushParcels(command = ParcelCommand.PushRequest(request.userToken!!, request.parcelIds!!))
         return ResponseEntity.noContent().build()
     }
 

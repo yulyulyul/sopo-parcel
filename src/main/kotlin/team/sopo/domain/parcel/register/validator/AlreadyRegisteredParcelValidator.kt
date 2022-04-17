@@ -12,7 +12,7 @@ class AlreadyRegisteredParcelValidator(private val parcelReader: ParcelReader) :
     override fun validate(request: ParcelCommand.RegisterRequest) {
         try {
             val parcel =
-                parcelReader.getParcel(request.userId, Carrier.getCarrierByCode(request.carrier), request.waybillNum)
+                parcelReader.getParcel(request.userToken, Carrier.getCarrierByCode(request.carrier), request.waybillNum)
             if (parcel.isActivate()) {
                 throw AlreadyRegisteredParcelException()
             }

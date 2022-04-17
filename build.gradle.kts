@@ -70,7 +70,6 @@ dependencies {
     implementation("org.springframework.cloud", "spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.boot:spring-boot-starter-validation:2.6.3")
     implementation("org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.0")
-    implementation("org.springframework.security.oauth.boot", "spring-security-oauth2-autoconfigure", "2.5.2")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:3.1.0")
     implementation("io.github.openfeign", "feign-httpclient")
 

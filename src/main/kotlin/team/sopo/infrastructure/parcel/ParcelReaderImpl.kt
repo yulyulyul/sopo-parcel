@@ -15,17 +15,17 @@ import kotlin.streams.toList
 @Component
 class ParcelReaderImpl(private val repository: JpaParcelRepository) : ParcelReader {
 
-    override fun getParcel(parcelId: Long, userId: Long): Parcel {
-        return repository.findByIdAndUserIdAndStatusEquals(parcelId, userId).orElseThrow { ParcelNotFoundException() }
+    override fun getParcel(parcelId: Long, userToken: String): Parcel {
+        return repository.findByIdAndUserTokenAndStatusEquals(parcelId, userToken).orElseThrow { ParcelNotFoundException() }
     }
 
-    override fun getParcel(userId: Long, carrier: Carrier, waybillNum: String): Parcel {
-        return repository.findByUserIdAndCarrierAndWaybillNumAndStatusEquals(userId, carrier.CODE, waybillNum)
+    override fun getParcel(userToken: String, carrier: Carrier, waybillNum: String): Parcel {
+        return repository.findByUserTokenAndCarrierAndWaybillNumAndStatusEquals(userToken, carrier.CODE, waybillNum)
             .orElseThrow { ParcelNotFoundException() }
     }
 
-    override fun getParcels(parcelIds: List<Long>, userId: Long): List<Parcel> {
-        val parcels = repository.findAllByIdInAndUserIdAndStatusEquals(parcelIds, userId)
+    override fun getParcels(parcelIds: List<Long>, userToken: String): List<Parcel> {
+        val parcels = repository.findAllByIdInAndUserTokenAndStatusEquals(parcelIds, userToken)
         val ids = parcels.parallelStream().map(Parcel::id).toList()
         parcelIds.filter { !ids.contains(it) }.toList().apply {
             if (this.isNotEmpty()) {
@@ -36,18 +36,18 @@ class ParcelReaderImpl(private val repository: JpaParcelRepository) : ParcelRead
         return parcels
     }
 
-    override fun getOngoingParcels(userId: Long): List<Parcel> {
-        return repository.getParcelsOngoing(userId).orEmpty()
+    override fun getOngoingParcels(userToken: String): List<Parcel> {
+        return repository.getParcelsOngoing(userToken).orEmpty()
     }
 
-    override fun getCompleteParcels(userId: Long, inquiryDate: String, pageable: Pageable, itemCnt: Int): List<Parcel> {
+    override fun getCompleteParcels(userToken: String, inquiryDate: String, pageable: Pageable, itemCnt: Int): List<Parcel> {
         val inquiryYearMonth = YearMonth.parse(
             inquiryDate,
             DateTimeFormatter.ofPattern("yyyyMM")
         )
         val completeParcels = repository.getCompleteParcels(
             pageable = OffsetBasedPageRequest(pageable.pageNumber * itemCnt, itemCnt),
-            user_id = userId,
+            user_token = userToken,
             startDate = "${inquiryYearMonth.year}-${inquiryYearMonth.monthValue}-01",
             endDate = "${inquiryYearMonth.year}-${inquiryYearMonth.monthValue}-31"
         )
@@ -55,19 +55,19 @@ class ParcelReaderImpl(private val repository: JpaParcelRepository) : ParcelRead
         return completeParcels.content
     }
 
-    override fun getRegisteredCountIn2Week(userId: Long): Long {
-        return repository.getRegisterParcelCountIn2Week(userId)
+    override fun getRegisteredCountIn2Week(userToken: String): Long {
+        return repository.getRegisterParcelCountIn2Week(userToken)
     }
 
-    override fun getRegisteredParcelCount(userId: Long): Long {
-        return repository.getRegisterParcelCount(userId)
+    override fun getRegisteredParcelCount(userToken: String): Long {
+        return repository.getRegisterParcelCount(userToken)
     }
 
-    override fun getMonthlyParcelCntList(userId: Long): List<ParcelInfo.MonthlyParcelCnt> {
-        return repository.getMonthlyParcelCntList(userId)
+    override fun getMonthlyParcelCntList(userToken: String): List<ParcelInfo.MonthlyParcelCnt> {
+        return repository.getMonthlyParcelCntList(userToken)
     }
 
-    override fun getCurrentMonthRegisteredCount(userId: Long): Int {
-        return repository.getCurrentMonthRegisteredCount(userId)
+    override fun getCurrentMonthRegisteredCount(userToken: String): Int {
+        return repository.getCurrentMonthRegisteredCount(userToken)
     }
 }

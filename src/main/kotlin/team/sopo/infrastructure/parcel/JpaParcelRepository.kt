@@ -12,31 +12,31 @@ import java.util.*
 interface JpaParcelRepository : JpaRepository<Parcel, Long>, ParcelRepositorySupport {
 
     @Query(
-        value = "SELECT * FROM parcel WHERE user_id = :user_id AND status = 'ACTIVE' AND delivery_status = 'DELIVERED' AND date(arrival_dte) BETWEEN :startDate AND :endDate",
-        countQuery = "SELECT COUNT(*) FROM parcel WHERE user_id = :user_id AND status = 'ACTIVE' AND delivery_status = 'DELIVERED' AND date(arrival_dte) BETWEEN :startDate AND :endDate",
+        value = "SELECT * FROM parcel WHERE user_token = :user_token AND status = 'ACTIVE' AND delivery_status = 'DELIVERED' AND date(arrival_dte) BETWEEN :startDate AND :endDate",
+        countQuery = "SELECT COUNT(*) FROM parcel WHERE user_token = :user_token AND status = 'ACTIVE' AND delivery_status = 'DELIVERED' AND date(arrival_dte) BETWEEN :startDate AND :endDate",
         nativeQuery = true
     )
     fun getCompleteParcels(
         @Param("pageable") pageable: Pageable,
-        @Param("user_id") user_id: Long,
+        @Param("user_token") user_token: String,
         @Param("startDate") startDate: String,
         @Param("endDate") endDate: String
     ): Page<Parcel>
 
-    fun findByIdAndUserIdAndStatusEquals(
+    fun findByIdAndUserTokenAndStatusEquals(
         id: Long,
-        userId: Long,
+        userToken: String,
         status: Parcel.Activeness = Parcel.Activeness.ACTIVE
     ): Optional<Parcel>
 
-    fun findAllByIdInAndUserIdAndStatusEquals(
+    fun findAllByIdInAndUserTokenAndStatusEquals(
         ids: List<Long>,
-        userId: Long,
+        userToken: String,
         status: Parcel.Activeness = Parcel.Activeness.ACTIVE
     ): List<Parcel>
 
-    fun findByUserIdAndCarrierAndWaybillNumAndStatusEquals(
-        userId: Long,
+    fun findByUserTokenAndCarrierAndWaybillNumAndStatusEquals(
+        userToken: String,
         carrier: String,
         waybillNum: String,
         status: Parcel.Activeness = Parcel.Activeness.ACTIVE

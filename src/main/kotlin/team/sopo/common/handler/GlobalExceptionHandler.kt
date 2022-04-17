@@ -8,7 +8,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import team.sopo.common.exception.SopoException
-import team.sopo.common.exception.SopoOauthException
 import team.sopo.common.exception.error.Error
 import team.sopo.common.exception.error.Errors
 import team.sopo.common.exception.error.SopoError
@@ -34,21 +33,6 @@ class GlobalExceptionHandler(private val repository: ApiTracingRepository) {
         logError(error, e)
 
         return ResponseEntity(errors, e.getHttpStatus())
-    }
-
-    @ExceptionHandler(SopoOauthException::class)
-    fun handleSopoOauthException(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        e: SopoOauthException
-    ): ResponseEntity<Errors> {
-
-        val sopoOauthError = e.sopoError
-        val error = Error(sopoOauthError, sopoOauthError.message ?: e.localizedMessage, request.servletPath)
-        val errors = Errors().apply { this.errors.add(error) }
-        logError(error, e)
-
-        return ResponseEntity(errors, sopoOauthError.status)
     }
 
     @ExceptionHandler(AuthenticationException::class)

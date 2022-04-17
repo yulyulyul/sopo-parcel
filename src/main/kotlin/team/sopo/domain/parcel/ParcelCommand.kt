@@ -6,95 +6,95 @@ import team.sopo.domain.parcel.trackinginfo.TrackingInfo
 
 class ParcelCommand {
     data class GetParcel(
-        val userId: Long,
+        val userToken: String,
         val parcelId: Long
     )
 
     data class GetParcels(
-        val userId: Long,
+        val userToken: String,
         val parcelIds: List<Long>
     )
 
     data class Reporting(
-        val userId: Long,
+        val userToken: String,
         val parcelIds: List<Long>
     )
 
-    data class GetOngoingParcels(val userId: Long)
+    data class GetOngoingParcels(val userToken: String)
 
     data class GetCompleteParcels(
-        val userId: Long,
+        val userToken: String,
         val inquiryDate: String,
         val itemCnt: Int,
         val pageable: Pageable
     )
 
-    data class GetMonthlyParcelCnt(val userId: Long)
+    data class GetMonthlyParcelCnt(val userToken: String)
 
     data class RegisterParcel(
-        val userId: Long,
+        val userToken: String,
         val carrier: String,
         val waybillNum: String,
         val alias: String,
         val trackingInfo: TrackingInfo? = null
     ) {
         fun toEntity(trackingInfo: TrackingInfo?): Parcel {
-            return Parcel(trackingInfo, userId, waybillNum, carrier, alias)
+            return Parcel(userToken, waybillNum, carrier, alias, trackingInfo)
         }
 
         fun toSearchRequest(): SearchRequest {
-            return SearchRequest(userId, carrier, waybillNum)
+            return SearchRequest(userToken, carrier, waybillNum)
         }
 
         fun toRegisterRequest(parcel: Parcel): RegisterRequest {
-            return RegisterRequest(userId, carrier, waybillNum, parcel)
+            return RegisterRequest(userToken, carrier, waybillNum, parcel)
         }
     }
 
     data class ChangeParcelAlias(
-        val userId: Long,
+        val userToken: String,
         val parcelId: Long,
         val alias: String
     )
 
     data class TrackingPersonalData(
-        val userId: Long,
+        val userToken: String,
         val apiId: String,
         val carrier: Carrier,
         val waybillNum: String
     )
 
     data class DeleteParcel(
-        val userId: Long,
+        val userToken: String,
         val parcelIds: List<Long>
     )
 
     data class SearchRequest(
-        val userId: Long,
+        val userToken: String,
         val carrier: String,
         val waybillNum: String,
         val searchMethod: SearchMethod = SearchMethod.SopoTracker
     ) {
         fun toTrackingPersonalData(apiId: String): TrackingPersonalData {
-            return TrackingPersonalData(userId, apiId, Carrier.getCarrierByCode(carrier), waybillNum)
+            return TrackingPersonalData(userToken, apiId, Carrier.getCarrierByCode(carrier), waybillNum)
         }
     }
 
     data class RegisterRequest(
-        val userId: Long,
+        val userToken: String,
         val carrier: String,
         val waybillNum: String,
         val parcel: Parcel
     )
 
     data class PushRequest(
-        val userId: Long,
+        val userToken: String,
         val parcelIds: List<Long>
     )
 
     data class DeviceAwakenRequest(val topic: String)
 
-    data class GetUsageInfo(val userId: Long)
+    data class GetUsageInfo(val userToken: String)
 
     data class UpdateRequest(
         val originalParcel: Parcel,
@@ -102,22 +102,22 @@ class ParcelCommand {
     )
 
     data class SingleRefresh(
-        val userId: Long,
+        val userToken: String,
         val parcelId: Long
     ) {
         fun toEntity(trackingInfo: TrackingInfo?, originalParcel: Parcel): Parcel {
             return Parcel(
-                trackingInfo,
-                originalParcel.userId,
+                userToken,
                 originalParcel.waybillNum,
                 originalParcel.carrier,
-                originalParcel.alias
+                originalParcel.alias,
+                trackingInfo
             )
         }
 
         fun toSearchRequest(originalParcel: Parcel): SearchRequest {
             return SearchRequest(
-                originalParcel.userId,
+                originalParcel.userToken,
                 originalParcel.carrier,
                 originalParcel.waybillNum
             )
@@ -128,9 +128,9 @@ class ParcelCommand {
         }
     }
 
-    data class EntireRefresh(val userId: Long) {
+    data class EntireRefresh(val userToken: String) {
         fun toRefreshRequest(parcelId: Long): SingleRefresh {
-            return SingleRefresh(userId, parcelId)
+            return SingleRefresh(userToken, parcelId)
         }
     }
 }

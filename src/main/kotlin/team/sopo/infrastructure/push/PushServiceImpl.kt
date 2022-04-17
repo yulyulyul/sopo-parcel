@@ -6,8 +6,8 @@ import team.sopo.domain.push.PushService
 
 @Service
 class PushServiceImpl(private val userClient: UserClient, private val producer: KafkaProducer) : PushService {
-    override fun pushCompleteParcels(userId: Long, parcelIds: List<Long>) {
-        val pushToken = userClient.getPushToken(userId).pushToken
+    override fun pushCompleteParcels(userToken: String, parcelIds: List<Long>) {
+        val pushToken = userClient.getPushToken(userToken).pushToken
         producer.sendMsg(PushInfo.ParcelUpdateCompleteMessage(pushToken, parcelIds))
     }
 

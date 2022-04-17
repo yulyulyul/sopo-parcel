@@ -13,7 +13,31 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "parcel")
-class Parcel() : AbstractEntity() {
+class Parcel(
+    @Column(name = "user_token", nullable = false)
+    var userToken: String,
+    @Column(name = "waybill_num")
+    var waybillNum: String,
+    @Column(name = "carrier")
+    var carrier: String,
+    @Column(name = "alias")
+    var alias: String
+) : AbstractEntity() {
+
+    constructor(
+//        userId: Long,
+        userToken: String,
+        waybillNum: String,
+        carrier: String,
+        alias: String,
+        trackingInfo: TrackingInfo?
+    ) : this(userToken, waybillNum, carrier, alias) {
+        this.alias = createParcelAlias(trackingInfo, alias, waybillNum)
+        this.inquiryResult = createInquiryResult(trackingInfo)
+        this.inquiryHash = createInquiryHash(inquiryResult)
+        this.deliveryStatus = createDeliveryStatus(trackingInfo)
+        this.arrivalDte = createArrivalDateTime(trackingInfo)
+    }
 
     enum class DeliveryStatus(val id: String, val description: String) {
         NOT_REGISTERED("not_registered", "등록되지 않았음"),
@@ -39,15 +63,6 @@ class Parcel() : AbstractEntity() {
     @Column(name = "user_id", nullable = false)
     var userId: Long = 0L
 
-    @Column(name = "waybill_num")
-    var waybillNum: String = ""
-
-    @Column(name = "carrier")
-    var carrier: String = ""
-
-    @Column(name = "alias")
-    var alias: String = ""
-
     @Column(name = "inquiry_result", columnDefinition = "TEXT")
     var inquiryResult: String = ""
 
@@ -67,23 +82,6 @@ class Parcel() : AbstractEntity() {
 
     @Column(name = "is_reported")
     var reported: Boolean = false
-
-    constructor(
-        trackingInfo: TrackingInfo?,
-        _userId: Long,
-        _waybillNum: String,
-        _carrier: String,
-        _alias: String
-    ) : this() {
-        userId = _userId
-        waybillNum = _waybillNum
-        carrier = _carrier
-        alias = createParcelAlias(trackingInfo, _alias, _waybillNum)
-        inquiryResult = createInquiryResult(trackingInfo)
-        inquiryHash = createInquiryHash(inquiryResult)
-        deliveryStatus = createDeliveryStatus(trackingInfo)
-        arrivalDte = createArrivalDateTime(trackingInfo)
-    }
 
     fun reporting(){
         if(!reported)
@@ -110,8 +108,8 @@ class Parcel() : AbstractEntity() {
     }
 
     fun verifyDeletable(command: ParcelCommand.DeleteParcel) {
-        if (userId != command.userId) {
-            throw UnauthorizedException("삭제하시려는 택배는 ${command.userId}님의 택배가 아닙니다.")
+        if (!StringUtils.equals(userToken, command.userToken)) {
+            throw UnauthorizedException("삭제하시려는 택배는 ${command.userToken}님의 택배가 아닙니다.")
         }
     }
 

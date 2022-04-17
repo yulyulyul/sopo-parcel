@@ -1,15 +1,15 @@
 package team.sopo.common.config.openapi
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.info.Contact
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.info.License
-import io.swagger.v3.oas.annotations.security.*
+import io.swagger.v3.oas.annotations.security.SecurityScheme
+import io.swagger.v3.oas.annotations.security.SecuritySchemes
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 
-@Profile( value = ["stage","local", "prelive"])
 @Configuration
 @OpenAPIDefinition(
     info = Info(
@@ -29,23 +29,12 @@ import org.springframework.context.annotation.Profile
 )
 @SecuritySchemes(
     SecurityScheme(
-        name = "BearerToken",
+        name = "Authorization",
         type = SecuritySchemeType.HTTP,
         scheme = "Bearer",
-        bearerFormat = "JWT"
-    ),
-    SecurityScheme(
-        name = "Oauth2",
-        type = SecuritySchemeType.OAUTH2,
-        flows = OAuthFlows(
-            password = OAuthFlow(
-                tokenUrl = "\${sopo.authsv.token-url}",
-                scopes = [
-                    OAuthScope(name = "read", description = "읽기"),
-                    OAuthScope(name = "write", description = "쓰기")
-                ]
-            )
-        ))
+        bearerFormat = "JWT",
+        `in` = SecuritySchemeIn.HEADER
+    )
 )
 
 class OpenApiConfig

@@ -59,13 +59,13 @@ class ParcelFacade(
     fun entireRefresh(command: ParcelCommand.EntireRefresh) {
         parcelService.entireRefresh(command).apply {
             if (this.isNotEmpty()) {
-                pushService.pushCompleteParcels(command.userId, this)
+                pushService.pushCompleteParcels(command.userToken, this)
             }
         }
     }
 
     fun pushParcels(command: ParcelCommand.PushRequest) {
-        pushService.pushCompleteParcels(command.userId, command.parcelIds)
+        pushService.pushCompleteParcels(command.userToken, command.parcelIds)
     }
 
     fun pushDeviceAwaken(command: ParcelCommand.DeviceAwakenRequest) {

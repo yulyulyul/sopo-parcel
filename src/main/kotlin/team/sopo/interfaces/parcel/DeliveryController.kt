@@ -36,10 +36,7 @@ class DeliveryController(
 
     @Operation(
         summary = "택배 Reporting API",
-        security = [SecurityRequirement(
-            name = "Oauth2",
-            scopes = ["read", "write"]
-        ), SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @PostMapping("/parcel/reporting")
     fun reportParcel(
@@ -47,7 +44,7 @@ class DeliveryController(
         principal: Principal
     ): ResponseEntity<Unit> {
         val command = ParcelCommand.Reporting(
-            userId = principal.name.toLong(),
+            userToken = principal.name,
             parcelIds = request.parcelIds ?: throw ConstraintViolationException("* 택배 id를 확인해주세요.", mutableSetOf())
         )
         parcelFacade.reporting(command)
@@ -57,10 +54,7 @@ class DeliveryController(
 
     @Operation(
         summary = "단일 택배 조회 API",
-        security = [SecurityRequirement(
-            name = "Oauth2",
-            scopes = ["read", "write"]
-        ), SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @GetMapping("/parcel/{parcelId}")
     fun getParcel(
@@ -72,7 +66,7 @@ class DeliveryController(
     ): ResponseEntity<ApiResult<ParcelDto.Main>> {
         logger.info("user : ${principal.name}")
         val command = ParcelCommand.GetParcel(
-            userId = principal.name.toLong(),
+            userToken = principal.name,
             parcelId = parcelId ?: throw ConstraintViolationException("* 택배 id를 확인해주세요.", mutableSetOf())
         )
         val parcelInfo = parcelFacade.getParcel(command)
@@ -82,10 +76,7 @@ class DeliveryController(
 
     @Operation(
         summary = "택배의 별칭을 수정하는 API",
-        security = [SecurityRequirement(
-            name = "Oauth2",
-            scopes = ["read", "write"]
-        ), SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @PatchMapping("/parcel/{parcelId}/alias")
     fun patchParcelAlias(
@@ -97,7 +88,7 @@ class DeliveryController(
         principal: Principal
     ): ResponseEntity<Unit> {
 
-        val command = ParcelCommand.ChangeParcelAlias(principal.name.toLong(), parcelId!!, request.alias)
+        val command = ParcelCommand.ChangeParcelAlias(principal.name, parcelId!!, request.alias)
         parcelFacade.changeParcelAlias(command)
 
         return ResponseEntity.noContent().build()
@@ -105,15 +96,12 @@ class DeliveryController(
 
     @Operation(
         summary = "복수의 택배[배송중] 조회 API",
-        security = [SecurityRequirement(
-            name = "Oauth2",
-            scopes = ["read", "write"]
-        ), SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @GetMapping("/parcels/ongoing")
     fun getOngoingParcels(principal: Principal): ResponseEntity<ApiResult<List<ParcelDto.Main>>> {
 
-        val command = ParcelCommand.GetOngoingParcels(principal.name.toLong())
+        val command = ParcelCommand.GetOngoingParcels(principal.name)
         val ongoings = parcelFacade.getOngoingParcels(command)
         val result = ApiResult(data = parcelDtoMapper.of(ongoings))
 
@@ -122,10 +110,7 @@ class DeliveryController(
 
     @Operation(
         summary = "복수의 택배 조회 API",
-        security = [SecurityRequirement(
-            name = "Oauth2",
-            scopes = ["read", "write"]
-        ), SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @GetMapping("/parcels")
     fun getParcels(
@@ -136,7 +121,7 @@ class DeliveryController(
         principal: Principal
     ): ResponseEntity<ApiResult<List<ParcelDto.Main>>> {
 
-        val command = ParcelCommand.GetParcels(principal.name.toLong(), parcels)
+        val command = ParcelCommand.GetParcels(principal.name, parcels)
         val parcelInfos = parcelFacade.getParcels(command)
         val result = ApiResult(data = parcelDtoMapper.of(parcelInfos))
 
@@ -145,10 +130,7 @@ class DeliveryController(
 
     @Operation(
         summary = "복수의 택배[배송완료] 조회(페이징 포함) API",
-        security = [SecurityRequirement(
-            name = "Oauth2",
-            scopes = ["read", "write"]
-        ), SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @GetMapping("/parcels/complete")
     fun getCompleteParcels(
@@ -177,7 +159,7 @@ class DeliveryController(
         principal: Principal
     ): ResponseEntity<ApiResult<List<ParcelDto.Main>>> {
 
-        val command = ParcelCommand.GetCompleteParcels(principal.name.toLong(), inquiryDate, itemCnt, pageable)
+        val command = ParcelCommand.GetCompleteParcels(principal.name, inquiryDate, itemCnt, pageable)
         val completes = parcelFacade.getCompleteParcels(command)
         val result = ApiResult(data = parcelDtoMapper.of(completes))
 
@@ -186,15 +168,12 @@ class DeliveryController(
 
     @Operation(
         summary = "사용자의 조회 가능한 '년/월' 리스트 API",
-        security = [SecurityRequirement(
-            name = "Oauth2",
-            scopes = ["read", "write"]
-        ), SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @GetMapping("/parcels/months")
     fun getMonths(principal: Principal): ResponseEntity<ApiResult<List<ParcelDto.MonthlyParcelCntResponse>>> {
 
-        val command = ParcelCommand.GetMonthlyParcelCnt(principal.name.toLong())
+        val command = ParcelCommand.GetMonthlyParcelCnt(principal.name)
         val monthlyParcelCnt = parcelFacade.getMonthlyParcelCnt(command)
         val successResult = ApiResult(data = parcelDtoMapper.toResponse(monthlyParcelCnt))
         return ResponseEntity.ok(successResult)
@@ -202,10 +181,7 @@ class DeliveryController(
 
     @Operation(
         summary = "단일 택배 상태 업데이트 API",
-        security = [SecurityRequirement(
-            name = "Oauth2",
-            scopes = ["read", "write"]
-        ), SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @PostMapping("/parcel/refresh")
     fun postParcelRefresh(
@@ -213,7 +189,7 @@ class DeliveryController(
         principal: Principal
     ): ResponseEntity<ApiResult<ParcelDto.RefreshResponse>> {
 
-        val command = ParcelCommand.SingleRefresh(principal.name.toLong(), request.parcelId!!)
+        val command = ParcelCommand.SingleRefresh(principal.name, request.parcelId!!)
         val singleRefresh = parcelFacade.singleRefresh(command)
 
         return ResponseEntity.ok(ApiResult(data = parcelDtoMapper.toResponse(singleRefresh)))
@@ -221,12 +197,11 @@ class DeliveryController(
 
     @Operation(
         summary = "모든 택배 업데이트 API",
-        security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"]),
-            SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @PostMapping("/parcels/refresh")
     fun postParcelsRefresh(principal: Principal): ResponseEntity<ApiResult<String>> {
-        parcelFacade.entireRefresh(ParcelCommand.EntireRefresh(principal.name.toLong()))
+        parcelFacade.entireRefresh(ParcelCommand.EntireRefresh(principal.name))
         return ResponseEntity.ok(ApiResult(data = ""))
     }
 
@@ -236,7 +211,7 @@ class DeliveryController(
         @RequestBody @Valid request: ParcelDto.RegisterParcelRequest,
         principal: Principal
     ): ResponseEntity<ApiResult<Long>> {
-        val registerCommand = request.toCommand(principal.name.toLong())
+        val registerCommand = request.toCommand(principal.name)
         val parcelInfo = parcelFacade.registerParcel(registerCommand)
 
         return ResponseEntity(ApiResult(data = parcelInfo.parcelId), HttpStatus.CREATED)
@@ -244,10 +219,7 @@ class DeliveryController(
 
     @Operation(
         summary = "택배 삭제 API",
-        security = [SecurityRequirement(
-            name = "Oauth2",
-            scopes = ["read", "write"]
-        ), SecurityRequirement(name = "BearerToken")]
+        security = [SecurityRequirement(name = "Authorization")]
     )
     @DeleteMapping("/parcels")
     fun deleteParcels(
@@ -255,7 +227,7 @@ class DeliveryController(
         @RequestBody @Valid request: ParcelDto.DeleteParcelsRequest,
         principal: Principal
     ): ResponseEntity<Unit> {
-        val deleteCommand = ParcelCommand.DeleteParcel(principal.name.toLong(), request.parcelIds!!)
+        val deleteCommand = ParcelCommand.DeleteParcel(principal.name, request.parcelIds!!)
         parcelFacade.deleteParcel(deleteCommand)
 
         return ResponseEntity.noContent().build()

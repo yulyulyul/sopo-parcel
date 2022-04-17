@@ -13,41 +13,41 @@ import java.time.ZonedDateTime
 
 class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : ParcelRepositorySupport {
 
-    override fun getRegisterParcelCount(userId: Long): Long {
+    override fun getRegisterParcelCount(userToken: String): Long {
         val parcel = QParcel.parcel
         return queryFactory
             .selectFrom(parcel)
-            .where(parcel.userId.eq(userId))
+            .where(parcel.userToken.eq(userToken))
             .fetch().size.toLong()
     }
 
-    override fun getRegisterParcelCountIn2Week(userId: Long): Long {
+    override fun getRegisterParcelCountIn2Week(userToken: String): Long {
         val parcel = QParcel.parcel
 
         return queryFactory
             .selectFrom(parcel)
             .where(
                 parcel.regDte.between(ZonedDateTime.now().minusWeeks(2L), ZonedDateTime.now())
-                    .and(parcel.userId.eq(userId))
+                    .and(parcel.userToken.eq(userToken))
             )
             .fetch().size.toLong()
     }
 
-    override fun getParcel(userId: Long, parcelId: Long): Parcel {
+    override fun getParcel(userToken: String, parcelId: Long): Parcel {
 
         return queryFactory
             .selectFrom(parcel)
             .where(
                 parcel.id.eq(parcelId)
-                    .and(parcel.userId.eq(userId))
+                    .and(parcel.userToken.eq(userToken))
             ).fetchOne() ?: throw ParcelNotFoundException()
     }
 
-    override fun getParcelsOngoing(userId: Long): List<Parcel>? {
+    override fun getParcelsOngoing(userToken: String): List<Parcel>? {
         return queryFactory
             .selectFrom(parcel)
             .where(
-                parcel.userId.eq(userId)
+                parcel.userToken.eq(userToken)
                     .and(parcel.status.eq(Parcel.Activeness.ACTIVE))
                     .and(parcel.deliveryStatus.ne(Parcel.DeliveryStatus.DELIVERED))
             )
@@ -55,11 +55,11 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             .fetch()
     }
 
-    override fun isAlreadyRegistered(userId: Long, waybillNum: String, carrier: String): Boolean {
+    override fun isAlreadyRegistered(userToken: String, waybillNum: String, carrier: String): Boolean {
         val flag = queryFactory
             .from(parcel)
             .where(
-                parcel.userId.eq(userId)
+                parcel.userToken.eq(userToken)
                     .and(parcel.status.eq(Parcel.Activeness.ACTIVE))
                     .and(parcel.waybillNum.eq(waybillNum))
                     .and(parcel.carrier.eq(carrier))
@@ -69,7 +69,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
         return flag > 0
     }
 
-    override fun getMonthlyParcelCntList(userId: Long): MutableList<ParcelInfo.MonthlyParcelCnt> {
+    override fun getMonthlyParcelCntList(userToken: String): MutableList<ParcelInfo.MonthlyParcelCnt> {
 
         val dateFormatTemplate = Expressions.stringTemplate("DATE_FORMAT({0}, {1})", parcel.arrivalDte, "%Y-%m")
         val dateTimePath = Expressions.dateTimePath(ZonedDateTime::class.java, "time")
@@ -85,7 +85,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
             .from(parcel)
             .leftJoin(parcel).on(parcel.userId.eq(parcel.userId))
             .where(
-                parcel.userId.eq(userId)
+                parcel.userToken.eq(userToken)
                     .and(
                         parcel.status.eq(Parcel.Activeness.ACTIVE)
                             .and(parcel.deliveryStatus.eq(Parcel.DeliveryStatus.DELIVERED))
@@ -99,21 +99,21 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
         return timeCountList
     }
 
-    override fun isLimitCountOver(userId: Long): Boolean {
+    override fun isLimitCountOver(userToken: String): Boolean {
         return queryFactory
             .from(parcel)
             .where(
-                parcel.userId.eq(userId)
+                parcel.userToken.eq(userToken)
                     .and(parcel.regDte.month().eq(Expressions.currentDate().month()))
             )
             .fetch().size > 50
     }
 
-    override fun getCurrentMonthRegisteredCount(userId: Long): Int {
+    override fun getCurrentMonthRegisteredCount(userToken: String): Int {
         return queryFactory
             .from(parcel)
             .where(
-                parcel.userId.eq(userId)
+                parcel.userToken.eq(userToken)
                     .and(parcel.regDte.month().eq(Expressions.currentDate().month()))
             )
             .fetch().size
