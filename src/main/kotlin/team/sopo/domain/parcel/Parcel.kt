@@ -186,12 +186,12 @@ class Parcel(
                     return@ifEmpty waybillNum
                 }
 
-                if (trackingInfo.from != null && StringUtils.isNotBlank(trackingInfo.from.name)) {
-                    return@ifEmpty "보내는 이 (${trackingInfo.from.name})"
-                }
-
                 if (trackingInfo.item != null) {
                     return@ifEmpty trackingInfo.item
+                }
+
+                if (trackingInfo.from != null && StringUtils.isNotBlank(trackingInfo.from.name)) {
+                    return@ifEmpty "보낸이 : ${trackingInfo.from.name}"
                 }
 
                 waybillNum
