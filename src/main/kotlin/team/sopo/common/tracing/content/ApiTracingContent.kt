@@ -17,7 +17,7 @@ class ApiTracingContent(
     var error_type: ErrorType? = null,
     var exception: String? = null,
     var exception_message: String? = "",
-    var return_message: String = "",
+//    var return_message: String = "",
     var request_url: String = "",
     var http_status: Int? = null
 ){

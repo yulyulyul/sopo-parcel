@@ -21,12 +21,12 @@ class ApiTracingRepository: TracingRepository<ApiTracingContent> {
         save(content)
     }
 
-    fun saveReturnMessage(returnMessage: String){
-        val content = get().apply {
-            this.return_message = returnMessage
-        }
-        save(content)
-    }
+//    fun saveReturnMessage(returnMessage: String){
+//        val content = get().apply {
+//            this.return_message = returnMessage
+//        }
+//        save(content)
+//    }
 
     fun saveErrorInfo(errorCode: Int, errorType: ErrorType, exception: Exception, exceptionMessage: String){
         val content = get().apply {

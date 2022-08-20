@@ -32,9 +32,9 @@ class APIResultHandler(private val tracingRepository: ApiTracingRepository) : Re
         val servletRequestAttributes = (RequestContextHolder.getRequestAttributes() as ServletRequestAttributes?)!!
         val httpStatus = servletRequestAttributes.response?.status
 
-        if (body != null) {
-            tracingRepository.saveReturnMessage(body.toString())
-        }
+//        if (body != null) {
+//            tracingRepository.saveReturnMessage(body.toString())
+//        }
         if(body is ApiResult<*>){
             body.path = servletRequestAttributes.request.requestURI
         }
