@@ -102,4 +102,11 @@ class ParcelDto {
         }
     }
 
+    data class MonthlyPageInfoResponse(
+        val hasPrevious: Boolean,
+        val previousDate: String?,
+        val hasNext: Boolean,
+        val nextDate: String?,
+        val cursorDate: String?
+    )
 }

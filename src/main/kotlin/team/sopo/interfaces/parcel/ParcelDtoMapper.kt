@@ -21,4 +21,6 @@ interface ParcelDtoMapper {
     )
     fun toResponse(monthlyParcelCnt: ParcelInfo.MonthlyParcelCnt): ParcelDto.MonthlyParcelCntResponse
     fun toResponse(monthlyParcelCnts: List<ParcelInfo.MonthlyParcelCnt>): List<ParcelDto.MonthlyParcelCntResponse>
+
+    fun toResponse(monthlyPageInfo: ParcelInfo.MonthlyPageInfo): ParcelDto.MonthlyPageInfoResponse
 }

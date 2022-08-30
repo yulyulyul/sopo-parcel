@@ -31,6 +31,10 @@ class ParcelCommand {
 
     data class GetMonthlyParcelCnt(val userToken: String)
 
+    data class GetMonthlyPageInfo(val userToken: String, val cursorDate: String?){
+        fun isFirstPage() = cursorDate.isNullOrBlank()
+    }
+
     data class RegisterParcel(
         val userToken: String,
         val carrier: String,

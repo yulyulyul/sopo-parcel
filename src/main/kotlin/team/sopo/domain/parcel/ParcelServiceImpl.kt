@@ -59,6 +59,17 @@ class ParcelServiceImpl(
     }
 
     @Transactional(readOnly = true)
+    override fun getMonthlyPageInfo(getCommand: ParcelCommand.GetMonthlyPageInfo): ParcelInfo.MonthlyPageInfo {
+        val monthlyHistory = parcelReader.getMonthlyParcelCntList(getCommand.userToken)
+
+        return if (getCommand.isFirstPage()) {
+            monthlyHistory.getFirstPageDate()
+        } else {
+            monthlyHistory.getCursorDateInfo(getCommand.cursorDate)
+        }
+    }
+
+    @Transactional(readOnly = true)
     override fun getUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage {
         val countIn2Week = parcelReader.getRegisteredCountIn2Week(getCommand.userToken)
         val totalCount = parcelReader.getRegisteredParcelCount(getCommand.userToken)
@@ -119,5 +130,37 @@ class ParcelServiceImpl(
             }
             .map(Parcel::id)
             .toList()
+    }
+
+    private fun List<ParcelInfo.MonthlyParcelCnt>.getCursorDateInfo(cursorDate: String?): ParcelInfo.MonthlyPageInfo {
+        forEachIndexed { index, monthlyParcelCnt ->
+            val hasPrevious = index != 0
+            val hasNext = index != (this.size - 1)
+
+            if (monthlyParcelCnt.time == cursorDate) {
+                return ParcelInfo.MonthlyPageInfo(
+                    hasPrevious = hasPrevious,
+                    previousDate = if (hasPrevious) this[index - 1].time else null,
+                    hasNext = hasNext,
+                    nextDate = if (hasNext) this[index + 1].time else null,
+                    cursorDate = monthlyParcelCnt.time
+                )
+            }
+        }
+        return ParcelInfo.MonthlyPageInfo.getEmptyData()
+    }
+    private fun List<ParcelInfo.MonthlyParcelCnt>.getFirstPageDate(): ParcelInfo.MonthlyPageInfo {
+        val hasNext = this.size > 1
+        return if (this.isNotEmpty()) {
+            ParcelInfo.MonthlyPageInfo(
+                hasPrevious = false,
+                previousDate = null,
+                hasNext = hasNext,
+                nextDate = if (hasNext) this[1].time else null,
+                cursorDate = this[0].time
+            )
+        } else {
+            ParcelInfo.MonthlyPageInfo.getEmptyData()
+        }
     }
 }

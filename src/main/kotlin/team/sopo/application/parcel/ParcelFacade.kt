@@ -36,6 +36,10 @@ class ParcelFacade(
         return parcelService.getMonthlyParcelCntList(command)
     }
 
+    fun getMonthlyPageInfo(command: ParcelCommand.GetMonthlyPageInfo): ParcelInfo.MonthlyPageInfo {
+        return parcelService.getMonthlyPageInfo(command)
+    }
+
     fun getUsageInfo(command: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage {
         return parcelService.getUsageInfo(command)
     }

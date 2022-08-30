@@ -20,18 +20,23 @@ GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcels/months
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
+### 월별 완료된 택배 page info
+GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcels/complete/monthly-page-info/?cursorDate=2022-01
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
 ### 택배 등록
 POST http://localhost:6443/api/v1/sopo-parcel/delivery/parcel
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "carrier": "CJ_LOGISTICS",
-  "waybillNum": "648346324206",
-  "alias": "큐엘 무타공 멀티탭 선정리 선반 거치대"
+  "carrier": "LOTTE",
+  "waybillNum": "239317675553",
+  "alias": "어고트론"
 }
 
 ### 단일 택배 조회
-GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcel/1
+GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcel/6
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}

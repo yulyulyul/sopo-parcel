@@ -30,6 +30,24 @@ class ParcelInfo {
         val totalRegisteredCount: Long
     )
 
+    data class MonthlyPageInfo(
+        val hasPrevious: Boolean,
+        val previousDate: String?,
+        val hasNext: Boolean,
+        val nextDate: String?,
+        val cursorDate: String?
+    ){
+        companion object{
+            fun getEmptyData(): MonthlyPageInfo = ParcelInfo.MonthlyPageInfo(
+                hasPrevious = false,
+                previousDate = null,
+                hasNext = false,
+                nextDate = null,
+                cursorDate = null
+            )
+        }
+    }
+
     class MonthlyParcelCnt(_time: String, _count: Long) {
         val time = _time
         val count = _count

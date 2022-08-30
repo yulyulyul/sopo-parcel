@@ -180,6 +180,27 @@ class DeliveryController(
     }
 
     @Operation(
+        summary = "월별 완료된 택배 page info",
+        security = [SecurityRequirement(name = "Authorization")]
+    )
+    @GetMapping("/parcels/complete/monthly-page-info")
+    fun getMonthsV2(
+        @Parameter(
+            name = "cursorDate", description = "조회 날짜 (2021-03 - 년월)",
+            required = true, `in` = ParameterIn.QUERY,
+            schema = Schema(implementation = String::class, example = "2020-06")
+        )
+        cursorDate: String?,
+        principal: Principal
+    ): ResponseEntity<ApiResult<ParcelDto.MonthlyPageInfoResponse>> {
+
+        val command = ParcelCommand.GetMonthlyPageInfo(principal.name, cursorDate)
+        val monthV2 = parcelFacade.getMonthlyPageInfo(command)
+        val successResult = ApiResult(data = parcelDtoMapper.toResponse(monthV2))
+        return ResponseEntity.ok(successResult)
+    }
+
+    @Operation(
         summary = "단일 택배 상태 업데이트 API",
         security = [SecurityRequirement(name = "Authorization")]
     )

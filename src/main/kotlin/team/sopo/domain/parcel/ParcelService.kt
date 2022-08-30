@@ -7,6 +7,7 @@ interface ParcelService {
     fun getOngoingParcels(getCommand: ParcelCommand.GetOngoingParcels): List<ParcelInfo.Main>
     fun getCompleteParcels(getCommand: ParcelCommand.GetCompleteParcels): List<ParcelInfo.Main>
     fun getMonthlyParcelCntList(getCommand: ParcelCommand.GetMonthlyParcelCnt): List<ParcelInfo.MonthlyParcelCnt>
+    fun getMonthlyPageInfo(getCommand: ParcelCommand.GetMonthlyPageInfo): ParcelInfo.MonthlyPageInfo
     fun getUsageInfo(getCommand: ParcelCommand.GetUsageInfo): ParcelInfo.ParcelUsage
     fun changeParcelAlias(changeCommand: ParcelCommand.ChangeParcelAlias)
     fun deleteParcel(deleteCommand: ParcelCommand.DeleteParcel)
