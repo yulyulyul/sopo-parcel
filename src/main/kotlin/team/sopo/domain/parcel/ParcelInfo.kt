@@ -5,19 +5,19 @@ import java.time.LocalDateTime
 
 class ParcelInfo {
     class Main(
-        var parcelId: Long? = null,
+        var parcelId: Long,
         var userId: Long,
-        var waybillNum: String? = null,
-        var carrier: Carrier? = null,
-        var alias: String? = null,
+        var waybillNum: String,
+        var carrier: Carrier,
+        var alias: String,
         var inquiryResult: TrackingInfo? = null,
         var inquiryHash: String? = null,
         var deliveryStatus: Parcel.DeliveryStatus? = null,
-        var regDte: LocalDateTime? = null,
+        var regDte: LocalDateTime,
         var arrivalDte: LocalDateTime? = null,
-        var auditDte: LocalDateTime? = null,
-        var status: Int? = null,
-        var reported: Boolean? = null
+        var auditDte: LocalDateTime,
+        var status: Int,
+        var reported: Boolean
     )
 
     class RefreshedParcel(
@@ -38,7 +38,7 @@ class ParcelInfo {
         val cursorDate: String?
     ){
         companion object{
-            fun getEmptyData(): MonthlyPageInfo = ParcelInfo.MonthlyPageInfo(
+            fun getEmptyData(): MonthlyPageInfo = MonthlyPageInfo(
                 hasPrevious = false,
                 previousDate = null,
                 hasNext = false,

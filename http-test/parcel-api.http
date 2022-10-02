@@ -10,6 +10,30 @@ Content-Type: application/json
 
 > {% client.global.set("auth_token", response.body.access_token); %}
 
+### 택배의 별칭을 수정하는 조회
+PATCH http://localhost:6443/api/v1/sopo-parcel/delivery//parcel/7/alias
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "alias": "Change Parcel`s Alias"
+}
+
+### 복수의 택배 조회
+GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcels?parcel=7&parcel=8
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+### 월별 완료된 택배 page info
+GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcels/complete/monthly-page-info?cursorDate=202206
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+### 복수의 택배[배송완료] 조회(페이징 포함)
+GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcels/complete?page=0&itemCnt=10&inquiryDate=202207
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
 ### 진행중인 택배 가져오기
 GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcels/ongoing
 Content-Type: application/json
@@ -17,11 +41,6 @@ Authorization: Bearer {{auth_token}}
 
 ### 사용자의 조회 가능한 '년/월' 리스트
 GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcels/months
-Content-Type: application/json
-Authorization: Bearer {{auth_token}}
-
-### 월별 완료된 택배 page info
-GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcels/complete/monthly-page-info/?cursorDate=2022-01
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
@@ -37,6 +56,6 @@ Authorization: Bearer {{auth_token}}
 }
 
 ### 단일 택배 조회
-GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcel/6
+GET http://localhost:6443/api/v1/sopo-parcel/delivery/parcel/4
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}

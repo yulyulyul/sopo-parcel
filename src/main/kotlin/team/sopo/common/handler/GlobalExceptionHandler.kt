@@ -1,6 +1,5 @@
 package team.sopo.common.handler
 
-import org.apache.logging.log4j.LogManager
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.AuthenticationException
@@ -15,12 +14,11 @@ import team.sopo.common.tracing.ApiTracingRepository
 import java.util.stream.Collectors
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.validation.ConstraintViolationException
 
 
 @RestControllerAdvice
 class GlobalExceptionHandler(private val repository: ApiTracingRepository) {
-
-    private val logger = LogManager.getLogger(GlobalExceptionHandler::class)
 
     @ExceptionHandler(SopoException::class)
     fun handleSopoException(
@@ -93,7 +91,30 @@ class GlobalExceptionHandler(private val repository: ApiTracingRepository) {
             this.errors.addAll(errorResponses)
         }
 
-        if(errors.errors.isNotEmpty()){
+        if (errors.errors.isNotEmpty()) {
+            val error = errors.errors.first()
+            logError(error, e)
+        }
+
+        return ResponseEntity(errors, SopoError.VALIDATION.status)
+    }
+
+    @ExceptionHandler(ConstraintViolationException::class)
+    fun handleConstraintViolationException(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        e: ConstraintViolationException
+    ): ResponseEntity<Errors> {
+
+        val errorResponses = e.constraintViolations.map {
+            Error(SopoError.VALIDATION, it.messageTemplate, request.servletPath)
+        }.toList()
+
+        val errors = Errors().apply {
+            this.errors.addAll(errorResponses)
+        }
+
+        if (errors.errors.isNotEmpty()) {
             val error = errors.errors.first()
             logError(error, e)
         }

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.hibernate.validator.constraints.Range
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
@@ -15,7 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import team.sopo.application.parcel.ParcelFacade
-import team.sopo.common.annotation.DateFormatYearMonth
+import team.sopo.common.annotation.CheckYYYYMM
+import team.sopo.common.annotation.CheckYYYYMMPermitNull
 import team.sopo.common.model.api.ApiResult
 import team.sopo.domain.parcel.ParcelCommand
 import java.security.Principal
@@ -147,6 +149,7 @@ class DeliveryController(
             schema = Schema(implementation = Integer::class, example = "10")
         )
         @NotNull(message = "* 아이템 개수를 확인해주세요.")
+        @Range(message = "* 아이템 개수는 0-20 사이로 입력해주세요.", min = 0, max = 20)
         itemCnt: Int,
         @Parameter(
             name = "inquiryDate", description = "조회 날짜(202103 - 년월)",
@@ -154,7 +157,7 @@ class DeliveryController(
             schema = Schema(implementation = String::class, example = "202006")
         )
         @NotNull(message = "* 조회 날짜를 확인해주세요.")
-        @DateFormatYearMonth(message = "* 조회 날짜의 형식을 확인해주세요.")
+        @CheckYYYYMM(message = "* 조회 날짜의 형식을 확인해주세요.")
         inquiryDate: String,
         principal: Principal
     ): ResponseEntity<ApiResult<List<ParcelDto.Main>>> {
@@ -168,8 +171,10 @@ class DeliveryController(
 
     @Operation(
         summary = "사용자의 조회 가능한 '년/월' 리스트 API",
-        security = [SecurityRequirement(name = "Authorization")]
+        security = [SecurityRequirement(name = "Authorization")],
+        deprecated = true
     )
+    @Deprecated("getMonthsV2 사용 바람")
     @GetMapping("/parcels/months")
     fun getMonths(principal: Principal): ResponseEntity<ApiResult<List<ParcelDto.MonthlyParcelCntResponse>>> {
 
@@ -186,15 +191,16 @@ class DeliveryController(
     @GetMapping("/parcels/complete/monthly-page-info")
     fun getMonthsV2(
         @Parameter(
-            name = "cursorDate", description = "조회 날짜 (2021-03 - 년월)",
-            required = true, `in` = ParameterIn.QUERY,
-            schema = Schema(implementation = String::class, example = "2020-06")
+            name = "cursorDate", description = "조회 날짜 (202103 - 년월)",
+            required = false, `in` = ParameterIn.QUERY,
+            schema = Schema(implementation = String::class, example = "202103")
         )
+        @CheckYYYYMMPermitNull(message = "* 조회 날짜의 형식을 확인해주세요.")
         cursorDate: String?,
         principal: Principal
     ): ResponseEntity<ApiResult<ParcelDto.MonthlyPageInfoResponse>> {
 
-        val command = ParcelCommand.GetMonthlyPageInfo(principal.name, cursorDate)
+        val command = ParcelCommand.GetMonthlyPageInfo(principal.name, cursorDate?.trim())
         val monthV2 = parcelFacade.getMonthlyPageInfo(command)
         val successResult = ApiResult(data = parcelDtoMapper.toResponse(monthV2))
         return ResponseEntity.ok(successResult)
@@ -221,9 +227,9 @@ class DeliveryController(
         security = [SecurityRequirement(name = "Authorization")]
     )
     @PostMapping("/parcels/refresh")
-    fun postParcelsRefresh(principal: Principal): ResponseEntity<ApiResult<String>> {
+    fun postParcelsRefresh(principal: Principal): ResponseEntity<Unit> {
         parcelFacade.entireRefresh(ParcelCommand.EntireRefresh(principal.name))
-        return ResponseEntity.ok(ApiResult(data = ""))
+        return ResponseEntity.noContent().build()
     }
 
     @Operation(summary = "단일 택배 등록 API", security = [SecurityRequirement(name = "Oauth2", scopes = ["read", "write"])])

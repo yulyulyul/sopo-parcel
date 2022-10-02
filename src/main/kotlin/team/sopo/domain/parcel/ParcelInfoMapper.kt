@@ -8,28 +8,39 @@ import team.sopo.domain.parcel.trackinginfo.TrackingInfo
 interface ParcelInfoMapper {
     @Mappings(
         Mapping(source = "parcel.id", target = "parcelId"),
-        Mapping(target = "inquiryResult", ignore = true),
-        Mapping(target = "carrier", ignore = true),
-        Mapping(target = "status", ignore = true)
+        Mapping(target = "inquiryResult", qualifiedByName = ["convertInquiryResult"]),
+        Mapping(target = "carrier", qualifiedByName = ["convertCarrier"]),
+        Mapping(target = "status", qualifiedByName = ["convertStatus"])
     )
     fun of(parcel: Parcel): ParcelInfo.Main
 
     fun of(parcelList: List<Parcel>): List<ParcelInfo.Main>
 
     companion object {
+
         @JvmStatic
-        @AfterMapping
-        fun afterMapping(@MappingTarget parcelInfo: ParcelInfo.Main, parcel: Parcel) {
+        @Named("convertCarrier")
+        fun convertCarrier(carrier: String): Carrier = Carrier.getCarrierByCode(carrier)
 
-            parcelInfo.inquiryResult = Gson().fromJson(parcel.inquiryResult, TrackingInfo::class.java)
+        @JvmStatic
+        @Named("convertInquiryResult")
+        fun convertInquiryResult(inquiryResult: String): TrackingInfo? {
+            return if(inquiryResult.isEmpty()){
+                null
+            }
+            else{
+                Gson().fromJson(inquiryResult, TrackingInfo::class.java)
+            }
+        }
 
-            parcelInfo.status = if (parcel.isActivate()) {
+        @JvmStatic
+        @Named("convertStatus")
+        fun convertStatus(status: Parcel.Activeness): Int {
+            return if (status== Parcel.Activeness.ACTIVE) {
                 1
             } else {
                 0
             }
-
-            parcelInfo.carrier = Carrier.getCarrierByCode(parcel.carrier)
         }
     }
 }

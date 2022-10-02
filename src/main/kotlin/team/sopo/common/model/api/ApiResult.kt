@@ -18,7 +18,7 @@ class ApiResult<T>(
      @JsonProperty("path") var path: String = "",
 
     @Schema(name = "API 처리 결과 데이터", required = false, readOnly = true)
-     @JsonProperty("data") var data: T? = null
+     @JsonProperty("data") var data: T
 ){
      override fun toString(): String {
           return Gson().toJson(this)

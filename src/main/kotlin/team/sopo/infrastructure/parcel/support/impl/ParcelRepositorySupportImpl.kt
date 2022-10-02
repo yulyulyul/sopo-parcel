@@ -71,7 +71,7 @@ class ParcelRepositorySupportImpl(private val queryFactory: JPAQueryFactory) : P
 
     override fun getMonthlyParcelCntList(userToken: String): MutableList<ParcelInfo.MonthlyParcelCnt> {
 
-        val dateFormatTemplate = Expressions.stringTemplate("DATE_FORMAT({0}, {1})", parcel.arrivalDte, "%Y-%m")
+        val dateFormatTemplate = Expressions.stringTemplate("DATE_FORMAT({0}, {1})", parcel.arrivalDte, "%Y%m")
         val dateTimePath = Expressions.dateTimePath(ZonedDateTime::class.java, "time")
 
         val timeCountList = queryFactory

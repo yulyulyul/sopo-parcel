@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext
 
-class YearMonthValidator: ConstraintValidator<DateFormatYearMonth, String> {
+class YearMonthValidator: ConstraintValidator<CheckYYYYMM, String> {
     override fun isValid(value: String?, context: ConstraintValidatorContext): Boolean {
         return try{
             if (value== null){
