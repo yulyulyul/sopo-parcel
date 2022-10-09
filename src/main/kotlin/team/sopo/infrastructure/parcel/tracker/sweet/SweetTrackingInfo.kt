@@ -91,59 +91,59 @@ data class SweetTrackingInfo(
 
     private fun toCarrier(code: String): Carrier {
         return when (code) {
-            team.sopo.domain.parcel.Carrier.EPOST.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.EPOST.CODE,
-                team.sopo.domain.parcel.Carrier.EPOST.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.EPOST.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.EPOST.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.EPOST.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.HANJINS.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.HANJINS.CODE,
-                team.sopo.domain.parcel.Carrier.HANJINS.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.HANJINS.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.HANJINS.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.HANJINS.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.CJ_LOGISTICS.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.CJ_LOGISTICS.CODE,
-                team.sopo.domain.parcel.Carrier.CJ_LOGISTICS.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.CJ_LOGISTICS.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.CJ_LOGISTICS.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.CJ_LOGISTICS.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.LOGEN.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.LOGEN.CODE,
-                team.sopo.domain.parcel.Carrier.LOGEN.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.LOGEN.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.LOGEN.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.LOGEN.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.LOTTE.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.LOTTE.CODE,
-                team.sopo.domain.parcel.Carrier.LOTTE.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.LOTTE.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.LOTTE.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.LOTTE.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.CHUNILPS.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.CHUNILPS.CODE,
-                team.sopo.domain.parcel.Carrier.CHUNILPS.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.CHUNILPS.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.CHUNILPS.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.CHUNILPS.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.DAESIN.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.DAESIN.CODE,
-                team.sopo.domain.parcel.Carrier.DAESIN.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.DAESIN.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.DAESIN.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.DAESIN.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.KDEXP.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.KDEXP.CODE,
-                team.sopo.domain.parcel.Carrier.KDEXP.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.KDEXP.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.KDEXP.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.KDEXP.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.CVSNET.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.CVSNET.CODE,
-                team.sopo.domain.parcel.Carrier.CVSNET.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.CVSNET.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.CVSNET.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.CVSNET.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.HDEXP.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.HDEXP.CODE,
-                team.sopo.domain.parcel.Carrier.HDEXP.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.HDEXP.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.HDEXP.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.HDEXP.NAME,
                 null
             )
-            team.sopo.domain.parcel.Carrier.CU_POST.CODE -> Carrier(
-                team.sopo.domain.parcel.Carrier.CU_POST.CODE,
-                team.sopo.domain.parcel.Carrier.CU_POST.NAME,
+            team.sopo.domain.parcel.carrier.Carrier.CU_POST.CODE -> Carrier(
+                team.sopo.domain.parcel.carrier.Carrier.CU_POST.CODE,
+                team.sopo.domain.parcel.carrier.Carrier.CU_POST.NAME,
                 null
             )
             else -> throw IllegalStateException("정의되지 않은 배송사입니다.")

@@ -1,6 +1,6 @@
 package team.sopo.common.extension
 
-import team.sopo.domain.parcel.Carrier
+import team.sopo.domain.parcel.carrier.Carrier
 import team.sopo.domain.parcel.Parcel
 import team.sopo.domain.parcel.trackinginfo.*
 

@@ -3,7 +3,7 @@ package team.sopo.interfaces.parcel
 import io.swagger.v3.oas.annotations.media.Schema
 import org.hibernate.validator.constraints.Length
 import team.sopo.common.annotation.Enum
-import team.sopo.domain.parcel.Carrier
+import team.sopo.domain.parcel.carrier.Carrier
 import team.sopo.domain.parcel.Parcel
 import team.sopo.domain.parcel.ParcelCommand
 import team.sopo.domain.parcel.trackinginfo.TrackingInfo
@@ -50,6 +50,11 @@ class ParcelDto {
             return ParcelCommand.RegisterParcel(userToken, Carrier.valueOf(carrier!!).CODE, waybillNum, alias)
         }
     }
+
+    class RegisterCarrierRequest(
+        val carrier: String="",
+        val available: Boolean=true
+    )
 
 
     @Schema(name = "택배 리턴 모델")
@@ -108,5 +113,10 @@ class ParcelDto {
         val hasNext: Boolean,
         val nextDate: String?,
         val cursorDate: String?
+    )
+
+    data class CarrierStatus(
+        val carrier: String,
+        val available: Boolean
     )
 }

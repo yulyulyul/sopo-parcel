@@ -1,6 +1,8 @@
 package team.sopo.domain.parcel
 
 import org.springframework.data.domain.Pageable
+import team.sopo.domain.parcel.carrier.Carrier
+import team.sopo.domain.parcel.carrier.CarrierStatus
 import team.sopo.domain.parcel.search.SearchMethod
 import team.sopo.domain.parcel.trackinginfo.TrackingInfo
 
@@ -36,6 +38,15 @@ class ParcelCommand {
         val cursorDate: String?
         ){
         fun isFirstPage() = cursorDate.isNullOrBlank()
+    }
+
+    data class RegisterCarrierStatus(
+        val carrier: String,
+        val available: Boolean
+    ){
+        fun toEntity(): CarrierStatus{
+            return CarrierStatus(carrier, available)
+        }
     }
 
     data class RegisterParcel(

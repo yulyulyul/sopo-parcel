@@ -37,7 +37,7 @@ sourceSets {
 }
 
 group = "team.sopo"
-version = "0.0.54"
+version = "0.0.56"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_11
 
@@ -58,7 +58,9 @@ val querydslVersion = "5.0.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-cache:2.6.3")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:2.6.3")
     implementation("org.springframework.boot:spring-boot-starter-web:2.6.3")
     implementation("org.springframework.boot:spring-boot-starter-security:2.6.3")
     implementation("org.springframework.boot:spring-boot-starter-hateoas:2.6.3")
@@ -131,6 +133,8 @@ dependencies {
     testImplementation ("com.github.springtestdbunit:spring-test-dbunit:1.3.0")
     testImplementation ("org.dbunit:dbunit:2.7.2")
     testImplementation ("io.mockk:mockk:1.12.2")
+    implementation("org.ehcache:ehcache:3.10.2")
+    implementation("javax.cache:cache-api:1.1.1")
 }
 
 idea {

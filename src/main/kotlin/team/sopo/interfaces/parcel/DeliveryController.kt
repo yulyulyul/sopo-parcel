@@ -37,6 +37,36 @@ class DeliveryController(
     private val logger: Logger = LoggerFactory.getLogger(DeliveryController::class.java)
 
     @Operation(
+        summary = "배송사 상태를 추가하는 API",
+        security = [SecurityRequirement(name = "Authorization")]
+    )
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/carrier/status")
+    fun postCarrier(
+        @RequestBody @Valid request: ParcelDto.RegisterCarrierRequest,
+        principal: Principal
+    ): ResponseEntity<Unit> {
+        val command = ParcelCommand.RegisterCarrierStatus(request.carrier, request.available)
+        parcelFacade.registerCarrierStatus(command)
+
+        return ResponseEntity.noContent().build()
+    }
+
+    @Operation(
+        summary = "지원하는 배송사들 상태를 가져오는 API",
+        security = [SecurityRequirement(name = "Authorization")]
+    )
+    @GetMapping("/carriers/status")
+    fun getCarrierStatusList(
+        principal: Principal
+    ): ResponseEntity<ApiResult<List<ParcelDto.CarrierStatus>>> {
+        val carriers = parcelFacade.getCarrierStatusList()
+        val result = ApiResult(data = parcelDtoMapper.ofDto(carriers))
+
+        return ResponseEntity.ok(result)
+    }
+
+    @Operation(
         summary = "택배 Reporting API",
         security = [SecurityRequirement(name = "Authorization")]
     )

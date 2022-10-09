@@ -1,8 +1,11 @@
 package team.sopo.domain.parcel
 
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.sopo.common.exception.SopoException
+import team.sopo.domain.parcel.carrier.CarrierStatusReader
+import team.sopo.domain.parcel.carrier.CarrierStatusStore
 import team.sopo.domain.parcel.register.RegisterProcessor
 import team.sopo.domain.parcel.search.SearchProcessor
 import team.sopo.domain.parcel.update.UpdateProcessor
@@ -11,11 +14,24 @@ import team.sopo.domain.parcel.update.UpdateStatus
 @Service
 class ParcelServiceImpl(
     private val parcelReader: ParcelReader,
+    private val carrierStatusStore: CarrierStatusStore,
+    private val carrierStatusReader: CarrierStatusReader,
     private val searchProcessor: SearchProcessor,
     private val updateProcessor: UpdateProcessor,
     private val registerProcessor: RegisterProcessor,
     private val parcelInfoMapper: ParcelInfoMapper
 ) : ParcelService {
+
+    @Cacheable(value = ["getCarrierStatusList"])
+    override fun getCarrierStatusList(): List<ParcelInfo.CarrierStatus> {
+        val allStatus = carrierStatusReader.getAllStatus()
+        return parcelInfoMapper.ofInfo(allStatus)
+    }
+
+    override fun registerCarrier(registerCommand: ParcelCommand.RegisterCarrierStatus): ParcelInfo.CarrierStatus {
+        val status = carrierStatusStore.save(registerCommand.toEntity())
+        return parcelInfoMapper.of(status)
+    }
 
     @Transactional(readOnly = true)
     override fun getParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main {
