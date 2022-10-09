@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*
 import team.sopo.application.parcel.ParcelFacade
 import team.sopo.common.annotation.CheckYYYYMM
 import team.sopo.common.annotation.CheckYYYYMMPermitNull
-import team.sopo.common.model.api.ApiResult
 import team.sopo.domain.parcel.ParcelCommand
 import java.security.Principal
 import javax.validation.ConstraintViolationException
@@ -95,15 +94,14 @@ class DeliveryController(
         @NotNull(message = "* 택배 id를 확인해주세요.")
         parcelId: Long? = null,
         principal: Principal
-    ): ResponseEntity<ApiResult<ParcelDto.Main>> {
+    ): ResponseEntity<ParcelDto.Main> {
         logger.info("user : ${principal.name}")
         val command = ParcelCommand.GetParcel(
             userToken = principal.name,
             parcelId = parcelId ?: throw ConstraintViolationException("* 택배 id를 확인해주세요.", mutableSetOf())
         )
         val parcelInfo = parcelFacade.getParcel(command)
-        val result = ApiResult(data = parcelDtoMapper.of(parcelInfo))
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok(parcelDtoMapper.of(parcelInfo))
     }
 
     @Operation(
@@ -131,13 +129,12 @@ class DeliveryController(
         security = [SecurityRequirement(name = "Authorization")]
     )
     @GetMapping("/parcels/ongoing")
-    fun getOngoingParcels(principal: Principal): ResponseEntity<ApiResult<List<ParcelDto.Main>>> {
+    fun getOngoingParcels(principal: Principal): ResponseEntity<List<ParcelDto.Main>> {
 
         val command = ParcelCommand.GetOngoingParcels(principal.name)
         val ongoings = parcelFacade.getOngoingParcels(command)
-        val result = ApiResult(data = parcelDtoMapper.of(ongoings))
 
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok(parcelDtoMapper.of(ongoings))
     }
 
     @Operation(
@@ -151,13 +148,12 @@ class DeliveryController(
         @NotNull(message = "* 택배 id를 확인해주세요.")
         parcels: List<Long>,
         principal: Principal
-    ): ResponseEntity<ApiResult<List<ParcelDto.Main>>> {
+    ): ResponseEntity<List<ParcelDto.Main>> {
 
         val command = ParcelCommand.GetParcels(principal.name, parcels)
         val parcelInfos = parcelFacade.getParcels(command)
-        val result = ApiResult(data = parcelDtoMapper.of(parcelInfos))
 
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok(parcelDtoMapper.of(parcelInfos))
     }
 
     @Operation(
@@ -190,13 +186,12 @@ class DeliveryController(
         @CheckYYYYMM(message = "* 조회 날짜의 형식을 확인해주세요.")
         inquiryDate: String,
         principal: Principal
-    ): ResponseEntity<ApiResult<List<ParcelDto.Main>>> {
+    ): ResponseEntity<List<ParcelDto.Main>> {
 
         val command = ParcelCommand.GetCompleteParcels(principal.name, inquiryDate, itemCnt, pageable)
         val completes = parcelFacade.getCompleteParcels(command)
-        val result = ApiResult(data = parcelDtoMapper.of(completes))
 
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok(parcelDtoMapper.of(completes))
     }
 
     @Operation(
@@ -206,12 +201,11 @@ class DeliveryController(
     )
     @Deprecated("getMonthsV2 사용 바람")
     @GetMapping("/parcels/months")
-    fun getMonths(principal: Principal): ResponseEntity<ApiResult<List<ParcelDto.MonthlyParcelCntResponse>>> {
+    fun getMonths(principal: Principal): ResponseEntity<List<ParcelDto.MonthlyParcelCntResponse>> {
 
         val command = ParcelCommand.GetMonthlyParcelCnt(principal.name)
         val monthlyParcelCnt = parcelFacade.getMonthlyParcelCnt(command)
-        val successResult = ApiResult(data = parcelDtoMapper.toResponse(monthlyParcelCnt))
-        return ResponseEntity.ok(successResult)
+        return ResponseEntity.ok(parcelDtoMapper.toResponse(monthlyParcelCnt))
     }
 
     @Operation(
@@ -228,12 +222,11 @@ class DeliveryController(
         @CheckYYYYMMPermitNull(message = "* 조회 날짜의 형식을 확인해주세요.")
         cursorDate: String?,
         principal: Principal
-    ): ResponseEntity<ApiResult<ParcelDto.MonthlyPageInfoResponse>> {
+    ): ResponseEntity<ParcelDto.MonthlyPageInfoResponse> {
 
         val command = ParcelCommand.GetMonthlyPageInfo(principal.name, cursorDate?.trim())
         val monthV2 = parcelFacade.getMonthlyPageInfo(command)
-        val successResult = ApiResult(data = parcelDtoMapper.toResponse(monthV2))
-        return ResponseEntity.ok(successResult)
+        return ResponseEntity.ok(parcelDtoMapper.toResponse(monthV2))
     }
 
     @Operation(
@@ -244,12 +237,12 @@ class DeliveryController(
     fun postParcelRefresh(
         @RequestBody @Valid request: ParcelDto.RefreshParcelRequest,
         principal: Principal
-    ): ResponseEntity<ApiResult<ParcelDto.RefreshResponse>> {
+    ): ResponseEntity<ParcelDto.RefreshResponse> {
 
         val command = ParcelCommand.SingleRefresh(principal.name, request.parcelId!!)
         val singleRefresh = parcelFacade.singleRefresh(command)
 
-        return ResponseEntity.ok(ApiResult(data = parcelDtoMapper.toResponse(singleRefresh)))
+        return ResponseEntity.ok(parcelDtoMapper.toResponse(singleRefresh))
     }
 
     @Operation(
@@ -267,11 +260,11 @@ class DeliveryController(
     fun postParcel(
         @RequestBody @Valid request: ParcelDto.RegisterParcelRequest,
         principal: Principal
-    ): ResponseEntity<ApiResult<Long>> {
+    ): ResponseEntity<Long> {
         val registerCommand = request.toCommand(principal.name)
         val parcelInfo = parcelFacade.registerParcel(registerCommand)
 
-        return ResponseEntity(ApiResult(data = parcelInfo.parcelId), HttpStatus.CREATED)
+        return ResponseEntity(parcelInfo.parcelId, HttpStatus.CREATED)
     }
 
     @Operation(
