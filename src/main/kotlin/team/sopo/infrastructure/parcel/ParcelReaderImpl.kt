@@ -4,7 +4,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.common.util.OffsetBasedPageRequest
-import team.sopo.domain.parcel.Carrier
+import team.sopo.domain.parcel.carrier.Carrier
 import team.sopo.domain.parcel.Parcel
 import team.sopo.domain.parcel.ParcelInfo
 import team.sopo.domain.parcel.ParcelReader

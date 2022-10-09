@@ -10,8 +10,23 @@ Content-Type: application/json
 
 > {% client.global.set("auth_token", response.body.access_token); %}
 
+### 배송사 상태를 추가하는 API
+POST http://localhost:6443/api/v1/sopo-parcel/delivery/carrier/status
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "carrier": "LOTTE",
+  "available": true
+}
+
+### 지원하는 배송사 가져오는 API
+GET http://localhost:6443/api/v1/sopo-parcel/delivery/carriers/status
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
 ### 택배의 별칭을 수정하는 조회
-PATCH http://localhost:6443/api/v1/sopo-parcel/delivery//parcel/7/alias
+PATCH http://localhost:6443/api/v1/sopo-parcel/delivery/parcel/7/alias
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 

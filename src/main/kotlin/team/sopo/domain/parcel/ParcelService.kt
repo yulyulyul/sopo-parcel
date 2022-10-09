@@ -1,6 +1,8 @@
 package team.sopo.domain.parcel
 
 interface ParcelService {
+    fun getCarrierStatusList(): List<ParcelInfo.CarrierStatus>
+    fun registerCarrier(registerCommand: ParcelCommand.RegisterCarrierStatus): ParcelInfo.CarrierStatus
     fun getParcel(getCommand: ParcelCommand.GetParcel): ParcelInfo.Main
     fun getParcels(getCommand: ParcelCommand.GetParcels): List<ParcelInfo.Main>
     fun reporting(command: ParcelCommand.Reporting)

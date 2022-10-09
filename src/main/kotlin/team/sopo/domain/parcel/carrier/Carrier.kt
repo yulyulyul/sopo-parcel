@@ -1,4 +1,4 @@
-package team.sopo.domain.parcel
+package team.sopo.domain.parcel.carrier
 
 enum class Carrier(val CODE: String, val NAME: String) {
     CHUNILPS("kr.chunilps", "천일택배"),

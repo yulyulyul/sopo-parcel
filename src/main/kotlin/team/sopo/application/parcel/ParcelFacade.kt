@@ -11,6 +11,13 @@ class ParcelFacade(
     private val pushService: PushService,
     private val parcelService: ParcelService
 ) {
+    fun getCarrierStatusList(): List<ParcelInfo.CarrierStatus> {
+        return parcelService.getCarrierStatusList()
+    }
+
+    fun registerCarrierStatus(command: ParcelCommand.RegisterCarrierStatus): ParcelInfo.CarrierStatus {
+       return parcelService.registerCarrier(command)
+    }
 
     fun reporting(command: ParcelCommand.Reporting) {
         parcelService.reporting(command)

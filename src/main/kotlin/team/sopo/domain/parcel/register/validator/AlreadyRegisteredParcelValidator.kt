@@ -3,7 +3,7 @@ package team.sopo.domain.parcel.register.validator
 import org.springframework.stereotype.Component
 import team.sopo.common.exception.AlreadyRegisteredParcelException
 import team.sopo.common.exception.ParcelNotFoundException
-import team.sopo.domain.parcel.Carrier
+import team.sopo.domain.parcel.carrier.Carrier
 import team.sopo.domain.parcel.ParcelCommand
 import team.sopo.domain.parcel.ParcelReader
 

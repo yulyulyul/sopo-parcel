@@ -11,6 +11,9 @@ interface ParcelDtoMapper {
     fun of(parcelInfo: ParcelInfo.Main): ParcelDto.Main
     fun of(parcelInfos: List<ParcelInfo.Main>): List<ParcelDto.Main>
 
+    fun of(carrierStatus: ParcelInfo.CarrierStatus): ParcelDto.CarrierStatus
+    fun ofDto(carrierStatusList: List<ParcelInfo.CarrierStatus>): List<ParcelDto.CarrierStatus>
+
     @Mapping(source = "updated", target = "isUpdated")
     fun toResponse(refreshedParcel: ParcelInfo.RefreshedParcel): ParcelDto.RefreshResponse
     fun toResponse(parcelUsage: ParcelInfo.ParcelUsage): ParcelDto.ParcelUsageResponse

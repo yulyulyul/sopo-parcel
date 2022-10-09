@@ -2,7 +2,7 @@ package team.sopo.infrastructure.parcel.search
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import team.sopo.domain.parcel.Carrier
+import team.sopo.domain.parcel.carrier.Carrier
 import team.sopo.domain.parcel.ParcelCommand
 import team.sopo.domain.parcel.search.SearchApiCaller
 import team.sopo.domain.parcel.search.SearchMethod

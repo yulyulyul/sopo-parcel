@@ -1,6 +1,7 @@
 package team.sopo.domain.parcel
 
 import org.springframework.data.domain.Pageable
+import team.sopo.domain.parcel.carrier.Carrier
 
 interface ParcelReader {
     fun getParcel(parcelId: Long, userToken: String): Parcel

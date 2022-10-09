@@ -1,7 +1,7 @@
 package team.sopo.common.tracing.content
 
 import feign.Request
-import team.sopo.domain.parcel.Carrier
+import team.sopo.domain.parcel.carrier.Carrier
 
 data class DeliveryTrackerContent(
     var api_id: String,

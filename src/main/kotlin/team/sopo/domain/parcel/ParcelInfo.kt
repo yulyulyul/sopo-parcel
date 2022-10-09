@@ -1,6 +1,10 @@
 package team.sopo.domain.parcel
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import team.sopo.domain.parcel.carrier.Carrier
 import team.sopo.domain.parcel.trackinginfo.TrackingInfo
+import java.io.Serializable
 import java.time.LocalDateTime
 
 class ParcelInfo {
@@ -56,4 +60,9 @@ class ParcelInfo {
             return "{time:$time, count:$count}"
         }
     }
+
+    data class CarrierStatus(
+        val carrier: String,
+        val available: Boolean
+    ) : Serializable
 }

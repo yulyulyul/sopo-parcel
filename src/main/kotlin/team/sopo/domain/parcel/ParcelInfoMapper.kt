@@ -2,6 +2,8 @@ package team.sopo.domain.parcel
 
 import com.google.gson.Gson
 import org.mapstruct.*
+import team.sopo.domain.parcel.carrier.Carrier
+import team.sopo.domain.parcel.carrier.CarrierStatus
 import team.sopo.domain.parcel.trackinginfo.TrackingInfo
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
@@ -15,6 +17,10 @@ interface ParcelInfoMapper {
     fun of(parcel: Parcel): ParcelInfo.Main
 
     fun of(parcelList: List<Parcel>): List<ParcelInfo.Main>
+
+    fun of(carrier: CarrierStatus): ParcelInfo.CarrierStatus
+
+    fun ofInfo(carrierList: List<CarrierStatus>): List<ParcelInfo.CarrierStatus>
 
     companion object {
 

@@ -25,6 +25,7 @@ import team.sopo.common.exception.ParcelNotFoundException
 import team.sopo.common.exception.ValidationException
 import team.sopo.common.util.OffsetBasedPageRequest
 import team.sopo.domain.parcel.*
+import team.sopo.domain.parcel.carrier.Carrier
 import team.sopo.domain.parcel.register.RegisterProcessor
 import team.sopo.domain.parcel.search.SearchProcessor
 import team.sopo.domain.parcel.trackinginfo.From
