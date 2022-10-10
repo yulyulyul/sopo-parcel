@@ -17,6 +17,7 @@ Authorization: Bearer {{auth_token}}
 
 {
   "carrier": "LOTTE",
+  "name": "롯데택배",
   "available": true
 }
 

@@ -52,7 +52,11 @@ class ParcelDto {
     }
 
     class RegisterCarrierRequest(
+        @field: NotBlank(message = "배송사를 확인해주세요.")
+        @field: Enum(enumClass = Carrier::class, message = "지원하지 않은 배송사입니다.", ignoreCase = true)
         val carrier: String="",
+        @field: NotBlank(message = "배송사 이름을 확인해주세요.")
+        val name: String="",
         val available: Boolean=true
     )
 
@@ -117,6 +121,7 @@ class ParcelDto {
 
     data class CarrierStatus(
         val carrier: String,
+        val name: String,
         val available: Boolean
     )
 }

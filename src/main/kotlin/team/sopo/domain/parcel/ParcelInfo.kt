@@ -1,7 +1,5 @@
 package team.sopo.domain.parcel
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import team.sopo.domain.parcel.carrier.Carrier
 import team.sopo.domain.parcel.trackinginfo.TrackingInfo
 import java.io.Serializable
@@ -40,8 +38,8 @@ class ParcelInfo {
         val hasNext: Boolean,
         val nextDate: String?,
         val cursorDate: String?
-    ){
-        companion object{
+    ) {
+        companion object {
             fun getEmptyData(): MonthlyPageInfo = MonthlyPageInfo(
                 hasPrevious = false,
                 previousDate = null,
@@ -63,6 +61,7 @@ class ParcelInfo {
 
     data class CarrierStatus(
         val carrier: String,
+        val name: String,
         val available: Boolean
     ) : Serializable
 }

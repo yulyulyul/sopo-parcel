@@ -45,7 +45,7 @@ class DeliveryController(
         @RequestBody @Valid request: ParcelDto.RegisterCarrierRequest,
         principal: Principal
     ): ResponseEntity<Unit> {
-        val command = ParcelCommand.RegisterCarrierStatus(request.carrier, request.available)
+        val command = ParcelCommand.RegisterCarrierStatus(request.carrier, request.name, request.available)
         parcelFacade.registerCarrierStatus(command)
 
         return ResponseEntity.noContent().build()
@@ -58,11 +58,10 @@ class DeliveryController(
     @GetMapping("/carriers/status")
     fun getCarrierStatusList(
         principal: Principal
-    ): ResponseEntity<ApiResult<List<ParcelDto.CarrierStatus>>> {
+    ): ResponseEntity<List<ParcelDto.CarrierStatus>> {
         val carriers = parcelFacade.getCarrierStatusList()
-        val result = ApiResult(data = parcelDtoMapper.ofDto(carriers))
 
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok(parcelDtoMapper.ofDto(carriers))
     }
 
     @Operation(

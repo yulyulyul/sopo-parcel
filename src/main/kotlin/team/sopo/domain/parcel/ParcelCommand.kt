@@ -42,10 +42,11 @@ class ParcelCommand {
 
     data class RegisterCarrierStatus(
         val carrier: String,
+        val name: String,
         val available: Boolean
     ){
         fun toEntity(): CarrierStatus{
-            return CarrierStatus(carrier, available)
+            return CarrierStatus(carrier, name, available)
         }
     }
 
