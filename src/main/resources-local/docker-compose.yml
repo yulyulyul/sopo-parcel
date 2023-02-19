@@ -1,7 +1,8 @@
 version: "3.7"
 services:
   parcel-db:
-    image: mariadb:10.6
+    image: mariadb:latest
+    platform: linux/amd64
     command: --lower_case_table_names=1
     ports:
       - "13306:3306"
@@ -14,6 +15,5 @@ services:
     command: # 명령어 실행
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-    platform: linux/amd64
     volumes:
       - ./mysql:/var/lib/mysql

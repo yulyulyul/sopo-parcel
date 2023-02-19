@@ -176,7 +176,7 @@ tasks.bootRun {
 }
 
 flyway {
-    url = "jdbc:mariadb://localhost:23306/parcel?verifyServerCertificate=false&allowPublicKeyRetrieval=true&useSSL=false"
+    url = "jdbc:mariadb://localhost:13306/parcel?verifyServerCertificate=false&allowPublicKeyRetrieval=true&useSSL=false"
     user = "parcel-svc"
     password = "parcel-pass"
     encoding = "UTF-8"
