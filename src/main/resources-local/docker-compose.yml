@@ -17,3 +17,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     volumes:
       - ./mysql:/var/lib/mysql
+  redis:
+    image: redis:7.0.0
+    ports:
+      - "6379:6379"

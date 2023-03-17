@@ -15,17 +15,6 @@ Configuration:
         value: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{[%-5level] traceId : %X{trace_id} spanId : %X{span_id} %throwable}{${color-filter}} [%t{1.}] %style{%c{1.}}{MAGENTA} (%F:%L) - %msg%n"
 
   Appenders:
-    Socket:
-      name: Socket
-      host: localhost
-      port: 5170
-      JsonTemplateLayout:
-        stackTraceEnabled: true
-        eventTemplateUri: classpath:LogstashJsonEventLayoutV1.json
-        eventTemplateAdditionalField:
-          - key: data_type
-            value: "$${event:Marker:-LOG}"
-
     Console:
       name: CONSOLE
       target: SYSTEM_OUT
@@ -38,7 +27,6 @@ Configuration:
         additivity: false
         AppenderRef:
           - ref: CONSOLE
-          - ref: Socket
 
     Logger:
       - name: team.sopo

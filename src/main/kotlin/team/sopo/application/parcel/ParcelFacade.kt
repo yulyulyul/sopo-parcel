@@ -16,7 +16,7 @@ class ParcelFacade(
     }
 
     fun registerCarrierStatus(command: ParcelCommand.RegisterCarrierStatus): ParcelInfo.CarrierStatus {
-       return parcelService.registerCarrier(command)
+        return parcelService.registerCarrier(command)
     }
 
     fun reporting(command: ParcelCommand.Reporting) {
@@ -68,19 +68,10 @@ class ParcelFacade(
     }
 
     fun entireRefresh(command: ParcelCommand.EntireRefresh) {
-        parcelService.entireRefresh(command).apply {
-            if (this.isNotEmpty()) {
-                pushService.pushCompleteParcels(command.userToken, this)
+        parcelService.entireRefresh(command)
+            .takeIf { it.isNotEmpty() }
+            ?.let {
+                pushService.pushToUpdateParcel(command.userToken, it)
             }
-        }
     }
-
-    fun pushParcels(command: ParcelCommand.PushRequest) {
-        pushService.pushCompleteParcels(command.userToken, command.parcelIds)
-    }
-
-    fun pushDeviceAwaken(command: ParcelCommand.DeviceAwakenRequest) {
-        pushService.pushAwakenDevice(command.topic)
-    }
-
 }

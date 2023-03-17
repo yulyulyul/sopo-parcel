@@ -1,10 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.google.cloud.tools.jib.gradle.JibExtension
 
 plugins {
     val basicVersion = "1.5.31"
     id("org.springframework.boot") version "2.5.6"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.flywaydb.flyway") version "6.0.8"
+    id("com.google.cloud.tools.jib") version "3.2.0"
 
     kotlin("jvm") version basicVersion
     kotlin("plugin.spring") version basicVersion
@@ -37,7 +39,7 @@ sourceSets {
 }
 
 group = "team.sopo"
-version = "0.0.58"
+version = "9.0.62"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_11
 
@@ -55,22 +57,22 @@ allOpen{
 
 extra["springCloudVersion"] = "2020.0.4"
 val querydslVersion = "5.0.0"
+val baseVersion = "2.6.3"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter:2.6.3")
-    implementation("org.springframework.boot:spring-boot-starter-cache:2.6.3")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.6.3")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis:2.6.3")
-    implementation("org.springframework.boot:spring-boot-starter-web:2.6.3")
-    implementation("org.springframework.boot:spring-boot-starter-security:2.6.3")
-    implementation("org.springframework.boot:spring-boot-starter-hateoas:2.6.3")
-    implementation("org.springframework.boot:spring-boot-starter-actuator:2.6.3")
-    implementation("org.springframework.boot:spring-boot-starter-mail:2.6.3")
-    implementation("org.springframework.kafka:spring-kafka:2.8.2")
+    implementation("org.springframework.boot:spring-boot-starter:$baseVersion")
+    implementation("org.springframework.boot:spring-boot-starter-cache:$baseVersion")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:$baseVersion")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:$baseVersion")
+    implementation("org.springframework.boot:spring-boot-starter-web:$baseVersion")
+    implementation("org.springframework.boot:spring-boot-starter-security:$baseVersion")
+    implementation("org.springframework.boot:spring-boot-starter-hateoas:$baseVersion")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:$baseVersion")
+    implementation("org.springframework.boot:spring-boot-starter-mail:$baseVersion")
     implementation("org.springframework.cloud:spring-cloud-starter-config:3.1.0")
-    implementation("org.springframework.boot:spring-boot-starter-aop:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-aop:$baseVersion")
     implementation("org.springframework.cloud", "spring-cloud-starter-netflix-eureka-client")
-    implementation("org.springframework.boot:spring-boot-starter-validation:2.6.3")
+    implementation("org.springframework.boot:spring-boot-starter-validation:$baseVersion")
     implementation("org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.0")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:3.1.0")
     implementation("io.github.openfeign", "feign-httpclient")
@@ -80,7 +82,7 @@ dependencies {
     implementation("org.springdoc", "springdoc-openapi-security", "1.5.4")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.3") {
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$baseVersion") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.springframework.security:spring-security-test:5.5.1")
@@ -182,4 +184,32 @@ flyway {
     encoding = "UTF-8"
     outOfOrder = true
     validateOnMigrate = true
+}
+configure<JibExtension> {
+    from {
+        image = "adoptopenjdk/openjdk11"
+        platforms {
+            platform {
+                architecture = "amd64"
+                os = "linux"
+            }
+            platform {
+                architecture = "arm64"
+                os = "linux"
+            }
+        }
+    }
+    to {
+        image = "www.sooopo.com/sopo_$profile/parcel"
+        tags = setOf("$version", "$version")
+        auth {
+            username = "sopo_kube"
+            password = "sopo1212Q"
+        }
+    }
+    container {
+        environment = mapOf(
+            "SPRING_PROFILES_ACTIVE" to profile
+        )
+    }
 }

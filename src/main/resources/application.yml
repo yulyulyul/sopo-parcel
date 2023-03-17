@@ -1,33 +1,3 @@
 spring:
   application:
     name: parcel-service
----
-spring:
-  cloud:
-    config:
-      profile: stage
-      uri: http://config:8888
-      name: default, parcel-service, kafka, eureka, maria, discovery, feign, flyway
-  config:
-    activate:
-      on-profile: stage
----
-spring:
-  cloud:
-    config:
-      profile: local
-      uri: http://localhost:8888
-      name: default, parcel-service, eureka, maria, discovery, feign, flyway
-  config:
-    activate:
-      on-profile: local
----
-spring:
-  cloud:
-    config:
-      profile: prelive
-      uri: http://config:8888
-      name: default, parcel-service, kafka, eureka, maria, discovery, feign, flyway
-  config:
-    activate:
-      on-profile: prelive
